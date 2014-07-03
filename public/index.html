@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" ng-app>
+  <head>
+    <title>Crowd Rank</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/knockout.min.js"></script>
+    <script type="text/javascript" src="/js/modernizr.min.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+  </head>
+  <body>
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <h4>Score: <span data-bind="text: score"></span></h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <h4>Rank: <span data-bind="text: rank"></span></h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h2 data-bind="text: matchupText"></h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-sm-6">
+                <img data-bind="attr: { src: cardOneData().image_url }, click: cardOneClick">
+            </div>
+            <div class="col-md-6 col-sm-6">
+                <img data-bind="attr: { src: cardTwoData().image_url }, click: cardTwoClick">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Start of StatCounter Code for Default Guide -->
+    <script type="text/javascript">
+    var sc_project=9890103; 
+    var sc_invisible=1; 
+    var sc_security="f76cd652"; 
+    var scJsHost = (("https:" == document.location.protocol) ? "https://secure." : "http://www.");
+    document.write("<sc"+"ript type='text/javascript' src='" + scJsHost + "statcounter.com/counter/counter.js'></"+"script>");
+    </script>
+    <noscript><div class="statcounter"><a title="web analytics"
+    href="http://statcounter.com/" target="_blank"><img
+    class="statcounter"
+    src="http://c.statcounter.com/9890103/0/f76cd652/1/"
+    alt="web analytics"></a></div></noscript>
+    <!-- End of StatCounter Code for Default Guide -->
+    </body>
+</html>
