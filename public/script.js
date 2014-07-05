@@ -29,7 +29,7 @@ var viewModel = function() {
     });
 
     function initialize() {
-        loadScore();
+//        loadScore();
         newMatchup();
     }
     
@@ -57,9 +57,9 @@ var viewModel = function() {
             score(score() - 1);
         }
         
-        if (Modernizr.localstorage) {
-            localStorage[storageScoreKey] = score();
-        }
+//        if (Modernizr.localstorage) {
+//            localStorage[storageScoreKey] = score();
+//        }
     }
     
     function sendMatchupResult(cardNum) {
