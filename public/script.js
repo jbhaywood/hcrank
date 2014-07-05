@@ -1,15 +1,16 @@
 var viewModel = function() {
     var self = this;
     var storageScoreKey = 'hcrank_score';
-    var mana = ko.observable();
+    var currentMana = 0;
+    var firstMatchup = true;
+
     var score = ko.observable(0);
     var matchupText = ko.observable('');
     var cardOneData = ko.observable('');
     var cardTwoData = ko.observable('');
-    var firstMatchup = true;
-    var start;
+    var matchupStartTime;
     
-    var rank = ko.computed(function() {
+    var userRank = ko.computed(function() {
         var localScore = score();
         var localRank;
         
@@ -66,8 +67,8 @@ var viewModel = function() {
         
         // ignore the first matchup because it's going to person isn't totally focused on ranking cards yet 
         if (!firstMatchup) {
-            var stop = new Date().getTime();
-            decisionTime = stop - start;
+            var matchupStopTime = new Date().getTime();
+            decisionTime = matchupStopTime - matchupStartTime;
         } else {
             firstMatchup = false;
         }
@@ -95,9 +96,9 @@ var viewModel = function() {
             setImageSize(data.cardTwo, 'original');
             cardOneData(data.cardOne);
             cardTwoData(data.cardTwo);
-            mana(data.mana);
+            currentMana = data.mana;
             matchupText('Choose wisely');
-            start = new Date().getTime();
+            matchupStartTime = new Date().getTime();
         });
     }
     
@@ -113,7 +114,7 @@ var viewModel = function() {
         matchupText: matchupText,
         initialize: initialize,
         score: score,
-        rank: rank
+        rank: userRank
     };
 }();
 
