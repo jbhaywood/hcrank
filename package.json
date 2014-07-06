@@ -2,7 +2,6 @@
   "name": "crowd-rank",
   "version": "0.0.1",
   "description": "A test",
-  "main": "server.js",
   "repository": "",
   "author": "James Haywood",
   "dependencies": {
@@ -11,10 +10,8 @@
     "mongoose": "3.8.12",
     "stringify-object": "*"
   },
-  "scripts": {
-    "start": "node server.js"
-  },
   "engines": {
-    "node": "0.10.x"
+    "node": "0.10.x",
+    "npm": "1.3.x"
   }
 }
