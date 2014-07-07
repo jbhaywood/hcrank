@@ -67,10 +67,7 @@ app.post('/api/sendmatchup/', function(req, res) {
 cardProvider.initialize();
 dbProvider.initialize();
 
-var server_port = process.env.PORT || 8080;
-var server_ip_address = process.env.IP || '127.0.0.1';
-
-server.listen(server_port, server_ip_address, function(){
+server.listen(process.env.PORT || 8080, function(){
     var addr = server.address();
     console.log("Server listening at", addr.address + ":" + addr.port);
 });
