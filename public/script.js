@@ -29,7 +29,7 @@ var viewModel = function() {
     });
 
     function initialize() {
-//        loadScore();
+        loadScore();
         newMatchup();
     }
     
@@ -57,15 +57,15 @@ var viewModel = function() {
             score(score() - 1);
         }
         
-//        if (Modernizr.localstorage) {
-//            localStorage[storageScoreKey] = score();
-//        }
+        if (Modernizr.localstorage) {
+            localStorage[storageScoreKey] = score();
+        }
     }
     
     function sendMatchupResult(cardNum) {
         var decisionTime = 0;
         
-        // ignore the first matchup because it's going to person isn't totally focused on ranking cards yet 
+        // ignore the first matchup because the person isn't totally focused on ranking cards yet 
         if (!firstMatchup) {
             var matchupStopTime = new Date().getTime();
             decisionTime = matchupStopTime - matchupStartTime;
