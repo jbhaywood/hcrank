@@ -1,5 +1,4 @@
 var viewModel = function() {
-    var self = this;
     var storageScoreKey = 'hcrank_score';
     var currentMana = 0;
     var firstMatchup = true;
