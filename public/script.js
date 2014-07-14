@@ -1,7 +1,8 @@
-var viewModel = function() {
+'use strict';
+
+var viewModel = (function() {
     var storageScoreKey = 'hcrank_score';
     var currentMana = 0;
-    var firstMatchup = true;
 
     var score = ko.observable(0);
     var matchupText = ko.observable('');
@@ -27,10 +28,10 @@ var viewModel = function() {
         return localRank;
     });
 
-    function initialize() {
+    var initialize = function() {
         loadScore();
         newMatchup();
-    }
+    };
     
     function cardOneClick() {
         sendMatchupResult(1);
@@ -62,16 +63,9 @@ var viewModel = function() {
     }
     
     function sendMatchupResult(cardNum) {
-        var decisionTime = 0;
-        
-        // ignore the first matchup because the person isn't totally focused on ranking cards yet 
-        if (!firstMatchup) {
-            var matchupStopTime = new Date().getTime();
-            decisionTime = matchupStopTime - matchupStartTime;
-        } else {
-            firstMatchup = false;
-        }
-    
+        var matchupStopTime = new Date().getTime();
+        var decisionTime = matchupStopTime - matchupStartTime;
+
         var sendData = { 
             cardOneId: cardOneData().id,
             cardTwoId: cardTwoData().id,
@@ -80,7 +74,7 @@ var viewModel = function() {
         };
         
         $.post('/api/sendmatchup/', sendData, function(data) {
-            var result = data.pickedBest ? "The crowd agrees" : "The crowd does not agree";
+            var result = data.pickedBest ? 'The crowd agrees' : 'The crowd does not agree';
             matchupText(result);
             setScore(data.pickedBest);
             setTimeout(function() {
@@ -90,7 +84,8 @@ var viewModel = function() {
     }
     
     function newMatchup() {
-        $.get('/api/newmatchup/', function(data) {
+        var sendData = { manaSkip: currentMana };
+        $.post('/api/newmatchup/', sendData, function(data) {
             setImageSize(data.cardOne, 'original');
             setImageSize(data.cardTwo, 'original');
             cardOneData(data.cardOne);
@@ -102,7 +97,7 @@ var viewModel = function() {
     }
     
     function setImageSize(card, size) {
-        card.image_url = card.image_url.replace("\/medium\/", "\/" + size + "\/");
+        card.image_url = card.image_url.replace('\/medium\/', '\/' + size + '\/');
     }
     
     return {
@@ -115,7 +110,7 @@ var viewModel = function() {
         score: score,
         rank: userRank
     };
-}();
+}());
 
 $(document).ready(function () {
     ko.applyBindings(viewModel);

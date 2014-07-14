@@ -1,3 +1,4 @@
+'use strict';
 var mongoose = require('mongoose');
 var _ = require('lodash');
 
@@ -86,7 +87,7 @@ var setNeutralRank = function(cardId, rank) {
         if (!err) {
             card.neutralRank = rank;
             card.save();
-            console.log("cardId: " + cardId + "; saved! Rank = " + card.neutralRank)
+            console.log('cardId: ' + cardId + '; saved! Rank = ' + card.neutralRank);
         } else {
             console.log(err);
         }
@@ -110,8 +111,8 @@ var saveMatchup = function(cardOneId, cardTwoId, winnerId, milliseconds) {
         secondsToDecide: (milliseconds / 1000)
     });
     matchup.save();
-    console.log("Matchup saved! " + matchup)
-}
+    console.log('Matchup saved! ' + matchup);
+};
 
 exports.initialize = initialize;
 exports.getRank = getRank;

@@ -1,3 +1,4 @@
+'use strict';
 var _ = require('lodash');
 var _allCardsData = require('./data/all-cards.json');
 
@@ -17,15 +18,6 @@ var getPlayableCards = function() {
 
 var getPlayableCardsByHero = function(heroName) {
     return _.where(getPlayableCards(), { hero: heroName });
-};
-
-var getPlayableCardsByMana = function(mana) {
-    return _.where(getPlayableCards(), { mana: mana });
-};
-
-var getTwoRandomCardsByMana = function(mana) {
-    var cards = getPlayableCardsByMana(mana);
-    return getTwoRandomCards(cards);
 };
 
 var getTwoRandomCards = function(cards) {
@@ -56,17 +48,27 @@ var initialize = function() {
     _manaVals = _.pluck(getPlayableCards(), 'mana');
 };
 
-var getTwoRandomNeutralCards = function() {
-    var randomInd = Math.floor(Math.random() * _manaVals.length);
-    var randomMana = _manaVals[randomInd];
+var getTwoRandomNeutralCards = function(manaSkip) {
+    var randomInd;
+    var randomMana;
+    manaSkip = parseInt(manaSkip, 10);
+
+    do {
+        randomInd = Math.floor(Math.random() * _manaVals.length);
+        randomMana = _manaVals[randomInd];
+    } while ( randomMana === manaSkip );
+
     // group all mana cost cards greater than 10 with the 10 cards
     if (randomMana > 10) {
         randomMana = 10;
     }
+
     var cards = _.filter(getPlayableCardsByHero('neutral'), function(card) {
         return (randomMana < 10 && card.mana === randomMana) ||  (randomMana >= 10 && card.mana >= 10);
     });
+
     var twoCards = getTwoRandomCards(cards);
+
     return {
         cardOne: twoCards.cardOne,
         cardTwo: twoCards.cardTwo,
