@@ -3,12 +3,11 @@
   <head>
     <title>Crowd Rank</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-responsive.min.css">
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/knockout.min.js"></script>
-    <script type="text/javascript" src="js/modernizr.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.min.js"></script>
     <script type="text/javascript" src="script.js"></script>
   </head>
   <body>
@@ -30,10 +29,10 @@
         </div>
         <div class="row">
             <div class="col-md-6 col-sm-6">
-                <img data-bind="attr: { src: cardOneData().image_url }, click: cardOneClick">
+                <img data-bind="attr: { src: cardOneData().url }, click: cardOneClick">
             </div>
             <div class="col-md-6 col-sm-6">
-                <img data-bind="attr: { src: cardTwoData().image_url }, click: cardTwoClick">
+                <img data-bind="attr: { src: cardTwoData(). url }, click: cardTwoClick">
             </div>
         </div>
     </div>

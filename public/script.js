@@ -1,5 +1,4 @@
 'use strict';
-
 var viewModel = (function() {
     var storageScoreKey = 'hcrank_score';
     var currentMana = 0;
@@ -33,73 +32,79 @@ var viewModel = (function() {
         newMatchup();
     };
     
-    function cardOneClick() {
-        sendMatchupResult(1);
-    }
+    var cardOneClick = function() {
+        processMatchup(cardOneData(), cardTwoData());
+    };
     
-    function cardTwoClick() {
-        sendMatchupResult(2);
-    }
+    var cardTwoClick = function() {
+        processMatchup(cardTwoData(), cardOneData());
+    };
     
-    function loadScore() {
+    var loadScore = function() {
         if (Modernizr.localstorage) {
           var localScore = parseInt(localStorage[storageScoreKey], 10);
           if (!isNaN(localScore)) {
               score(localScore);
           }
         }
-    }
+    };
     
-    function setScore(pickedBest) {
+    var setScore = function(pickedBest) {
+        var currentScore = score();
         if (pickedBest) {
-            score(score() + 1);
-        } else if (score() > 0) {
-            score(score() - 1);
+            score(currentScore + 1);
+        } else if (currentScore > 0) {
+            score(currentScore - 1);
         }
         
         if (Modernizr.localstorage) {
             localStorage[storageScoreKey] = score();
         }
-    }
-    
-    function sendMatchupResult(cardNum) {
-        var matchupStopTime = new Date().getTime();
-        var decisionTime = matchupStopTime - matchupStartTime;
+    };
 
-        var sendData = { 
-            cardOneId: cardOneData().id,
-            cardTwoId: cardTwoData().id,
-            picked: cardNum === 1 ? 1 : 2,
-            time: decisionTime
-        };
-        
-        $.post('/api/sendmatchup/', sendData, function(data) {
-            var result = data.pickedBest ? 'The crowd agrees' : 'The crowd does not agree';
-            matchupText(result);
-            setScore(data.pickedBest);
-            setTimeout(function() {
-                newMatchup();
-            }, 1000);
-        });
-    }
-    
-    function newMatchup() {
+    var setImageUrl = function(card, size) {
+        card.url = card.url.replace('\/medium\/', '\/' + size + '\/');
+    };
+
+    var newMatchup = function() {
         var sendData = { manaSkip: currentMana };
+
         $.post('/api/newmatchup/', sendData, function(data) {
-            setImageSize(data.cardOne, 'original');
-            setImageSize(data.cardTwo, 'original');
+            setImageUrl(data.cardOne, 'original');
+            setImageUrl(data.cardTwo, 'original');
             cardOneData(data.cardOne);
             cardTwoData(data.cardTwo);
             currentMana = data.mana;
             matchupText('Choose wisely');
             matchupStartTime = new Date().getTime();
         });
-    }
-    
-    function setImageSize(card, size) {
-        card.image_url = card.image_url.replace('\/medium\/', '\/' + size + '\/');
-    }
-    
+    };
+
+    var processMatchup = function(pickedCard, unpickedCard) {
+        var matchupStopTime = new Date().getTime();
+        var decisionTime = matchupStopTime - matchupStartTime;
+        var pickedRank = pickedCard.neutralRank;
+        var unpickedRank = unpickedCard.neutralRank;
+        var pickedBest = pickedRank > unpickedRank;
+
+        pickedCard.neutralRank = ((100 - pickedRank) / 2) + pickedRank;
+        unpickedCard.neutralRank = unpickedRank - (unpickedRank / 2);
+        matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
+        setScore(pickedBest);
+
+        var sendData = {
+            cardOne: pickedCard,
+            cardTwo: unpickedCard,
+            milliseconds: decisionTime
+        };
+
+        $.post('/api/savematchup/', sendData);
+
+        setTimeout(function() {
+            newMatchup();
+        }, 1000);
+    };
+
     return {
         cardOneData: cardOneData,
         cardTwoData: cardTwoData,
@@ -112,7 +117,7 @@ var viewModel = (function() {
     };
 }());
 
-$(document).ready(function () {
+$(document).ready(function() {
     ko.applyBindings(viewModel);
     viewModel.initialize();
 });
