@@ -5,8 +5,9 @@ var viewModel = (function() {
 
     var score = ko.observable(0);
     var matchupText = ko.observable('');
-    var cardOneData = ko.observable('');
-    var cardTwoData = ko.observable('');
+    var matchupSubtext = ko.observable('');
+    var cardOneData = ko.observable({});
+    var cardTwoData = ko.observable({});
     var matchupStartTime;
     
     var userRank = ko.computed(function() {
@@ -66,6 +67,22 @@ var viewModel = (function() {
         card.url = card.url.replace('\/medium\/', '\/' + size + '\/');
     };
 
+    var setMatchupText = function(cardOne, cardTwo) {
+        var rankOne = cardOne.neutralRank;
+        var rankTwo = cardTwo.neutralRank;
+        var rankDiff = Math.abs(rankOne - rankTwo);
+
+        if (rankDiff < 10) {
+            matchupSubtext('(careful, this one\'s tricky)');
+        } else if (rankDiff < 50) {
+            matchupSubtext('(hmm...)');
+        } else {
+            matchupSubtext('(piece of cake)');
+        }
+
+        matchupText('Choose wisely');
+    };
+
     var newMatchup = function() {
         var sendData = { manaSkip: currentMana };
 
@@ -75,9 +92,15 @@ var viewModel = (function() {
             cardOneData(data.cardOne);
             cardTwoData(data.cardTwo);
             currentMana = data.mana;
-            matchupText('Choose wisely');
+            setMatchupText(data.cardOne, data.cardTwo);
             matchupStartTime = new Date().getTime();
         });
+    };
+
+    var clearMatchup = function() {
+        cardOneData({});
+        cardTwoData({});
+        matchupSubtext('');
     };
 
     var processMatchup = function(pickedCard, unpickedCard) {
@@ -91,6 +114,7 @@ var viewModel = (function() {
         unpickedCard.neutralRank = unpickedRank - (unpickedRank / 2);
         matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
         setScore(pickedBest);
+        clearMatchup();
 
         var sendData = {
             cardOne: pickedCard,
@@ -111,6 +135,7 @@ var viewModel = (function() {
         cardOneClick: cardOneClick,
         cardTwoClick: cardTwoClick,
         matchupText: matchupText,
+        matchupSubtext: matchupSubtext,
         initialize: initialize,
         score: score,
         rank: userRank

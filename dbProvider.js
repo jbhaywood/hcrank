@@ -24,14 +24,14 @@ var initialize = function() {
     });
 
     mongoose.connection.on('disconnected', function () {
-        console.log('Mongoose default connection to DB :' + _dbServer + ' disconnected');
+        console.log('Mongoose connection to ' + _dbServer + ' disconnected');
         if (_restartOnDisconnect) {
              connect();
         }
     });
 
     mongoose.connection.on('connected', function() {
-        console.log('Connected to ' + _dbServer + ' DB!');
+        console.log('Connected to ' + _dbServer);
     });
 
     Card = mongoose.model('Card', mongoose.Schema({
