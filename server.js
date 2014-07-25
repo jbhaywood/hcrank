@@ -1,5 +1,8 @@
 'use strict';
 var express = require('express');
+var bodyParser = require('body-parser');
+//var morgan = require('morgan');
+//var errorHandler = require('errorHandler');
 var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
 var routes = require('./app/routes');
@@ -8,18 +11,21 @@ dbProvider.initialize();
 cardProvider.initialize();
 
 var app = express();
+var router = express.Router();
+var port = process.env.PORT || 3000;
 
-app.use('/', express.static(__dirname + '/public'));
-app.use('/', express.json());
-app.use('/', express.urlencoded());
-app.set('port', process.env.PORT || 3000);
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use('/api', router);
+//app.use(morgan('combined'));
+//app.use(errorHandler());
 
-routes.initialize(app);
+routes.initialize(router);
 
-app.listen(app.get('port'), function() {
-    console.log('Server listening at port ' + app.get('port'));
-});
-    
+app.listen(port);
+
 var gracefulExit = function() {
     var promise = dbProvider.shutDown();
     promise.onFulfill(function() {

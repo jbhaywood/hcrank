@@ -122,7 +122,9 @@ var viewModel = (function() {
             milliseconds: decisionTime
         };
 
-        $.post('/api/savematchup/', sendData);
+        $.post('/api/savematchup/', sendData, function() {
+            console.log('saveMatchup returned');
+        });
 
         setTimeout(function() {
             newMatchup();

@@ -2,12 +2,14 @@
 var _ = require('lodash');
 var dbProvider = require('./dbProvider');
 var allCardsData = require('./data/all-cards.json');
+var Q = require('q');
 
 var _allCards =  allCardsData.cards;
 var _manaVals = [];
 var _cardHeroes = [];
 var _playableCards = [];
 var _playableCardsHash = {};
+var _playableNeutralCards = [];
 
 var getPlayableCardsByHero = function(heroName) {
     return _.where(_playableCards, { hero: heroName });
@@ -60,44 +62,52 @@ var initialize = function() {
     _.forEach(_playableCards, function(card) {
        _playableCardsHash[card.id] = card;
     });
+
+    _playableNeutralCards = getPlayableCardsByHero('neutral');
 };
 
 var getTwoRandomNeutralCards = function(manaSkip) {
-    var randomInd;
-    var randomMana;
-    manaSkip = parseInt(manaSkip, 10);
+    return Q.fcall(function() {
+        var randomInd;
+        var randomMana;
+        manaSkip = parseInt(manaSkip, 10);
 
-    do {
-        randomInd = Math.floor(Math.random() * _manaVals.length);
-        randomMana = _manaVals[randomInd];
-    } while ( randomMana === manaSkip );
+        do {
+            randomInd = Math.floor(Math.random() * _manaVals.length);
+            randomMana = _manaVals[randomInd];
+        } while ( randomMana === manaSkip );
 
-    // group all mana cost cards greater than 10 with the 10 cards
-    // and any zero cost cards with the one mana cards
-    if (randomMana > 10) {
-        randomMana = 10;
-    } else if (randomMana < 1) {
-        randomMana = 1;
-    }
+        // group all mana cost cards greater than 10 with the 10 cards
+        // and any zero cost cards with the one mana cards
+        if (randomMana > 10) {
+            randomMana = 10;
+        } else if (randomMana < 1) {
+            randomMana = 1;
+        }
 
-    var cards = _.filter(getPlayableCardsByHero('neutral'), function(card) {
-        return (randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
-            (randomMana >= 10 && card.mana >= 10) ||
-            (randomMana <= 1 && card.mana <= 1);
+        var cards = _.filter(_playableNeutralCards, function(card) {
+            return (randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
+                (randomMana >= 10 && card.mana >= 10) ||
+                (randomMana <= 1 && card.mana <= 1);
+        });
+
+        var twoCards = getTwoRandomCards(cards);
+
+        return {
+            cardOne: twoCards.cardOne,
+            cardTwo: twoCards.cardTwo,
+            mana: randomMana
+        };
     });
-
-    var twoCards = getTwoRandomCards(cards);
-
-    return {
-        cardOne: twoCards.cardOne,
-        cardTwo: twoCards.cardTwo,
-        mana: randomMana
-    };
 };
 
 var setNeutralRank = function(cardId, rank) {
     var card = _playableCardsHash[cardId];
     if (card) {
+        if (isNaN(rank) || rank < 0 || rank > 100) {
+            console.log('Error: setNeutralRank card id: ' + cardId + ' has invalid rank: ' + rank);
+            rank = 50;
+        }
         card.neutralRank = rank;
         card.updated = new Date();
     }

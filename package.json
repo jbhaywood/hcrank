@@ -3,14 +3,19 @@
   "version": "0.0.2",
   "description": "Crowd-sourced Hearthstone card ranking application.",
   "author": "James Haywood",
+  "main": "server.js",
   "dependencies": {
-    "express": "3.2.x",
-    "lodash": "2.4.x",
-    "mongoose": "3.8.x",
-    "stringify-object": "0.2.x"
+    "lodash": "~2.4.1",
+    "mongoose": "~3.8.12",
+    "stringify-object": "~0.2.1",
+    "morgan": "~1.2.0",
+    "errorhandler": "~1.1.1",
+    "express": "~4.6.1",
+    "body-parser": "~1.5.0",
+    "q": "~1.0.1"
   },
   "devDependencies": {
-    "mocha": "1.20.x"
+    "mocha": "~1.20.1"
   },
   "engines": {
     "node": "0.10.x",

@@ -2,27 +2,31 @@
 var cardProvider = require('../cardProvider');
 var dbProvider = require('../dbProvider');
 
-exports.initialize = function(app) {
-    app.post('/api/newmatchup/', function(req, res) {
+exports.initialize = function(router) {
+    router.post('/newmatchup/', function(req, res) {
         var data = req.body;
-        var cardData = cardProvider.getTwoRandomNeutralCards(data.manaSkip);
-        var sendData = {
-            cardOne: {
-                id: cardData.cardOne.id,
-                url: cardData.cardOne.image_url,
-                neutralRank: cardData.cardOne.neutralRank
-            },
-            cardTwo: {
-                id: cardData.cardTwo.id,
-                url: cardData.cardTwo.image_url,
-                neutralRank: cardData.cardTwo.neutralRank
-            },
-            mana:cardData.mana
-        };
-        res.send(sendData);
+        cardProvider.getTwoRandomNeutralCards(data.manaSkip)
+            .then(function(cardData) {
+                var sendData = {
+                    cardOne: {
+                        id: cardData.cardOne.id,
+                        url: cardData.cardOne.image_url,
+                        neutralRank: cardData.cardOne.neutralRank
+                    },
+                    cardTwo: {
+                        id: cardData.cardTwo.id,
+                        url: cardData.cardTwo.image_url,
+                        neutralRank: cardData.cardTwo.neutralRank
+                    },
+                    mana:cardData.mana
+                };
+                res.send(sendData);
+            }, function(err) {
+                console.log('Error: api-newMatchup: ' + err);
+            });
     });
 
-    app.post('/api/savematchup/', function(req) {
+    router.post('/savematchup/', function(req, res) {
         var data = req.body;
         var idOne = parseInt(data.cardOne.id);
         var idTwo = parseInt(data.cardTwo.id);
@@ -32,5 +36,6 @@ exports.initialize = function(app) {
         cardProvider.setNeutralRank(idOne, rankOne);
         cardProvider.setNeutralRank(idTwo, rankTwo);
         dbProvider.saveMatchup(idOne, idTwo, idOne, milliseconds);
+        res.send(null);
     });
 };
