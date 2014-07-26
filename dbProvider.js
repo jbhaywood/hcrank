@@ -2,7 +2,6 @@
 var _ = require('lodash');
 var Q = require('q');
 var mongoose = require('mongoose');
-var config = require('./config/config');
 
 var Card;
 var Matchup;
@@ -11,7 +10,16 @@ var _classList = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'sham
 var _defaultClassRanks;
 var _dbServer = 'test_db';
 var _restartOnDisconnect = true;
-var _connectUri = config ? config.dbConnectUri : process.env.DB_CONNECT_URI;
+
+var _connectUri;
+var config;
+if (process.env.NODE_ENV === 'production') {
+    _connectUri = process.env.DB_CONNECT_URI;
+} else {
+    config = require('./config/config');
+    _connectUri = config.dbConnectUri;
+}
+
 
 // PUBLIC
 
