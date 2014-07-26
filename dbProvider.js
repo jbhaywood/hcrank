@@ -1,6 +1,7 @@
 'use strict';
-var mongoose = require('mongoose');
 var _ = require('lodash');
+var Q = require('q');
+var mongoose = require('mongoose');
 
 var Card;
 var Matchup;
@@ -80,6 +81,21 @@ var saveMatchup = function(cardOneId, cardTwoId, winnerId, milliseconds) {
     matchup.save();
 };
 
+var saveCards = function(cardsData) {
+    _.forEach(cardsData, function(cardData) {
+        getCard(cardData.id).then(function(card) {
+            if (card) {
+                card.neutralRank = cardData.neutralRank;
+                card.classRanks = cardData.classRanks.slice();
+                card.updated = new Date();
+                card.save();
+            }
+        }, function(err) {
+            console.log(err);
+        });
+    });
+};
+
 var shutDown = function() {
     var promise = new mongoose.Promise;
     _restartOnDisconnect = false;
@@ -94,4 +110,5 @@ exports.initialize = initialize;
 exports.getCard = getCard;
 exports.getCardsByIds = getCardsByIds;
 exports.saveMatchup = saveMatchup;
+exports.saveCards = saveCards;
 exports.shutDown = shutDown;

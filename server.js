@@ -6,25 +6,28 @@ var bodyParser = require('body-parser');
 var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
 var routes = require('./app/routes');
+var Q = require('q');
 
 dbProvider.initialize();
-cardProvider.initialize();
+cardProvider.initialize().done(function() {
+//    cardProvider.resetCardRanks();
 
-var app = express();
-var router = express.Router();
-var port = process.env.PORT || 3000;
+    var app = express();
+    var router = express.Router();
+    var port = process.env.PORT || 3000;
 
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use('/api', router);
-//app.use(morgan('combined'));
-//app.use(errorHandler());
+    app.use(express.static('public'));
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+    app.use('/api', router);
+    //app.use(morgan('combined'));
+    //app.use(errorHandler());
 
-routes.initialize(router);
+    routes.initialize(router);
 
-app.listen(port);
+    app.listen(port);
+});
 
 var gracefulExit = function() {
     var promise = dbProvider.shutDown();

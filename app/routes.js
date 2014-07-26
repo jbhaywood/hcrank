@@ -5,37 +5,58 @@ var dbProvider = require('../dbProvider');
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
         var data = req.body;
-        cardProvider.getTwoRandomNeutralCards(data.manaSkip)
-            .then(function(cardData) {
-                var sendData = {
-                    cardOne: {
-                        id: cardData.cardOne.id,
-                        url: cardData.cardOne.image_url,
-                        neutralRank: cardData.cardOne.neutralRank
-                    },
-                    cardTwo: {
-                        id: cardData.cardTwo.id,
-                        url: cardData.cardTwo.image_url,
-                        neutralRank: cardData.cardTwo.neutralRank
-                    },
-                    mana:cardData.mana
-                };
-                res.send(sendData);
-            }, function(err) {
-                console.log('Error: api-newMatchup: ' + err);
-            });
+        var cardData = cardProvider.getTwoRandomNeutralCards(data.manaSkip);
+        var sendData = {
+            cardOne: {
+                id: cardData.cardOne.id,
+                url: cardData.cardOne.image_url,
+                neutralRank: cardData.cardOne.neutralRank
+            },
+            cardTwo: {
+                id: cardData.cardTwo.id,
+                url: cardData.cardTwo.image_url,
+                neutralRank: cardData.cardTwo.neutralRank
+            },
+            mana:cardData.mana
+        };
+        res.send(sendData);
     });
 
-    router.post('/savematchup/', function(req, res) {
-        var data = req.body;
-        var idOne = parseInt(data.cardOne.id);
-        var idTwo = parseInt(data.cardTwo.id);
-        var rankOne = parseFloat(data.cardOne.neutralRank);
-        var rankTwo = parseFloat(data.cardTwo.neutralRank);
-        var milliseconds = parseInt(data.milliseconds);
-        cardProvider.setNeutralRank(idOne, rankOne);
-        cardProvider.setNeutralRank(idTwo, rankTwo);
-        dbProvider.saveMatchup(idOne, idTwo, idOne, milliseconds);
-        res.send(null);
+    var intCheck = function(int) {
+        return typeof int === 'number' && (int % 1) === 0;
+    };
+
+    var saveMatchupParams = '/savematchup/:cardOneId/:cardTwoId/:cardOneNeutralRank/:cardTwoNeutralRank/:milliseconds';
+    router.get(saveMatchupParams, function(req, res) {
+        var params = req.params;
+
+        if (params.cardOneId && params.cardTwoId && params.cardOneNeutralRank &&
+            params.cardTwoNeutralRank && params.milliseconds) {
+            var idOne = parseInt(params.cardOneId);
+            var idTwo = parseInt(params.cardTwoId);
+
+            if (intCheck(idOne) && intCheck(idTwo)) {
+                var rankOne = parseFloat(params.cardOneNeutralRank);
+                var rankTwo = parseFloat(params.cardTwoNeutralRank);
+                var milliseconds = parseInt(params.milliseconds);
+
+                if (isNaN(rankOne) || rankOne < 0 || rankOne > 100) {
+                    rankOne = 50;
+                }
+                if (isNaN(rankTwo) || rankTwo < 0 || rankTwo > 100) {
+                    rankTwo = 50;
+                }
+                if (!intCheck(milliseconds)) {
+                    milliseconds = 0;
+                }
+
+                cardProvider.setNeutralRank(idOne, rankOne);
+                cardProvider.setNeutralRank(idTwo, rankTwo);
+                cardProvider.saveAllCards();
+                dbProvider.saveMatchup(idOne, idTwo, idOne, milliseconds);
+            }
+        }
+
+        res.end();
     });
 };

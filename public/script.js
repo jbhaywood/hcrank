@@ -83,6 +83,12 @@ var viewModel = (function() {
         matchupText('Choose wisely');
     };
 
+    var clearMatchup = function() {
+        cardOneData({});
+        cardTwoData({});
+        matchupSubtext('');
+    };
+
     var newMatchup = function() {
         var sendData = { manaSkip: currentMana };
 
@@ -95,12 +101,6 @@ var viewModel = (function() {
             setMatchupText(data.cardOne, data.cardTwo);
             matchupStartTime = new Date().getTime();
         });
-    };
-
-    var clearMatchup = function() {
-        cardOneData({});
-        cardTwoData({});
-        matchupSubtext('');
     };
 
     var processMatchup = function(pickedCard, unpickedCard) {
@@ -116,15 +116,10 @@ var viewModel = (function() {
         setScore(pickedBest);
         clearMatchup();
 
-        var sendData = {
-            cardOne: pickedCard,
-            cardTwo: unpickedCard,
-            milliseconds: decisionTime
-        };
-
-        $.post('/api/savematchup/', sendData, function() {
-            console.log('saveMatchup returned');
-        });
+        var saveMatchupSendStr = '/api/savematchup/' + pickedCard.id +
+            '/' + unpickedCard.id + '/' + pickedCard.neutralRank +
+            '/' + unpickedCard.neutralRank + '/' + decisionTime;
+        $.get(saveMatchupSendStr);
 
         setTimeout(function() {
             newMatchup();
