@@ -10,13 +10,14 @@ var _classList = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'sham
 var _defaultClassRanks;
 var _dbServer = 'test_db';
 var _restartOnDisconnect = true;
+var _connectUri = process.env.DB_CONNECT_URI;
 
 // PUBLIC
 
 var initialize = function() {
     var connect = function () {
         var options = { server: { socketOptions: { keepAlive: 1 } } };
-        mongoose.connect('mongodb://jhaywood:test_db@kahana.mongohq.com:10037/' + _dbServer, options);
+        mongoose.connect(_connectUri, options);
     };
     connect();
 
@@ -81,14 +82,14 @@ var saveMatchup = function(cardOneId, cardTwoId, winnerId, milliseconds) {
     matchup.save();
 };
 
-var saveCards = function(cardsData) {
-    _.forEach(cardsData, function(cardData) {
-        getCard(cardData.id).then(function(card) {
-            if (card) {
-                card.neutralRank = cardData.neutralRank;
-                card.classRanks = cardData.classRanks.slice();
-                card.updated = new Date();
-                card.save();
+var saveUpdatedCards = function(cardDatas) {
+    _.forEach(cardDatas, function(cardData) {
+        getCard(cardData.id).then(function(dbCard) {
+            if (dbCard && cardData.updated > dbCard.updated) {
+                dbCard.neutralRank = cardData.neutralRank;
+                dbCard.classRanks = cardData.classRanks.slice();
+                dbCard.updated = cardData.updated;
+                dbCard.save();
             }
         }, function(err) {
             console.log(err);
@@ -110,5 +111,5 @@ exports.initialize = initialize;
 exports.getCard = getCard;
 exports.getCardsByIds = getCardsByIds;
 exports.saveMatchup = saveMatchup;
-exports.saveCards = saveCards;
+exports.saveUpdatedCards = saveUpdatedCards;
 exports.shutDown = shutDown;

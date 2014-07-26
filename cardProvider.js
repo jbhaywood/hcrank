@@ -5,11 +5,11 @@ var dbProvider = require('./dbProvider');
 var allCardsData = require('./data/all-cards.json');
 
 var _allCards =  allCardsData.cards;
-var _manaVals = [];
-var _cardHeroes = [];
 var _playableCards = [];
 var _playableCardsHash = {};
 var _playableNeutralCards = [];
+var _manaVals = [];
+var _cardHeroes = [];
 var _saveCounter = 0;
 
 var getPlayableCardsByHero = function(heroName) {
@@ -36,7 +36,7 @@ var getTwoRandomCards = function(cards) {
 // PUBLIC 
 
 var initialize = function() {
-    var deffered = Q.defer();
+    var deferred = Q.defer();
 
     // get the possible heroes
     _cardHeroes = _.chain(_allCards).pluck('hero').unique().value();
@@ -66,12 +66,12 @@ var initialize = function() {
 
         _playableNeutralCards = getPlayableCardsByHero('neutral');
 
-        deffered.resolve();
+        deferred.resolve();
     }, function(err) {
         console.log(err);
     });
 
-    return deffered.promise;
+    return deferred.promise;
 };
 
 var getTwoRandomNeutralCards = function(manaSkip) {
@@ -111,7 +111,7 @@ var saveAllCards = function() {
     _saveCounter = _saveCounter + 1;
 
     if (_saveCounter === 100) {
-        dbProvider.saveCards(_playableNeutralCards);
+        dbProvider.saveUpdatedCards(_playableNeutralCards);
         _saveCounter = 0;
     }
 };
