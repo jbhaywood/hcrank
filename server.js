@@ -10,12 +10,7 @@ var Q = require('q');
 
 dbProvider.initialize();
 cardProvider.initialize().done(function() {
-    if (process.env.NODE_ENV !== 'production') {
-        console.log('Resetting card ranks.');
-        cardProvider.resetCardRanks();
-    } else {
-        console.log('Using existing card ranks.');
-    }
+//    cardProvider.resetCardRanks();
 
     var app = express();
     var router = express.Router();
