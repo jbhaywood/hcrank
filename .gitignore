@@ -2,3 +2,4 @@ heroku-client/
 heroku-client.tgz
 .idea/
 node_modules/
+config/

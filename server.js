@@ -1,8 +1,8 @@
 'use strict';
 var express = require('express');
 var bodyParser = require('body-parser');
-//var morgan = require('morgan');
-//var errorHandler = require('errorHandler');
+var morgan = require('morgan');
+var errorHandler = require('errorHandler');
 var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
 var routes = require('./app/routes');
@@ -10,7 +10,12 @@ var Q = require('q');
 
 dbProvider.initialize();
 cardProvider.initialize().done(function() {
-//    cardProvider.resetCardRanks();
+    if (process.env.NODE_ENV !== 'production') {
+        console.log('Resetting card ranks.');
+        cardProvider.resetCardRanks();
+    } else {
+        console.log('Using existing card ranks.');
+    }
 
     var app = express();
     var router = express.Router();
@@ -21,8 +26,11 @@ cardProvider.initialize().done(function() {
         extended: true
     }));
     app.use('/api', router);
-    //app.use(morgan('combined'));
-    //app.use(errorHandler());
+
+    if (process.env.NODE_ENV !== 'production') {
+        app.use(morgan('combined'));
+        app.use(errorHandler());
+    }
 
     routes.initialize(router);
 
