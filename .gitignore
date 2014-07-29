@@ -3,3 +3,4 @@ heroku-client.tgz
 .idea/
 node_modules/
 config/
+graphics/

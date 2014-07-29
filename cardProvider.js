@@ -17,15 +17,26 @@ var getPlayableCardsByHero = function(heroName) {
 };
 
 var getTwoRandomCards = function(cards) {
-    var indOne = Math.floor(Math.random() * cards.length);
+    var sorted;
+    // if there are enough cards, make sure all them get matched up more or less evenly
+    if (cards.length > 4) {
+        // sort cards so that the most recently updated are last
+        sorted = _.sortBy(cards, 'updated');
+        // then pick randomly from the first third
+        sorted.length = Math.ceil(sorted.length / 3);
+    } else {
+        sorted = cards.slice();
+    }
+
+    var indOne = Math.floor(Math.random() * sorted.length);
     var indTwo = indOne;
     
     do {
-         indTwo = Math.floor(Math.random() * cards.length);
+         indTwo = Math.floor(Math.random() * sorted.length);
     } while ( indOne === indTwo );
 
-    var cardOne = cards[indOne];
-    var cardTwo = cards[indTwo];
+    var cardOne = sorted[indOne];
+    var cardTwo = sorted[indTwo];
     
     return {
         cardOne: cardOne,
@@ -57,6 +68,7 @@ var initialize = function() {
             if (card) {
                 card.neutralRank = dbCard.neutralRank;
                 card.classRanks = dbCard.classRanks.slice();
+                card.updated = dbCard.updated;
             }
         });
 
@@ -92,6 +104,10 @@ var getTwoRandomNeutralCards = function(manaSkip) {
         randomMana = 1;
     }
 
+//    if (process.env.NODE_ENV !== 'production') {
+//        randomMana = 6;
+//    }
+
     var cards = _.filter(_playableNeutralCards, function(card) {
         return (randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
             (randomMana >= 10 && card.mana >= 10) ||
@@ -110,7 +126,7 @@ var getTwoRandomNeutralCards = function(manaSkip) {
 var saveAllCards = function() {
     _saveCounter = _saveCounter + 1;
 
-    if (_saveCounter === 100) {
+    if (_saveCounter === 25) {
         dbProvider.saveUpdatedCards(_playableNeutralCards);
         _saveCounter = 0;
     }
@@ -125,8 +141,8 @@ var setNeutralRank = function(cardId, rank) {
 };
 
 var resetCardRanks = function (){
-    var rankedNeutralCards = require('./data/rankedNeutralCards.js');
-    var datas = rankedNeutralCards.cardList;
+    var rankedCards = require('./data/rankedCards.js');
+    var datas = rankedCards.cardList;
     _.chain(datas)
         .map(function(data) {
             var avgRank = 	_.reduce(data.ranks, function(sum, num)
@@ -140,9 +156,13 @@ var resetCardRanks = function (){
             };
         })
         .forEach(function(data) {
-            var found = _.find(_playableNeutralCards, { id: data.id });
+            // TODO-jh add special handling for hero cards
+            var found = _.find(_playableCards, { id: data.id });
             if (found) {
                 found.neutralRank = data.rank;
+                found.classRanks = _.map(found.classRanks, function() {
+                    return data.rank;
+                });
                 found.updated = new Date();
             }
         });
