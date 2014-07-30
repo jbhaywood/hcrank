@@ -1,9 +1,4 @@
 exports.cardList = [
-    {
-        id: 7,
-        name: 'Garrosh Hellscream',
-        ranks: []
-    },
 	{
         id: 8,
         name: 'Mind Control',
@@ -38,11 +33,6 @@ exports.cardList = [
         id: 30,
         name: 'Thoughtsteal',
         ranks: [40]
-    },
-	{
-        id: 31,
-        name: 'Rexxar',
-        ranks: []
     },
 	{
         id: 32,
@@ -122,7 +112,7 @@ exports.cardList = [
 	{
         id: 77,
         name: 'Polymorph',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 86,
@@ -142,7 +132,7 @@ exports.cardList = [
 	{
         id: 113,
         name: 'Counterspell',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 132,
@@ -167,7 +157,7 @@ exports.cardList = [
 	{
         id: 141,
         name: 'Hunter\'s Mark',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 145,
@@ -202,12 +192,12 @@ exports.cardList = [
 	{
         id: 163,
         name: 'Sacrificial Pact',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 172,
         name: 'Ice Lance',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 175,
@@ -247,12 +237,12 @@ exports.cardList = [
 	{
         id: 192,
         name: 'Ice Block',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 195,
         name: 'Mirror Entity',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 196,
@@ -288,11 +278,6 @@ exports.cardList = [
         id: 220,
         name: 'Shadow Madness',
         ranks: [80]
-    },
-	{
-        id: 229,
-        name: 'Steady Shot',
-        ranks: []
     },
 	{
         id: 232,
@@ -355,11 +340,6 @@ exports.cardList = [
         ranks: [100]
     },
 	{
-        id: 274,
-        name: 'Malfurion Stormrage',
-        ranks: []
-    },
-	{
         id: 279,
         name: 'Holy Smite',
         ranks: [80]
@@ -387,7 +367,7 @@ exports.cardList = [
 	{
         id: 286,
         name: 'Vaporize',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 287,
@@ -412,22 +392,17 @@ exports.cardList = [
 	{
         id: 292,
         name: 'Multi-Shot',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 296,
         name: 'Kill Command',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 299,
         name: 'Forked Lightning',
         ranks: [60]
-    },
-	{
-        id: 300,
-        name: 'Life Tap',
-        ranks: []
     },
 	{
         id: 304,
@@ -447,12 +422,12 @@ exports.cardList = [
 	{
         id: 311,
         name: 'Gladiator\'s Longbow',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 315,
         name: 'Fireball',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 336,
@@ -507,7 +482,7 @@ exports.cardList = [
 	{
         id: 366,
         name: 'Spellbender',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 374,
@@ -542,12 +517,12 @@ exports.cardList = [
 	{
         id: 394,
         name: 'Explosive Shot',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 395,
         name: 'Water Elemental',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 397,
@@ -572,7 +547,7 @@ exports.cardList = [
 	{
         id: 405,
         name: 'Mana Wyrm',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 411,
@@ -607,7 +582,7 @@ exports.cardList = [
 	{
         id: 430,
         name: 'Cone of Cold',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 435,
@@ -622,7 +597,7 @@ exports.cardList = [
 	{
         id: 437,
         name: 'Animal Companion',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 440,
@@ -642,7 +617,7 @@ exports.cardList = [
 	{
         id: 447,
         name: 'Arcane Explosion',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 453,
@@ -652,7 +627,7 @@ exports.cardList = [
 	{
         id: 455,
         name: 'Snake Trap',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 456,
@@ -662,7 +637,7 @@ exports.cardList = [
 	{
         id: 457,
         name: 'Blizzard',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 459,
@@ -677,7 +652,7 @@ exports.cardList = [
 	{
         id: 462,
         name: 'Eye for an Eye',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 466,
@@ -695,11 +670,6 @@ exports.cardList = [
         ranks: [40]
     },
 	{
-        id: 472,
-        name: 'Reinforce',
-        ranks: []
-    },
-	{
         id: 475,
         name: 'Murloc Tidecaller',
         ranks: [1,7]
@@ -708,11 +678,6 @@ exports.cardList = [
         id: 476,
         name: 'Consecration',
         ranks: [100]
-    },
-	{
-        id: 479,
-        name: 'Lesser Heal',
-        ranks: []
     },
 	{
         id: 481,
@@ -767,7 +732,7 @@ exports.cardList = [
 	{
         id: 519,
         name: 'Freezing Trap',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 523,
@@ -812,7 +777,7 @@ exports.cardList = [
 	{
         id: 555,
         name: 'Arcane Intellect',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 556,
@@ -827,7 +792,7 @@ exports.cardList = [
 	{
         id: 564,
         name: 'Arcane Missiles',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 567,
@@ -867,12 +832,12 @@ exports.cardList = [
 	{
         id: 585,
         name: 'Explosive Trap',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 587,
         name: 'Frost Nova',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 592,
@@ -907,7 +872,7 @@ exports.cardList = [
 	{
         id: 606,
         name: 'Timber Wolf',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 608,
@@ -927,7 +892,7 @@ exports.cardList = [
 	{
         id: 614,
         name: 'Sorcerer\'s Apprentice',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 618,
@@ -937,7 +902,7 @@ exports.cardList = [
 	{
         id: 621,
         name: 'Ice Barrier',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 622,
@@ -968,11 +933,6 @@ exports.cardList = [
         id: 636,
         name: 'Whirlwind',
         ranks: [20]
-    },
-	{
-        id: 637,
-        name: 'Jaina Proudmoore',
-        ranks: []
     },
 	{
         id: 640,
@@ -1012,7 +972,7 @@ exports.cardList = [
 	{
         id: 662,
         name: 'Frostbolt',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 667,
@@ -1023,11 +983,6 @@ exports.cardList = [
         id: 670,
         name: 'Nightblade',
         ranks: [23,25]
-    },
-	{
-        id: 671,
-        name: 'Uther Lightbringer',
-        ranks: []
     },
 	{
         id: 672,
@@ -1045,11 +1000,6 @@ exports.cardList = [
         ranks: [40,10,27]
     },
 	{
-        id: 687,
-        name: 'Totemic Call',
-        ranks: []
-    },
-	{
         id: 692,
         name: 'Druid of the Claw',
         ranks: [80]
@@ -1057,7 +1007,7 @@ exports.cardList = [
 	{
         id: 699,
         name: 'Tundra Rhino',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 700,
@@ -1090,19 +1040,9 @@ exports.cardList = [
         ranks: [41]
     },
 	{
-        id: 725,
-        name: 'Armor Up!',
-        ranks: []
-    },
-	{
         id: 727,
         name: 'Hand of Protection',
         ranks: [20]
-    },
-	{
-        id: 730,
-        name: 'Dagger Mastery',
-        ranks: []
     },
 	{
         id: 734,
@@ -1127,7 +1067,7 @@ exports.cardList = [
 	{
         id: 748,
         name: 'Kirin Tor Mage',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 749,
@@ -1250,11 +1190,6 @@ exports.cardList = [
         ranks: [40]
     },
 	{
-        id: 807,
-        name: 'Fireblast',
-        ranks: []
-    },
-	{
         id: 810,
         name: 'Gorehowl',
         ranks: [100]
@@ -1265,19 +1200,14 @@ exports.cardList = [
         ranks: [80,89,98]
     },
 	{
-        id: 813,
-        name: 'Anduin Wrynn',
-        ranks: []
-    },
-	{
         id: 814,
         name: 'Snipe',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 818,
         name: 'Far Sight',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 823,
@@ -1292,7 +1222,7 @@ exports.cardList = [
 	{
         id: 830,
         name: 'Totemic Might',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 834,
@@ -1342,7 +1272,7 @@ exports.cardList = [
 	{
         id: 860,
         name: 'Sense Demons',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 864,
@@ -1357,7 +1287,7 @@ exports.cardList = [
 	{
         id: 877,
         name: 'Arcane Shot',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 878,
@@ -1385,19 +1315,14 @@ exports.cardList = [
         ranks: [40,68]
     },
 	{
-        id: 893,
-        name: 'Gul\'dan',
-        ranks: []
-    },
-	{
         id: 896,
         name: 'Flare',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 903,
         name: 'Bestial Wrath',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 904,
@@ -1448,11 +1373,6 @@ exports.cardList = [
         id: 926,
         name: 'Imp Master',
         ranks: [80,77]
-    },
-	{
-        id: 930,
-        name: 'Valeera Sanguinar',
-        ranks: []
     },
 	{
         id: 932,
@@ -1552,12 +1472,12 @@ exports.cardList = [
 	{
         id: 1003,
         name: 'Houndmaster',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1004,
         name: 'Flamestrike',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1007,
@@ -1622,7 +1542,7 @@ exports.cardList = [
 	{
         id: 1047,
         name: 'Tracking',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 1050,
@@ -1638,11 +1558,6 @@ exports.cardList = [
         id: 1064,
         name: 'Blade Flurry',
         ranks: [20]
-    },
-	{
-        id: 1066,
-        name: 'Thrall',
-        ranks: []
     },
 	{
         id: 1068,
@@ -1662,17 +1577,17 @@ exports.cardList = [
 	{
         id: 1080,
         name: 'Archmage Antonidas',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1084,
         name: 'Mirror Image',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 1087,
         name: 'Pyroblast',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1090,
@@ -1682,7 +1597,7 @@ exports.cardList = [
 	{
         id: 1091,
         name: 'Misdirection',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 1092,
@@ -1692,7 +1607,7 @@ exports.cardList = [
 	{
         id: 1093,
         name: 'Deadly Shot',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 1098,
@@ -1730,11 +1645,6 @@ exports.cardList = [
         ranks: [80,92,88]
     },
 	{
-        id: 1123,
-        name: 'Shapeshift',
-        ranks: []
-    },
-	{
         id: 1124,
         name: 'Wild Growth',
         ranks: [20]
@@ -1767,7 +1677,7 @@ exports.cardList = [
 	{
         id: 1144,
         name: 'King Krush',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1147,
@@ -1822,22 +1732,22 @@ exports.cardList = [
 	{
         id: 1241,
         name: 'Starving Buzzard',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 1243,
         name: 'Unleash the Hounds',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 1261,
         name: 'Savannah Highmane',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1281,
         name: 'Scavenging Hyena',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1361,
@@ -1962,7 +1872,7 @@ exports.cardList = [
 	{
         id: 1662,
         name: 'Eaglehorn Bow',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1686,
@@ -1992,6 +1902,6 @@ exports.cardList = [
 	{
         id: 1737,
         name: 'Ethereal Arcanist',
-        ranks: []
+        ranks: [20]
     }
 ];
