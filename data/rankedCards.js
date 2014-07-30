@@ -7,12 +7,12 @@ exports.cardList = [
 	{
         id: 8,
         name: 'Mind Control',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 9,
         name: 'Prophet Velen',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 12,
@@ -27,7 +27,7 @@ exports.cardList = [
 	{
         id: 23,
         name: 'Bane of Doom',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 28,
@@ -37,7 +37,7 @@ exports.cardList = [
 	{
         id: 30,
         name: 'Thoughtsteal',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 31,
@@ -47,7 +47,7 @@ exports.cardList = [
 	{
         id: 32,
         name: 'Al\'Akir the Windlord',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 34,
@@ -57,7 +57,7 @@ exports.cardList = [
 	{
         id: 36,
         name: 'Cenarius',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 37,
@@ -77,12 +77,12 @@ exports.cardList = [
 	{
         id: 48,
         name: 'Voidwalker',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 51,
         name: 'Windfury',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 61,
@@ -92,7 +92,7 @@ exports.cardList = [
 	{
         id: 64,
         name: 'Swipe',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 67,
@@ -112,7 +112,7 @@ exports.cardList = [
 	{
         id: 70,
         name: 'Blessing of Might',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 75,
@@ -127,7 +127,7 @@ exports.cardList = [
 	{
         id: 86,
         name: 'Starfall',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 90,
@@ -137,7 +137,7 @@ exports.cardList = [
 	{
         id: 95,
         name: 'Nourish',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 113,
@@ -162,7 +162,7 @@ exports.cardList = [
 	{
         id: 140,
         name: 'Redemption',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 141,
@@ -172,22 +172,22 @@ exports.cardList = [
 	{
         id: 145,
         name: 'Mindgames',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 147,
         name: 'Shadowflame',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 149,
         name: 'Ancestral Healing',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 151,
         name: 'Mark of Nature',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 157,
@@ -217,7 +217,7 @@ exports.cardList = [
 	{
         id: 178,
         name: 'Windspeaker',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 179,
@@ -227,7 +227,7 @@ exports.cardList = [
 	{
         id: 180,
         name: 'Backstab',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 186,
@@ -237,7 +237,7 @@ exports.cardList = [
 	{
         id: 189,
         name: 'Fire Elemental',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 191,
@@ -257,17 +257,17 @@ exports.cardList = [
 	{
         id: 196,
         name: 'Vanish',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 201,
         name: 'Defias Ringleader',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 205,
         name: 'Ironbark Protector',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 211,
@@ -277,7 +277,7 @@ exports.cardList = [
 	{
         id: 213,
         name: 'Mark of the Wild',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 216,
@@ -287,7 +287,7 @@ exports.cardList = [
 	{
         id: 220,
         name: 'Shadow Madness',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 229,
@@ -297,27 +297,27 @@ exports.cardList = [
 	{
         id: 232,
         name: 'Repentance',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 233,
         name: 'Naturalize',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 237,
         name: 'Auchenai Soulpriest',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 238,
         name: 'Feral Spirit',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 239,
         name: 'Rockbiter Weapon',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 242,
@@ -327,7 +327,7 @@ exports.cardList = [
 	{
         id: 250,
         name: 'Hammer of Wrath',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 251,
@@ -337,7 +337,7 @@ exports.cardList = [
 	{
         id: 254,
         name: 'Innervate',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 257,
@@ -347,12 +347,12 @@ exports.cardList = [
 	{
         id: 268,
         name: 'Cold Blood',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 272,
         name: 'Cabal Shadow Priest',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 274,
@@ -362,7 +362,7 @@ exports.cardList = [
 	{
         id: 279,
         name: 'Holy Smite',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 281,
@@ -372,7 +372,7 @@ exports.cardList = [
 	{
         id: 282,
         name: 'Betrayal',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 284,
@@ -392,7 +392,7 @@ exports.cardList = [
 	{
         id: 287,
         name: 'Kidnapper',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 289,
@@ -407,7 +407,7 @@ exports.cardList = [
 	{
         id: 291,
         name: 'Holy Light',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 292,
@@ -422,7 +422,7 @@ exports.cardList = [
 	{
         id: 299,
         name: 'Forked Lightning',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 300,
@@ -437,7 +437,7 @@ exports.cardList = [
 	{
         id: 306,
         name: 'Edwin VanCleef',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 308,
@@ -477,7 +477,7 @@ exports.cardList = [
 	{
         id: 345,
         name: 'Assassinate',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 348,
@@ -492,7 +492,7 @@ exports.cardList = [
 	{
         id: 352,
         name: 'Doomhammer',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 363,
@@ -502,7 +502,7 @@ exports.cardList = [
 	{
         id: 365,
         name: 'Shadowstep',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 366,
@@ -517,17 +517,17 @@ exports.cardList = [
 	{
         id: 376,
         name: 'Inner Fire',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 381,
         name: 'Soul of the Forest',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 383,
         name: 'Light\'s Justice',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 389,
@@ -537,7 +537,7 @@ exports.cardList = [
 	{
         id: 391,
         name: 'Perdition\'s Blade',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 394,
@@ -567,7 +567,7 @@ exports.cardList = [
 	{
         id: 404,
         name: 'Ancestral Spirit',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 405,
@@ -597,7 +597,7 @@ exports.cardList = [
 	{
         id: 421,
         name: 'Assassin\'s Blade',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 424,
@@ -612,7 +612,7 @@ exports.cardList = [
 	{
         id: 435,
         name: 'Holy Wrath',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 436,
@@ -667,12 +667,12 @@ exports.cardList = [
 	{
         id: 459,
         name: 'Deadly Poison',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 461,
         name: 'Sap',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 462,
@@ -687,12 +687,12 @@ exports.cardList = [
 	{
         id: 467,
         name: 'Moonfire',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 469,
         name: 'Blood Imp',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 472,
@@ -707,7 +707,7 @@ exports.cardList = [
 	{
         id: 476,
         name: 'Consecration',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 479,
@@ -717,12 +717,12 @@ exports.cardList = [
 	{
         id: 481,
         name: 'Savagery',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 493,
         name: 'Force of Nature',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 496,
@@ -732,12 +732,12 @@ exports.cardList = [
 	{
         id: 503,
         name: 'Power of the Wild',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 505,
         name: 'Lightning Bolt',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 510,
@@ -757,12 +757,12 @@ exports.cardList = [
 	{
         id: 513,
         name: 'Mana Tide Totem',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 517,
         name: 'Felguard',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 519,
@@ -802,7 +802,7 @@ exports.cardList = [
 	{
         id: 545,
         name: 'Mind Blast',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 546,
@@ -842,12 +842,12 @@ exports.cardList = [
 	{
         id: 573,
         name: 'Shiv',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 577,
         name: 'Bite',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 581,
@@ -862,7 +862,7 @@ exports.cardList = [
 	{
         id: 584,
         name: 'Noble Sacrifice',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 585,
@@ -877,12 +877,12 @@ exports.cardList = [
 	{
         id: 592,
         name: 'Succubus',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 594,
         name: 'Lay on Hands',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 596,
@@ -892,7 +892,7 @@ exports.cardList = [
 	{
         id: 601,
         name: 'Keeper of the Grove',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 602,
@@ -922,7 +922,7 @@ exports.cardList = [
 	{
         id: 613,
         name: 'Power Word: Shield',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 614,
@@ -932,7 +932,7 @@ exports.cardList = [
 	{
         id: 618,
         name: 'Dust Devil',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 621,
@@ -947,17 +947,17 @@ exports.cardList = [
 	{
         id: 629,
         name: 'Lightning Storm',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 630,
         name: 'Sprint',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 631,
         name: 'Doomguard',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 635,
@@ -992,7 +992,7 @@ exports.cardList = [
 	{
         id: 643,
         name: 'Sword of Justice',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 648,
@@ -1017,7 +1017,7 @@ exports.cardList = [
 	{
         id: 667,
         name: 'Fan of Knives',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 670,
@@ -1037,7 +1037,7 @@ exports.cardList = [
 	{
         id: 679,
         name: 'Divine Favor',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 680,
@@ -1052,7 +1052,7 @@ exports.cardList = [
 	{
         id: 692,
         name: 'Druid of the Claw',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 699,
@@ -1067,12 +1067,12 @@ exports.cardList = [
 	{
         id: 708,
         name: 'Headcrack',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 710,
         name: 'Sinister Strike',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 712,
@@ -1097,7 +1097,7 @@ exports.cardList = [
 	{
         id: 727,
         name: 'Hand of Protection',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 730,
@@ -1122,7 +1122,7 @@ exports.cardList = [
 	{
         id: 742,
         name: 'Savage Roar',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 748,
@@ -1152,7 +1152,7 @@ exports.cardList = [
 	{
         id: 756,
         name: 'Equality',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 757,
@@ -1182,12 +1182,12 @@ exports.cardList = [
 	{
         id: 766,
         name: 'Hex',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 767,
         name: 'Earth Shock',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 768,
@@ -1197,17 +1197,17 @@ exports.cardList = [
 	{
         id: 773,
         name: 'Healing Touch',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 774,
         name: 'Unbound Elemental',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 777,
         name: 'Lord Jaraxxus',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 778,
@@ -1217,7 +1217,7 @@ exports.cardList = [
 	{
         id: 783,
         name: 'Pit Lord',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 785,
@@ -1237,7 +1237,7 @@ exports.cardList = [
 	{
         id: 797,
         name: 'Lightwell',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 801,
@@ -1282,7 +1282,7 @@ exports.cardList = [
 	{
         id: 823,
         name: 'Starfire',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 825,
@@ -1302,27 +1302,27 @@ exports.cardList = [
 	{
         id: 836,
         name: 'Wrath',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 841,
         name: 'Holy Nova',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 846,
         name: 'Power Overwhelming',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 847,
         name: 'Truesilver Champion',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 854,
         name: 'Humility',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 855,
@@ -1337,7 +1337,7 @@ exports.cardList = [
 	{
         id: 859,
         name: 'Twisting Nether',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 860,
@@ -1347,7 +1347,7 @@ exports.cardList = [
 	{
         id: 864,
         name: 'Lava Burst',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 866,
@@ -1367,17 +1367,17 @@ exports.cardList = [
 	{
         id: 886,
         name: 'Lightspawn',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 887,
         name: 'Master of Disguise',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 890,
         name: 'Tirion Fordring',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 891,
@@ -1402,7 +1402,7 @@ exports.cardList = [
 	{
         id: 904,
         name: 'Eviscerate',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 906,
@@ -1417,7 +1417,7 @@ exports.cardList = [
 	{
         id: 914,
         name: 'Shadow Bolt',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 915,
@@ -1427,12 +1427,12 @@ exports.cardList = [
 	{
         id: 919,
         name: 'Drain Life',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 920,
         name: 'Ancient of Lore',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 921,
@@ -1467,17 +1467,17 @@ exports.cardList = [
 	{
         id: 943,
         name: 'Blessing of Kings',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 950,
         name: 'Hellfire',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 960,
         name: 'Stormforged Axe',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 962,
@@ -1487,17 +1487,17 @@ exports.cardList = [
 	{
         id: 969,
         name: 'Summoning Portal',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 971,
         name: 'Frost Shock',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 974,
         name: 'Soulfire',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 976,
@@ -1512,7 +1512,7 @@ exports.cardList = [
 	{
         id: 982,
         name: 'Corruption',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 985,
@@ -1522,7 +1522,7 @@ exports.cardList = [
 	{
         id: 990,
         name: 'Conceal',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 993,
@@ -1567,7 +1567,7 @@ exports.cardList = [
 	{
         id: 1008,
         name: 'Flametongue Totem',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 1009,
@@ -1587,12 +1587,12 @@ exports.cardList = [
 	{
         id: 1019,
         name: 'Dread Infernal',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 1022,
         name: 'Argent Protector',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 1023,
@@ -1612,7 +1612,7 @@ exports.cardList = [
 	{
         id: 1035,
         name: 'Ancient of War',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1037,
@@ -1627,7 +1627,7 @@ exports.cardList = [
 	{
         id: 1050,
         name: 'Claw',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 1063,
@@ -1637,7 +1637,7 @@ exports.cardList = [
 	{
         id: 1064,
         name: 'Blade Flurry',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 1066,
@@ -1647,7 +1647,7 @@ exports.cardList = [
 	{
         id: 1068,
         name: 'Guardian of Kings',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 1073,
@@ -1677,7 +1677,7 @@ exports.cardList = [
 	{
         id: 1090,
         name: 'Flame Imp',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1091,
@@ -1687,7 +1687,7 @@ exports.cardList = [
 	{
         id: 1092,
         name: 'Mortal Coil',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1093,
@@ -1702,12 +1702,12 @@ exports.cardList = [
 	{
         id: 1099,
         name: 'Mind Vision',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1100,
         name: 'Siphon Soul',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1108,
@@ -1722,7 +1722,7 @@ exports.cardList = [
 	{
         id: 1117,
         name: 'SI:7 Agent',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1122,
@@ -1737,12 +1737,12 @@ exports.cardList = [
 	{
         id: 1124,
         name: 'Wild Growth',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 1133,
         name: 'Patient Assassin',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1135,
@@ -1757,12 +1757,12 @@ exports.cardList = [
 	{
         id: 1141,
         name: 'Earth Elemental',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1142,
         name: 'Demonfire',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 1144,
@@ -1782,22 +1782,22 @@ exports.cardList = [
 	{
         id: 1158,
         name: 'Preparation',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 1167,
         name: 'Aldor Peacekeeper',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1171,
         name: 'Bloodlust',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1174,
         name: 'Avenging Wrath',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1182,
@@ -1812,12 +1812,12 @@ exports.cardList = [
 	{
         id: 1189,
         name: 'Silence',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 1221,
         name: 'Void Terror',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 1241,
@@ -1842,42 +1842,42 @@ exports.cardList = [
 	{
         id: 1361,
         name: 'Divine Spirit',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 1362,
         name: 'Circle of Healing',
-        ranks: []
+        ranks: [1]
     },
 	{
         id: 1363,
         name: 'Shadow Word: Death',
-        ranks: []
+        ranks: [803]
     },
 	{
         id: 1364,
         name: 'Temple Enforcer',
-        ranks: []
+        ranks: [100]
     },
 	{
         id: 1365,
         name: 'Holy Fire',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 1366,
         name: 'Mass Dispel',
-        ranks: []
+        ranks: [40]
     },
 	{
         id: 1367,
         name: 'Shadow Word: Pain',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 1368,
         name: 'Shadowform',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1369,
@@ -1902,7 +1902,7 @@ exports.cardList = [
 	{
         id: 1373,
         name: 'Blessing of Wisdom',
-        ranks: []
+        ranks: [60]
     },
 	{
         id: 1401,
@@ -1912,7 +1912,7 @@ exports.cardList = [
 	{
         id: 1522,
         name: 'Blessed Champion',
-        ranks: []
+        ranks: [20]
     },
 	{
         id: 1634,
@@ -1922,7 +1922,7 @@ exports.cardList = [
 	{
         id: 1650,
         name: 'Northshire Cleric',
-        ranks: []
+        ranks: [80]
     },
 	{
         id: 1651,
