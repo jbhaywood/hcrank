@@ -1,13 +1,10 @@
 'use strict';
 var _ = require('lodash');
-var Q = require('q');
 var mongoose = require('mongoose');
 
 var Card;
 var Matchup;
 
-var _classList = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
-var _defaultClassRanks;
 var _dbServer = 'test_db';
 var _restartOnDisconnect = true;
 
@@ -19,7 +16,6 @@ if (process.env.NODE_ENV === 'production') {
     config = require('./config/config');
     _connectUri = config.dbConnectUri;
 }
-
 
 // PUBLIC
 
@@ -47,8 +43,7 @@ var initialize = function() {
 
     Card = mongoose.model('Card', mongoose.Schema({
         id: Number,
-        neutralRank: Number,
-        classRanks: [Number],
+        ranks: [Number],
         updated: Date
     }));
 
@@ -60,7 +55,10 @@ var initialize = function() {
         created: Date
     }));
 
-    _defaultClassRanks = _.map(_classList, function() { return 0; });
+    // uncomment to remove all card documents
+//    Card.remove({}, function(err) {
+//        console.log('collection removed');
+//    });
 };
 
 var getCard = function(cardId) {
@@ -94,12 +92,17 @@ var saveMatchup = function(cardOneId, cardTwoId, winnerId, milliseconds) {
 var saveUpdatedCards = function(cardDatas) {
     _.forEach(cardDatas, function(cardData) {
         getCard(cardData.id).then(function(dbCard) {
-            if (dbCard && cardData.updated > dbCard.updated) {
-                dbCard.neutralRank = cardData.neutralRank;
-                dbCard.classRanks = cardData.classRanks.slice();
+            if (!dbCard) {
+                dbCard = new Card({
+                    id: cardData.id,
+                    ranks: cardData.ranks.slice(),
+                    updated: new Date()
+                });
+            } else if (cardData.updated > dbCard.updated) {
+                dbCard.ranks = cardData.ranks.slice();
                 dbCard.updated = cardData.updated;
-                dbCard.save();
             }
+            dbCard.save();
         }, function(err) {
             console.log(err);
         });

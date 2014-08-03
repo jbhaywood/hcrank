@@ -19,12 +19,12 @@ exports.writeData = function() {
             indent: '    '
         });
     });
-    fs.writeFileSync('./rankedCards.js', rankDatas);
+    fs.writeFileSync('./rankedCardsList.js', rankDatas);
 };
 
 exports.transferData = function() {
     var rankedNeutralCards = require('./rankedNeutralCards.js');
-    var rankedAllCards = require('./rankedCards.js');
+    var rankedAllCards = require('./rankedCardsList.js');
     var neutralDatas = rankedNeutralCards.cardList;
     var allDatas = rankedAllCards.cardList;
 
@@ -38,5 +38,5 @@ exports.transferData = function() {
         });
     });
 
-    fs.writeFileSync('./rankedCards.js', writeableDatas);
+    fs.writeFileSync('./rankedCardsList.js', writeableDatas);
 };

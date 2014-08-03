@@ -5,14 +5,15 @@ var morgan = require('morgan');
 var errorHandler = require('errorhandler');
 var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
+var apiRoutes = require('./app/apiRoutes');
 var routes = require('./app/routes');
-var Q = require('q');
 
 dbProvider.initialize();
-cardProvider.initialize().done(function() {
-//    cardProvider.resetCardRanks();
+//cardProvider.resetCardRanks();
 
+cardProvider.initialize().done(function() {
     var app = express();
+    var apiRouter = express.Router();
     var router = express.Router();
     var port = process.env.PORT || 3000;
 
@@ -20,7 +21,8 @@ cardProvider.initialize().done(function() {
     app.use(bodyParser.urlencoded({
         extended: true
     }));
-    app.use('/api', router);
+    app.use('/', router);
+    app.use('/api', apiRouter);
 
     if (process.env.NODE_ENV !== 'production') {
         app.use(morgan('combined'));
@@ -28,6 +30,7 @@ cardProvider.initialize().done(function() {
     }
 
     routes.initialize(router);
+    apiRoutes.initialize(apiRouter);
 
     app.listen(port);
 });

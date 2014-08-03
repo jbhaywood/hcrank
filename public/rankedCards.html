@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Ranked Neutral Cards</title>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+	<script type="text/javascript" src="rankedCards.js"></script>
+</head>
+<body>
+	<div data-bind="template: { foreach: cards } ">
+		<span class="thumbnail">
+			<img data-bind="attr: { src: url }"/>
+		</span>
+	</div>
+</body>
+</html>
