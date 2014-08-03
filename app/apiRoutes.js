@@ -10,12 +10,12 @@ exports.initialize = function(router) {
         var sendData = {
             cardOne: {
                 id: cardData.cardOne.id,
-                url: cardData.cardOne.image_url,
+                url: cardData.cardOne.url,
                 neutralRank: cardData.cardOne.neutralRank
             },
             cardTwo: {
                 id: cardData.cardTwo.id,
-                url: cardData.cardTwo.image_url,
+                url: cardData.cardTwo.url,
                 neutralRank: cardData.cardTwo.neutralRank
             },
             mana:cardData.mana
@@ -27,18 +27,18 @@ exports.initialize = function(router) {
         return typeof int === 'number' && (int % 1) === 0;
     };
 
-    var saveMatchupParams = '/savematchup/:cardOneId/:cardTwoId/:cardOneNeutralRank/:cardTwoNeutralRank/:milliseconds';
+    var saveMatchupParams = '/savematchup/:cardOneId/:cardTwoId/:cardOneRank/:cardTwoRank/:milliseconds';
     router.get(saveMatchupParams, function(req, res) {
         var params = req.params;
 
-        if (params.cardOneId && params.cardTwoId && params.cardOneNeutralRank &&
-            params.cardTwoNeutralRank && params.milliseconds) {
+        if (params.cardOneId && params.cardTwoId && params.cardOneRank &&
+            params.cardTwoRank && params.milliseconds) {
             var idOne = parseInt(params.cardOneId);
             var idTwo = parseInt(params.cardTwoId);
 
             if (intCheck(idOne) && intCheck(idTwo)) {
-                var rankOne = parseFloat(params.cardOneNeutralRank);
-                var rankTwo = parseFloat(params.cardTwoNeutralRank);
+                var rankOne = parseFloat(params.cardOneRank);
+                var rankTwo = parseFloat(params.cardTwoRank);
                 var milliseconds = parseInt(params.milliseconds);
 
                 if (isNaN(rankOne) || rankOne < 0 || rankOne > 100) {
@@ -64,16 +64,16 @@ exports.initialize = function(router) {
     router.post('/getcards/', function(req, res) {
         var data = req.body;
         var theClass = data.class;
-        var cardDatas = cardProvider.getPlayableCardsByClass(theClass);
+        var cardDatas = cardProvider.getCardDatasByClass(theClass);
         var sortedDatas = _.chain(cardDatas)
             .sortBy(function(cardData) {
-                return cardProvider.getCardRankForClass(cardData, theClass);
+                return cardData.getRankForClass(theClass);
             })
             .reverse()
             .map(function(cardData) {
                 return {
                     name: cardData.name,
-                    url: cardData.image_url
+                    url: cardData.url
                 };
             })
             .value();

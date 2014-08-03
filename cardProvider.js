@@ -2,12 +2,11 @@
 var _ = require('lodash');
 var Q = require('q');
 var dbProvider = require('./dbProvider');
-var allCardsData = require('./data/all-cards.json');
+var allCardsRawData = require('./data/all-cards.json');
 
-var _allCards =  allCardsData.cards;
-var _playableCards = [];
-var _playableCardsHash = {};
-var _playableNeutralCards = [];
+var _cardDatas = [];
+var _cardDatasHash = {};
+var _neutralCardDatas = [];
 var _manaVals = [];
 var _saveCounter = 0;
 
@@ -22,18 +21,58 @@ var _shamanIdx = 7;
 var _warlockIdx = 8;
 var _warriorIdx = 9;
 
-var getPlayableCards = function() {
-    if (_playableCards.length === 0) {
-        _playableCards = _.filter(_allCards, function(card) {
-            return card.collectible && card.category !== 'ability' && card.category !== 'hero';
-        });
+function CardData(id, theClass, mana, url) {
+    this.id = id;
+    this.class = theClass;
+    this.mana = mana;
+    this.url = url;
+    this.ranks = [ 0,0,0,0,0,0,0,0,0,0 ];
+    this.updated = new Date();
+}
+
+CardData.prototype.getRankForClass = function(theClass) {
+    switch (theClass) {
+        case 'neutral':
+            return this.ranks[_neutralIdx];
+        case 'druid':
+            return this.ranks[_druidIdx];
+        case 'hunter':
+            return this.ranks[_hunterIdx];
+        case 'mage':
+            return this.ranks[_mageIdx];
+        case 'paladin':
+            return this.ranks[_paladinIdx];
+        case 'priest':
+            return this.ranks[_priestIdx];
+        case 'rogue':
+            return this.ranks[_rogueIdx];
+        case 'shaman':
+            return this.ranks[_shamanIdx];
+        case 'warlock':
+            return this.ranks[_warlockIdx];
+        case 'warrior':
+            return this.ranks[_warriorIdx];
+        default:
+            console.log('Class not found: ' + theClass);
+            return null;
     }
-    return _playableCards;
 };
 
-var getPlayableCardsByClass = function(className) {
-    var cards = getPlayableCards();
-    return _.where(cards, { hero: className });
+var getCardDatas = function() {
+    if (_cardDatas.length === 0) {
+        var rawDatas = _.filter(allCardsRawData.cards, function(card) {
+            return card.collectible && card.category !== 'ability' && card.category !== 'hero';
+        });
+        _cardDatas = _.map(rawDatas, function(data) {
+            return new CardData(data.id, data.hero, data.mana, data.image_url);
+        });
+    }
+    return _cardDatas;
+};
+
+var getCardDatasByClass = function(className) {
+    var cards = getCardDatas();
+    return _.where(cards, { class: className });
 };
 
 var getTwoRandomCards = function(cards) {
@@ -68,7 +107,7 @@ var getTwoRandomCards = function(cards) {
 
 var initialize = function() {
     var deferred = Q.defer();
-    var cards = getPlayableCards();
+    var cards = getCardDatas();
 
     // get all the mana values for the purpose of getting
     // a random one weighted by the number of cards per mana cost
@@ -86,10 +125,10 @@ var initialize = function() {
         });
 
         _.forEach(cards, function(card) {
-            _playableCardsHash[card.id] = card;
+            _cardDatasHash[card.id] = card;
         });
 
-        _playableNeutralCards = getPlayableCardsByClass('neutral');
+        _neutralCardDatas = getCardDatasByClass('neutral');
 
         deferred.resolve();
     }, function(err) {
@@ -97,34 +136,6 @@ var initialize = function() {
     });
 
     return deferred.promise;
-};
-
-var getCardRankForClass = function(card, theClass) {
-    switch (theClass) {
-        case 'neutral':
-            return card.ranks[_neutralIdx];
-        case 'druid':
-            return card.ranks[_druidIdx];
-        case 'hunter':
-            return card.ranks[_hunterIdx];
-        case 'mage':
-            return card.ranks[_mageIdx];
-        case 'paladin':
-            return card.ranks[_paladinIdx];
-        case 'priest':
-            return card.ranks[_priestIdx];
-        case 'rogue':
-            return card.ranks[_rogueIdx];
-        case 'shaman':
-            return card.ranks[_shamanIdx];
-        case 'warlock':
-            return card.ranks[_warlockIdx];
-        case 'warrior':
-            return card.ranks[_warriorIdx];
-        default:
-            console.log('Class not found: ' + theClass);
-            return null;
-    }
 };
 
 var getTwoRandomNeutralCards = function(manaSkip) {
@@ -149,7 +160,7 @@ var getTwoRandomNeutralCards = function(manaSkip) {
 //        randomMana = 6;
 //    }
 
-    var cards = _.filter(_playableNeutralCards, function(card) {
+    var cards = _.filter(_neutralCardDatas, function(card) {
         return (randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
             (randomMana >= 10 && card.mana >= 10) ||
             (randomMana <= 1 && card.mana <= 1);
@@ -168,25 +179,25 @@ var saveAllCards = function() {
     _saveCounter = _saveCounter + 1;
 
     if (_saveCounter === 25) {
-        dbProvider.saveUpdatedCards(_playableCards);
+        dbProvider.saveUpdatedCards(_cardDatas);
         _saveCounter = 0;
     }
 };
 
 var setNeutralRank = function(cardId, rank) {
-    var card = _playableCardsHash[cardId];
+    var card = _cardDatasHash[cardId];
     if (card) {
-        card.neutralRank = rank;
+        card.ranks[_neutralIdx] = rank;
         card.updated = new Date();
     }
 };
 
 var resetCardRanks = function (){
-    var cards = getPlayableCards();
+    var cards = getCardDatas();
     var ids = _.pluck(cards, 'id');
     dbProvider.getCardsByIds(ids).then(function(dbCards) {
         var rankedCards = require('./data/rankedCardsList.js');
-        var rankDatas = rankedCardsList.cardList;
+        var rankDatas = rankedCards.cardList;
         var minCardDatas = _.map(rankDatas, function(data) {
             var avgRank = 	_.reduce(data.ranks, function(sum, num)
             {
@@ -204,9 +215,9 @@ var resetCardRanks = function (){
                 card.ranks = [];
                 var dbCard = _.find(dbCards, { id: minCardData.id });
                 var newRanks = [0,0,0,0,0,0,0,0,0,0];
-                switch (card.hero) {
+                switch (card.class) {
                     case 'neutral':
-                        newRanks[_neutralIdx] = dbCard ? dbCard.neutralRank : minCardData.rank;
+                        newRanks[_neutralIdx] = dbCard ? dbCard.ranks[_neutralIdx] : minCardData.rank;
                         break;
                     case 'druid':
                         newRanks[_druidIdx] = minCardData.rank;
@@ -236,21 +247,20 @@ var resetCardRanks = function (){
                         newRanks[_warriorIdx] = minCardData.rank;
                         break;
                     default:
-                        console.log('Hero not found: ' + card.hero);
+                        console.log('Hero not found: ' + card.class);
                         break;
                 }
                 card.ranks = newRanks.slice();
                 card.updated = new Date();
             }
         });
-        dbProvider.saveUpdatedCards(_playableCards);
+        dbProvider.saveUpdatedCards(_cardDatas);
     });
 };
 
 exports.initialize = initialize;
-exports.getCardRankForClass = getCardRankForClass;
 exports.getTwoRandomNeutralCards = getTwoRandomNeutralCards;
-exports.getPlayableCardsByClass = getPlayableCardsByClass;
+exports.getCardDatasByClass = getCardDatasByClass;
 exports.resetCardRanks = resetCardRanks;
 exports.saveAllCards = saveAllCards;
 exports.setNeutralRank = setNeutralRank;
