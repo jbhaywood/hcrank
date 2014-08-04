@@ -30,11 +30,30 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-md-6 col-sm-6">
+		<div class="col-md-5 col-sm-5">
 			<img class="hoverover" data-bind="attr: { src: cardOneData().url }, click: cardOneClick">
 		</div>
-		<div class="col-md-6 col-sm-6">
+		<div class="col-md-5 col-sm-5">
 			<img class="hoverover" data-bind="attr: { src: cardTwoData(). url }, click: cardTwoClick">
+		</div>
+		<div class="btn-group-vertical col-md-2 col-sm-2 text-right">
+			<!--using the anonymous function for the click event below prevents it from firing on page load-->
+			<button type="button" class="btn btn-default"
+			        data-bind="css: { 'btn-success': commonActive }, click: function() { filterButtonClick('common') }">
+				Common
+			</button>
+			<button type="button" class="btn btn-default"
+			        data-bind="css: { 'btn-success': rareActive }, click: function() { filterButtonClick('rare') }">
+				Rare
+			</button>
+			<button type="button" class="btn btn-default"
+			        data-bind="css: { 'btn-success': epicActive }, click: function() { filterButtonClick('epic') }">
+				Epic
+			</button>
+			<button type="button" class="btn btn-default"
+			        data-bind="css: { 'btn-success': legendaryActive }, click: function() { filterButtonClick('legendary') }">
+				Legendary
+			</button>
 		</div>
 	</div>
 </div>

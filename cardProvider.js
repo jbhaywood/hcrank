@@ -21,11 +21,12 @@ var _shamanIdx = 7;
 var _warlockIdx = 8;
 var _warriorIdx = 9;
 
-function CardData(id, theClass, mana, url) {
+function CardData(id, theClass, mana, url, rarity) {
     this.id = id;
     this.class = theClass;
     this.mana = mana;
     this.url = url;
+    this.rarity = rarity;
     this.ranks = [ 0,0,0,0,0,0,0,0,0,0 ];
     this.updated = new Date();
 }
@@ -64,7 +65,7 @@ var getCardDatas = function() {
             return card.collectible && card.category !== 'ability' && card.category !== 'hero';
         });
         _cardDatas = _.map(rawDatas, function(data) {
-            return new CardData(data.id, data.hero, data.mana, data.image_url);
+            return new CardData(data.id, data.hero, data.mana, data.image_url, data.quality);
         });
     }
     return _cardDatas;
@@ -138,7 +139,7 @@ var initialize = function() {
     return deferred.promise;
 };
 
-var getTwoRandomNeutralCards = function(manaSkip) {
+var getCardsFromManaAndRarity = function(manaSkip, includeRarities) {
     var randomInd;
     var randomMana;
     manaSkip = parseInt(manaSkip, 10);
@@ -156,22 +157,29 @@ var getTwoRandomNeutralCards = function(manaSkip) {
         randomMana = 1;
     }
 
-//    if (process.env.NODE_ENV !== 'production') {
-//        randomMana = 6;
-//    }
-
     var cards = _.filter(_neutralCardDatas, function(card) {
-        return (randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
+        return ((randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
             (randomMana >= 10 && card.mana >= 10) ||
-            (randomMana <= 1 && card.mana <= 1);
+            (randomMana <= 1 && card.mana <= 1)) &&
+            includeRarities.indexOf(card.rarity) !== -1;
     });
 
+    if (cards.length < 2) {
+        return getCardsFromManaAndRarity(manaSkip, includeRarities);
+    }
+    else {
+        return cards;
+    }
+};
+
+var getTwoRandomNeutralCards = function(manaSkip, includeRarities) {
+    var cards = getCardsFromManaAndRarity(manaSkip, includeRarities);
     var twoCards = getTwoRandomCards(cards);
 
     return {
         cardOne: twoCards.cardOne,
         cardTwo: twoCards.cardTwo,
-        mana: randomMana
+        mana: twoCards.cardOne.mana
     };
 };
 
@@ -220,31 +228,31 @@ var resetCardRanks = function (){
                         newRanks[_neutralIdx] = dbCard ? dbCard.ranks[_neutralIdx] : minCardData.rank;
                         break;
                     case 'druid':
-                        newRanks[_druidIdx] = minCardData.rank;
+                        newRanks[_druidIdx] = dbCard ? dbCard.ranks[_druidIdx] : minCardData.rank;
                         break;
                     case 'hunter':
-                        newRanks[_hunterIdx] = minCardData.rank;
+                        newRanks[_hunterIdx] = dbCard ? dbCard.ranks[_hunterIdx] : minCardData.rank;
                         break;
                     case 'mage':
-                        newRanks[_mageIdx] = minCardData.rank;
+                        newRanks[_mageIdx] = dbCard ? dbCard.ranks[_mageIdx] : minCardData.rank;
                         break;
                     case 'paladin':
-                        newRanks[_paladinIdx] = minCardData.rank;
+                        newRanks[_paladinIdx] = dbCard ? dbCard.ranks[_paladinIdx] : minCardData.rank;
                         break;
                     case 'priest':
-                        newRanks[_priestIdx] = minCardData.rank;
+                        newRanks[_priestIdx] = dbCard ? dbCard.ranks[_priestIdx] : minCardData.rank;
                         break;
                     case 'rogue':
-                        newRanks[_rogueIdx] = minCardData.rank;
+                        newRanks[_rogueIdx] = dbCard ? dbCard.ranks[_rogueIdx] : minCardData.rank;
                         break;
                     case 'shaman':
-                        newRanks[_shamanIdx] = minCardData.rank;
+                        newRanks[_shamanIdx] = dbCard ? dbCard.ranks[_shamanIdx] : minCardData.rank;
                         break;
                     case 'warlock':
-                        newRanks[_warlockIdx] = minCardData.rank;
+                        newRanks[_warlockIdx] = dbCard ? dbCard.ranks[_warlockIdx] : minCardData.rank;
                         break;
                     case 'warrior':
-                        newRanks[_warriorIdx] = minCardData.rank;
+                        newRanks[_warriorIdx] = dbCard ? dbCard.ranks[_warriorIdx] : minCardData.rank;
                         break;
                     default:
                         console.log('Hero not found: ' + card.class);

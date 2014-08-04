@@ -6,17 +6,17 @@ var dbProvider = require('../dbProvider');
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
         var data = req.body;
-        var cardData = cardProvider.getTwoRandomNeutralCards(data.manaSkip);
+        var cardData = cardProvider.getTwoRandomNeutralCards(data.manaSkip, data.rarities);
         var sendData = {
             cardOne: {
                 id: cardData.cardOne.id,
                 url: cardData.cardOne.url,
-                neutralRank: cardData.cardOne.neutralRank
+                neutralRank: cardData.cardOne.getRankForClass('neutral')
             },
             cardTwo: {
                 id: cardData.cardTwo.id,
                 url: cardData.cardTwo.url,
-                neutralRank: cardData.cardTwo.neutralRank
+                neutralRank: cardData.cardTwo.getRankForClass('neutral')
             },
             mana:cardData.mana
         };

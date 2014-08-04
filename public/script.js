@@ -1,17 +1,25 @@
 'use strict';
 var viewModel = (function() {
-    var storageScoreKey = 'hcrank_score';
-    var currentMana = 0;
+    var _scoreKey = 'hcrank_score';
+    var _commonActiveKey = 'hcrank_commonActive';
+    var _rareActiveKey = 'hcrank_rareActive';
+    var _epicActiveKey = 'hcrank_epicActive';
+    var _legendaryActiveKey = 'hcrank_legendaryActive';
+    var _currentMana = 0;
 
-    var score = ko.observable(0);
-    var matchupText = ko.observable('');
-    var matchupSubtext = ko.observable('');
-    var cardOneData = ko.observable({});
-    var cardTwoData = ko.observable({});
-    var matchupStartTime;
+    var _commonActive = ko.observable(true);
+    var _rareActive = ko.observable(true);
+    var _epicActive = ko.observable(true);
+    var _legendaryActive = ko.observable(true);
+    var _score = ko.observable(0);
+    var _matchupText = ko.observable('');
+    var _matchupSubtext = ko.observable('');
+    var _cardOneData = ko.observable({});
+    var _cardTwoData = ko.observable({});
+    var _matchupStartTime;
     
     var userRank = ko.computed(function() {
-        var localScore = score();
+        var localScore = _score();
         var localRank;
         
         if (localScore < 10) {
@@ -29,37 +37,79 @@ var viewModel = (function() {
     });
 
     var initialize = function() {
-        loadScore();
+        loadSettings();
         newMatchup();
     };
     
     var cardOneClick = function() {
-        processMatchup(cardOneData(), cardTwoData());
+        processMatchup(_cardOneData(), _cardTwoData());
     };
     
     var cardTwoClick = function() {
-        processMatchup(cardTwoData(), cardOneData());
+        processMatchup(_cardTwoData(), _cardOneData());
+    };
+
+    var filterButtonClick = function(name) {
+        switch (name) {
+            case 'common':
+                _commonActive(!_commonActive());
+                if (Modernizr.localstorage) {
+                    localStorage[_commonActiveKey] = _commonActive();
+                }
+                break;
+            case 'rare':
+                _rareActive(!_rareActive());
+                if (Modernizr.localstorage) {
+                    localStorage[_rareActiveKey] = _rareActive();
+                }
+                break;
+            case 'epic':
+                _epicActive(!_epicActive());
+                if (Modernizr.localstorage) {
+                    localStorage[_epicActiveKey] = _epicActive();
+                }
+                break;
+            case 'legendary':
+                _legendaryActive(!_legendaryActive());
+                if (Modernizr.localstorage) {
+                    localStorage[_legendaryActiveKey] = _legendaryActive();
+                }
+                break;
+        }
+
+        if (!_commonActive() && !_rareActive() && !_epicActive() && !_legendaryActive()) {
+            filterButtonClick(name);
+        }
     };
     
-    var loadScore = function() {
+    var loadSettings = function() {
         if (Modernizr.localstorage) {
-          var localScore = parseInt(localStorage[storageScoreKey], 10);
-          if (!isNaN(localScore)) {
-              score(localScore);
-          }
+            var localScore = parseInt(localStorage[_scoreKey], 10);
+            if (!isNaN(localScore)) {
+                _score(localScore);
+            }
+
+            var commonActive = localStorage[_commonActiveKey];
+            var rareActive = localStorage[_rareActiveKey];
+            var epicActive = localStorage[_epicActiveKey];
+            var legendaryActive = localStorage[_legendaryActiveKey];
+            _commonActive(commonActive === undefined ? true : commonActive === 'true');
+            _rareActive(rareActive === undefined ? true : rareActive === 'true');
+            _epicActive(epicActive === undefined ? true : epicActive === 'true');
+            _legendaryActive(legendaryActive === undefined ? true : legendaryActive === 'true');
         }
     };
     
     var setScore = function(pickedBest) {
-        var currentScore = score();
+        var currentScore = _score();
         if (pickedBest) {
-            score(currentScore + 1);
+            _score(currentScore + 1);
         } else if (currentScore > 0) {
-            score(currentScore - 1);
+            _score(currentScore - 1);
         }
-        
+
         if (Modernizr.localstorage) {
-            localStorage[storageScoreKey] = score();
+            localStorage[_scoreKey] = _score();
         }
     };
 
@@ -73,46 +123,63 @@ var viewModel = (function() {
         var rankDiff = Math.abs(rankOne - rankTwo);
 
         if (rankDiff < 10) {
-            matchupSubtext('(careful, this one\'s tricky)');
+            _matchupSubtext('(careful, this one\'s tricky)');
         } else if (rankDiff < 50) {
-            matchupSubtext('(hmm...)');
+            _matchupSubtext('(hmm...)');
         } else {
-            matchupSubtext('(piece of cake)');
+            _matchupSubtext('(piece of cake)');
         }
 
-        matchupText('Choose wisely');
+        _matchupText('Choose wisely');
     };
 
     var clearMatchup = function() {
-        cardOneData({});
-        cardTwoData({});
-        matchupSubtext('');
+        _cardOneData({});
+        _cardTwoData({});
+        _matchupSubtext('...');
     };
 
     var newMatchup = function() {
-        var sendData = { manaSkip: currentMana };
+        var rarities = [];
+        if (_commonActive()) {
+            rarities.push('common');
+        }
+        if (_rareActive()) {
+            rarities.push('rare');
+        }
+        if (_epicActive()) {
+            rarities.push('epic');
+        }
+        if (_legendaryActive()) {
+            rarities.push('legendary');
+        }
+
+        var sendData = {
+            manaSkip: _currentMana,
+            rarities: rarities
+        };
 
         $.post('/api/newmatchup/', sendData, function(data) {
             setImageUrl(data.cardOne, 'original');
             setImageUrl(data.cardTwo, 'original');
-            cardOneData(data.cardOne);
-            cardTwoData(data.cardTwo);
-            currentMana = data.mana;
+            _cardOneData(data.cardOne);
+            _cardTwoData(data.cardTwo);
+            _currentMana = data.mana;
             setMatchupText(data.cardOne, data.cardTwo);
-            matchupStartTime = new Date().getTime();
+            _matchupStartTime = new Date().getTime();
         });
     };
 
     var processMatchup = function(pickedCard, unpickedCard) {
         var matchupStopTime = new Date().getTime();
-        var decisionTime = matchupStopTime - matchupStartTime;
+        var decisionTime = matchupStopTime - _matchupStartTime;
         var pickedRank = pickedCard.neutralRank;
         var unpickedRank = unpickedCard.neutralRank;
         var pickedBest = pickedRank > unpickedRank;
 
         pickedCard.neutralRank = ((100 - pickedRank) / 2) + pickedRank;
         unpickedCard.neutralRank = unpickedRank - (unpickedRank / 2);
-        matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
+        _matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
         setScore(pickedBest);
         clearMatchup();
 
@@ -127,14 +194,19 @@ var viewModel = (function() {
     };
 
     return {
-        cardOneData: cardOneData,
-        cardTwoData: cardTwoData,
+        commonActive: _commonActive,
+        rareActive: _rareActive,
+        epicActive: _epicActive,
+        legendaryActive: _legendaryActive,
+        filterButtonClick: filterButtonClick,
+        cardOneData: _cardOneData,
+        cardTwoData: _cardTwoData,
         cardOneClick: cardOneClick,
         cardTwoClick: cardTwoClick,
-        matchupText: matchupText,
-        matchupSubtext: matchupSubtext,
+        matchupText: _matchupText,
+        matchupSubtext: _matchupSubtext,
         initialize: initialize,
-        score: score,
+        score: _score,
         rank: userRank
     };
 }());

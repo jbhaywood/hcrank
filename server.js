@@ -9,7 +9,7 @@ var apiRoutes = require('./app/apiRoutes');
 var routes = require('./app/routes');
 
 dbProvider.initialize();
-//cardProvider.resetCardRanks();
+cardProvider.resetCardRanks();
 
 cardProvider.initialize().done(function() {
     var app = express();
