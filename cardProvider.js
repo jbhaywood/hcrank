@@ -186,7 +186,7 @@ var getTwoRandomNeutralCards = function(manaSkip, includeRarities) {
 var saveAllCards = function() {
     _saveCounter = _saveCounter + 1;
 
-    if (_saveCounter === 25) {
+    if (_saveCounter === 5) {
         dbProvider.saveUpdatedCards(_cardDatas);
         _saveCounter = 0;
     }
