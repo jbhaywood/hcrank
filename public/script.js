@@ -117,6 +117,9 @@ var viewModel = (function() {
         if (heroData) {
             _heroData(heroData);
         }
+        else {
+            _heroData('');
+        }
     };
 
     var filterButtonClick = function(filterData) {
