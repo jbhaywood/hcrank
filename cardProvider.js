@@ -113,7 +113,7 @@ var getCardDatasByClass = function(className) {
     return _.where(cards, { class: className });
 };
 
-var getTwoRandomCards = function(cards) {
+var getTwoRandomCardsInternal = function(cards) {
     var sorted;
     // if there are enough cards, make sure all them get matched up more or less evenly
     if (cards.length > 4) {
@@ -208,7 +208,7 @@ var getFilteredCards = function(manaSkip, includeClasses, includeRarities) {
 
 var getTwoRandomCards = function(manaSkip, includeClasses, includeRarities) {
     var cards = getFilteredCards(manaSkip, includeClasses, includeRarities);
-    var twoCards = getTwoRandomCards(cards);
+    var twoCards = getTwoRandomCardsInternal(cards);
 
     return {
         cardOne: twoCards.cardOne,
