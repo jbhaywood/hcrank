@@ -171,11 +171,9 @@ var viewModel = (function() {
             });
         }
 
-        if (clickedClassData.name !== filterData.name) {
-            showHeroImage();
-            clearMatchup();
-            newMatchup();
-        }
+        showHeroImage();
+        clearMatchup();
+        newMatchup();
     };
     
     var loadSettings = function() {
