@@ -62,6 +62,9 @@ exports.initialize = function(router) {
                 rankOne = ((100 - rankOne) / 2) + rankOne;
                 rankTwo = rankTwo - (rankTwo / 2);
 
+                rankOne = rankOne.toFixed(2);
+                rankTwo = rankTwo.toFixed(2);
+
                 cardProvider.setCardRank(idOne, rankOne, cardClass);
                 cardProvider.setCardRank(idTwo, rankTwo, cardClass);
                 cardProvider.saveAllCards();

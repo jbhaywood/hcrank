@@ -228,7 +228,6 @@ var saveAllCards = function() {
 };
 
 var setCardRank = function(cardId, rank, cardClass) {
-    rank = rank.toFixed(2);
     var card = _cardDatasHash[cardId];
     if (card) {
         card.setRankForClass(cardClass, rank);
