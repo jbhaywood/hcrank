@@ -6,7 +6,6 @@ var allCardsRawData = require('./data/all-cards.json');
 
 var _cardDatas = [];
 var _cardDatasHash = {};
-var _neutralCardDatas = [];
 var _manaVals = [];
 var _saveCounter = 0;
 
@@ -21,9 +20,9 @@ var _shamanIdx = 7;
 var _warlockIdx = 8;
 var _warriorIdx = 9;
 
-function CardData(id, theClass, mana, url, rarity) {
+function CardData(id, cardClass, mana, url, rarity) {
     this.id = id;
-    this.class = theClass;
+    this.class = cardClass;
     this.mana = mana;
     this.url = url;
     this.rarity = rarity;
@@ -31,8 +30,8 @@ function CardData(id, theClass, mana, url, rarity) {
     this.updated = new Date();
 }
 
-CardData.prototype.getRankForClass = function(theClass) {
-    switch (theClass) {
+CardData.prototype.getRankForClass = function(cardClass) {
+    switch (cardClass) {
         case 'neutral':
             return this.ranks[_neutralIdx];
         case 'druid':
@@ -54,8 +53,46 @@ CardData.prototype.getRankForClass = function(theClass) {
         case 'warrior':
             return this.ranks[_warriorIdx];
         default:
-            console.log('Class not found: ' + theClass);
+            console.log('Class not found: ' + cardClass);
             return null;
+    }
+};
+
+CardData.prototype.setRankForClass = function(cardClass, rank) {
+    switch (cardClass) {
+        case 'neutral':
+            this.ranks[_neutralIdx] = rank;
+            break;
+        case 'druid':
+            this.ranks[_druidIdx] = rank;
+            break;
+        case 'hunter':
+            this.ranks[_hunterIdx] = rank;
+            break;
+        case 'mage':
+            this.ranks[_mageIdx] = rank;
+            break;
+        case 'paladin':
+            this.ranks[_paladinIdx] = rank;
+            break;
+        case 'priest':
+            this.ranks[_priestIdx] = rank;
+            break;
+        case 'rogue':
+            this.ranks[_rogueIdx] = rank;
+            break;
+        case 'shaman':
+            this.ranks[_shamanIdx] = rank;
+            break;
+        case 'warlock':
+            this.ranks[_warlockIdx] = rank;
+            break;
+        case 'warrior':
+            this.ranks[_warriorIdx] = rank;
+            break;
+        default:
+            console.log('Class not found: ' + cardClass);
+            break;
     }
 };
 
@@ -129,8 +166,6 @@ var initialize = function() {
             _cardDatasHash[card.id] = card;
         });
 
-        _neutralCardDatas = getCardDatasByClass('neutral');
-
         deferred.resolve();
     }, function(err) {
         console.log(err);
@@ -139,10 +174,9 @@ var initialize = function() {
     return deferred.promise;
 };
 
-var getCardsFromManaAndRarity = function(manaSkip, includeRarities) {
+var getFilteredCards = function(manaSkip, includeClasses, includeRarities) {
     var randomInd;
     var randomMana;
-    manaSkip = parseInt(manaSkip, 10);
 
     do {
         randomInd = Math.floor(Math.random() * _manaVals.length);
@@ -157,23 +191,23 @@ var getCardsFromManaAndRarity = function(manaSkip, includeRarities) {
         randomMana = 1;
     }
 
-    var cards = _.filter(_neutralCardDatas, function(card) {
+    var cards = _.filter(_cardDatas, function(card) {
         return ((randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
             (randomMana >= 10 && card.mana >= 10) ||
             (randomMana <= 1 && card.mana <= 1)) &&
-            includeRarities.indexOf(card.rarity) !== -1;
+            _.contains(includeClasses, card.class) &&
+            _.contains(includeRarities, card.rarity);
     });
 
     if (cards.length < 2) {
-        return getCardsFromManaAndRarity(manaSkip, includeRarities);
-    }
-    else {
+        return getFilteredCards(manaSkip, includeClasses, includeRarities);
+    } else {
         return cards;
     }
 };
 
-var getTwoRandomNeutralCards = function(manaSkip, includeRarities) {
-    var cards = getCardsFromManaAndRarity(manaSkip, includeRarities);
+var getTwoRandomNeutralCards = function(manaSkip, includeClasses, includeRarities) {
+    var cards = getFilteredCards(manaSkip, includeClasses, includeRarities);
     var twoCards = getTwoRandomCards(cards);
 
     return {
@@ -186,16 +220,18 @@ var getTwoRandomNeutralCards = function(manaSkip, includeRarities) {
 var saveAllCards = function() {
     _saveCounter = _saveCounter + 1;
 
-    if (_saveCounter === 5) {
+    var saveCount = process.env.NODE_ENV === 'production' ? 5 : 1;
+    if (_saveCounter === saveCount) {
         dbProvider.saveUpdatedCards(_cardDatas);
         _saveCounter = 0;
     }
 };
 
-var setNeutralRank = function(cardId, rank) {
+var setCardRank = function(cardId, rank, cardClass) {
+    rank = rank.toFixed(2);
     var card = _cardDatasHash[cardId];
     if (card) {
-        card.ranks[_neutralIdx] = rank;
+        card.setRankForClass(cardClass, rank);
         card.updated = new Date();
     }
 };
@@ -271,4 +307,4 @@ exports.getTwoRandomNeutralCards = getTwoRandomNeutralCards;
 exports.getCardDatasByClass = getCardDatasByClass;
 exports.resetCardRanks = resetCardRanks;
 exports.saveAllCards = saveAllCards;
-exports.setNeutralRank = setNeutralRank;
+exports.setCardRank = setCardRank;

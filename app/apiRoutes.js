@@ -6,19 +6,24 @@ var dbProvider = require('../dbProvider');
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
         var data = req.body;
-        var cardData = cardProvider.getTwoRandomNeutralCards(data.manaSkip, data.rarities);
+        var manaSkip = parseInt(data.manaSkip, 10);
+        var cardData = cardProvider.getTwoRandomNeutralCards(manaSkip, data.classes, data.rarities);
+        var cardClass = data.classes.length === 1 ? data.classes[0] : _.find(data.classes, function(cardClass) {
+            return cardClass !== 'neutral';
+        });
         var sendData = {
             cardOne: {
                 id: cardData.cardOne.id,
                 url: cardData.cardOne.url,
-                neutralRank: cardData.cardOne.getRankForClass('neutral')
+                currentRank: cardData.cardOne.getRankForClass(cardClass)
             },
             cardTwo: {
                 id: cardData.cardTwo.id,
                 url: cardData.cardTwo.url,
-                neutralRank: cardData.cardTwo.getRankForClass('neutral')
+                currentRank: cardData.cardTwo.getRankForClass(cardClass)
             },
-            mana:cardData.mana
+            mana: cardData.mana,
+            class: cardClass
         };
         res.send(sendData);
     });
@@ -27,14 +32,16 @@ exports.initialize = function(router) {
         return typeof int === 'number' && (int % 1) === 0;
     };
 
-    var saveMatchupParams = '/savematchup/:cardOneId/:cardTwoId/:cardOneRank/:cardTwoRank/:milliseconds';
+    // cardOne is the one the user picked, cardTwo is the one they didn't
+    var saveMatchupParams = '/savematchup/:cardOneId/:cardTwoId/:cardOneRank/:cardTwoRank/:milliseconds/:class';
     router.get(saveMatchupParams, function(req, res) {
         var params = req.params;
 
         if (params.cardOneId && params.cardTwoId && params.cardOneRank &&
-            params.cardTwoRank && params.milliseconds) {
+            params.cardTwoRank && params.milliseconds && params.class) {
             var idOne = parseInt(params.cardOneId);
             var idTwo = parseInt(params.cardTwoId);
+            var cardClass = params.class;
 
             if (intCheck(idOne) && intCheck(idTwo)) {
                 var rankOne = parseFloat(params.cardOneRank);
@@ -51,10 +58,14 @@ exports.initialize = function(router) {
                     milliseconds = 0;
                 }
 
-                cardProvider.setNeutralRank(idOne, rankOne);
-                cardProvider.setNeutralRank(idTwo, rankTwo);
+                // calculate new rank
+                rankOne = ((100 - rankOne) / 2) + rankOne;
+                rankTwo = rankTwo - (rankTwo / 2);
+
+                cardProvider.setCardRank(idOne, rankOne, cardClass);
+                cardProvider.setCardRank(idTwo, rankTwo, cardClass);
                 cardProvider.saveAllCards();
-                dbProvider.saveMatchup(idOne, idTwo, idOne, milliseconds);
+                dbProvider.saveMatchup(idOne, idTwo, rankOne, rankTwo, idOne, cardClass, milliseconds);
             }
         }
 
@@ -63,11 +74,11 @@ exports.initialize = function(router) {
 
     router.post('/getcards/', function(req, res) {
         var data = req.body;
-        var theClass = data.class;
-        var cardDatas = cardProvider.getCardDatasByClass(theClass);
+        var cardClass = data.class;
+        var cardDatas = cardProvider.getCardDatasByClass(cardClass);
         var sortedDatas = _.chain(cardDatas)
             .sortBy(function(cardData) {
-                return cardData.getRankForClass(theClass);
+                return cardData.getRankForClass(cardClass);
             })
             .reverse()
             .map(function(cardData) {

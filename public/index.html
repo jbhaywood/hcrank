@@ -9,70 +9,74 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
 	<script type="text/javascript" src="script.js"></script>
 </head>
 <body>
-<div class="container text-center">
-	<div class="row">
-		<div class="col-md-12 text-right">
-			<h4>Score: <span data-bind="text: score"></span></h4>
+	<div class="container-fluid text-center">
+		<div class="row">
+			<div class="col-md-12 text-right">
+				<h4>Score: <span data-bind="text: score"></span></h4>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12 text-right">
+				<h4>Rank: <span data-bind="text: rank"></span></h4>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<h2 data-bind="text: matchupText"></h2>
+				<h3 data-bind="text: matchupSubtext"></h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1 col-sm-1"></div>
+			<div class="col-md-3 col-sm-3">
+				<img class="hoverover img-responsive center-block" data-bind="attr: { src: cardOneData().url }, click: cardOneClick">
+			</div>
+			<div class="col-md-3 col-sm-3">
+				<img class="hoverover img-responsive center-block" data-bind="attr: { src: cardTwoData().url }, click: cardTwoClick">
+			</div>
+			<div class="col-md-1 col-sm-1"></div>
+			<div class="col-md-1 col-sm-1 text-center" style="padding-top: 30px">
+				<h3>Class</h3>
+				<div class="btn-group-vertical btn-block" data-bind="template: { foreach: classes }">
+					<button type="button" class="btn btn-default" data-bind="text: displayName,
+					css: { 'btn-success': isActive },
+					click: function() { $root.filterButtonClick($data) }"></button>
+				</div>
+				<h3>Rarity</h3>
+				<div class="btn-group-vertical btn-block" data-bind="template: { foreach: rarities }">
+					<button type="button" class="btn btn-default" data-bind="text: name,
+					css: { 'btn-success': isActive },
+					click: function() { $root.filterButtonClick($data) }"></button>
+				</div>
+			</div>
+			<div class="col-md-3 col-sm-3" style="padding-top: 70px">
+				<img class="img-responsive"
+				     style="max-width: 50%"
+				     data-bind="attr: { src: heroData().url }">
+			</div>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-md-12 text-right">
-			<h4>Rank: <span data-bind="text: rank"></span></h4>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<h2 data-bind="text: matchupText"></h2>
-			<h3 data-bind="text: matchupSubtext"></h3>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-5 col-sm-5">
-			<img class="hoverover" data-bind="attr: { src: cardOneData().url }, click: cardOneClick">
-		</div>
-		<div class="col-md-5 col-sm-5">
-			<img class="hoverover" data-bind="attr: { src: cardTwoData(). url }, click: cardTwoClick">
-		</div>
-		<div class="btn-group-vertical col-md-2 col-sm-2 text-right">
-			<!--using the anonymous function for the click event below prevents it from firing on page load-->
-			<button type="button" class="btn btn-default"
-			        data-bind="css: { 'btn-success': commonActive }, click: function() { filterButtonClick('common') }">
-				Common
-			</button>
-			<button type="button" class="btn btn-default"
-			        data-bind="css: { 'btn-success': rareActive }, click: function() { filterButtonClick('rare') }">
-				Rare
-			</button>
-			<button type="button" class="btn btn-default"
-			        data-bind="css: { 'btn-success': epicActive }, click: function() { filterButtonClick('epic') }">
-				Epic
-			</button>
-			<button type="button" class="btn btn-default"
-			        data-bind="css: { 'btn-success': legendaryActive }, click: function() { filterButtonClick('legendary') }">
-				Legendary
-			</button>
-		</div>
-	</div>
-</div>
 
-<!-- Start of StatCounter Code for Default Guide -->
-<script type="text/javascript">
-	var sc_project = 9890103;
-	var sc_invisible = 1;
-	var sc_security = "f76cd652";
-	var scJsHost = (("https:" == document.location.protocol) ? "https://secure." : "http://www.");
-	document.write("<sc" + "ript type='text/javascript' src='" + scJsHost + "statcounter.com/counter/counter.js'></" + "script>");
-</script>
-<noscript>
-	<div class="statcounter">
-		<a title="web analytics" href="http://statcounter.com/" target="_blank">
-			<img class="statcounter" src="http://c.statcounter.com/9890103/0/f76cd652/1/" alt="web analytics">
-		</a>
-	</div>
-</noscript>
-<!-- End of StatCounter Code for Default Guide -->
+	<!-- Start of StatCounter Code for Default Guide -->
+	<script type="text/javascript">
+		var sc_project=9890103;
+		var sc_invisible=1;
+		var sc_security="f76cd652";
+		var scJsHost = (("https:" == document.location.protocol) ? "https://secure." : "http://www.");
+		document.write("<sc"+"ript type='text/javascript' src='" + scJsHost +
+				"statcounter.com/counter/counter.js'></" + "script>");
+	</script>
+	<noscript>
+		<div class="statcounter">
+			<a title="free web stats" href="http://statcounter.com/" target="_blank">
+				<img class="statcounter" src="http://c.statcounter.com/9890103/0/f76cd652/1/" alt="free web stats">
+			</a>
+		</div>
+	</noscript>
+	<!-- End of StatCounter Code for Default Guide -->
 </body>
 </html>

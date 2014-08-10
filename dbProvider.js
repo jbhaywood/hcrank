@@ -50,7 +50,10 @@ var initialize = function() {
     Matchup = mongoose.model('Matchup', mongoose.Schema({
         cardOneId: Number,
         cardTwoId: Number,
+        cardOneRank: Number,
+        cardTwoRank: Number,
         winnerId: Number,
+        class: String,
         secondsToDecide: Number,
         created: Date
     }));
@@ -69,20 +72,27 @@ var getCardsByIds = function(cardIds) {
     return Card.where('id').in(cardIds).exec();
 };
 
-var saveMatchup = function(cardOneId, cardTwoId, winnerId, milliseconds) {
-    // always order cards by id to make looking up matchups between specific cards easier
-    var id1, id2;
+var saveMatchup = function(cardOneId, cardTwoId, cardOneRank, cardTwoRank, winnerId, cardClass, milliseconds) {
+    // always order cards by id to make looking up matchups between specific ones easier
+    var id1, id2, rank1, rank2;
     if (cardOneId < cardTwoId) {
         id1 = cardOneId;
         id2 = cardTwoId;
+        rank1 = cardOneRank;
+        rank2 = cardTwoRank;
     } else {
         id1 = cardTwoId;
         id2 = cardOneId;
+        rank1 = cardTwoRank;
+        rank2 = cardOneRank;
     }
     var matchup = new Matchup({
         cardOneId: id1,
         cardTwoId: id2,
+        cardOneRank: rank1,
+        cardTwoRank: rank2,
         winnerId: winnerId,
+        class: cardClass,
         secondsToDecide: (milliseconds / 1000),
         created: new Date()
     });

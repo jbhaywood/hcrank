@@ -1,16 +1,75 @@
 'use strict';
 var viewModel = (function() {
-    var _scoreKey = 'hcrank_score';
-    var _commonActiveKey = 'hcrank_commonActive';
-    var _rareActiveKey = 'hcrank_rareActive';
-    var _epicActiveKey = 'hcrank_epicActive';
-    var _legendaryActiveKey = 'hcrank_legendaryActive';
-    var _currentMana = 0;
+    function FilterData(name, displayName, url, activeDefault) {
+        this.name = name;
+        this.displayName = displayName;
+        this.url = url;
+        this.isActive = ko.observable(activeDefault);
+        this.storageKey = name + '_active';
 
-    var _commonActive = ko.observable(true);
-    var _rareActive = ko.observable(true);
-    var _epicActive = ko.observable(true);
-    var _legendaryActive = ko.observable(true);
+        this.loadSettings = function() {
+            if (Modernizr.localstorage) {
+                var isActive = localStorage[this.storageKey];
+                if (isActive === undefined) {
+                    isActive = activeDefault;
+                    localStorage[this.storageKey] = isActive;
+                } else {
+                    isActive = isActive === 'true';
+                }
+                this.isActive(isActive);
+            }
+        };
+
+        this.setActive = function(isActive) {
+            this.isActive(isActive);
+            if (Modernizr.localstorage) {
+                localStorage[this.storageKey] = isActive;
+            }
+        };
+
+        this.isNeutralOrCommon = function() {
+            return this.name === 'neutral' || this.name === 'common';
+        };
+    }
+
+    var _classDatas = [
+        new FilterData('neutral', 'Neutral', '', false),
+        new FilterData('druid', 'Malfurion',
+            'http://media-hearth.cursecdn.com/avatars/80/382/621.png', false),
+        new FilterData('hunter', 'Rexxar',
+            'http://media-hearth.cursecdn.com/avatars/80/381/484.png', false),
+        new FilterData('mage', 'Jaina',
+            'http://media-hearth.cursecdn.com/avatars/80/384/320.png', false),
+        new FilterData('paladin', 'Uther',
+            'http://media-hearth.cursecdn.com/avatars/80/380/257.png', false),
+        new FilterData('priest', 'Anduin',
+            'http://media-hearth.cursecdn.com/avatars/80/385/110.png', false),
+        new FilterData('rogue', 'Valeera',
+            'http://media-hearth.cursecdn.com/avatars/80/380/257.png', false),
+        new FilterData('shaman', 'Thrall',
+            'http://media-hearth.cursecdn.com/avatars/80/378/319.png', false),
+        new FilterData('warlock', 'Gul\'dan',
+            'http://media-hearth.cursecdn.com/avatars/80/383/618.png', false),
+        new FilterData('warrior', 'Garrosh',
+            'http://media-hearth.cursecdn.com/avatars/80/377/635.png', false)
+    ];
+
+    var _rarityNames = [
+        'Common',
+        'Rare',
+        'Epic',
+        'Legendary'
+    ];
+
+    var _rarityDatas = _.map(_rarityNames, function(name) {
+        return new FilterData(name.toLocaleLowerCase(), name, '', true);
+    });
+
+    var _scoreKey = 'score';
+    var _currentMana = 0;
+    var _currentMatchupClass = '';
+
+    var _heroData = ko.observable('');
     var _score = ko.observable(0);
     var _matchupText = ko.observable('');
     var _matchupSubtext = ko.observable('');
@@ -38,6 +97,7 @@ var viewModel = (function() {
 
     var initialize = function() {
         loadSettings();
+        showHeroImage();
         newMatchup();
     };
     
@@ -49,36 +109,72 @@ var viewModel = (function() {
         processMatchup(_cardTwoData(), _cardOneData());
     };
 
-    var filterButtonClick = function(name) {
-        switch (name) {
-            case 'common':
-                _commonActive(!_commonActive());
-                if (Modernizr.localstorage) {
-                    localStorage[_commonActiveKey] = _commonActive();
-                }
-                break;
-            case 'rare':
-                _rareActive(!_rareActive());
-                if (Modernizr.localstorage) {
-                    localStorage[_rareActiveKey] = _rareActive();
-                }
-                break;
-            case 'epic':
-                _epicActive(!_epicActive());
-                if (Modernizr.localstorage) {
-                    localStorage[_epicActiveKey] = _epicActive();
-                }
-                break;
-            case 'legendary':
-                _legendaryActive(!_legendaryActive());
-                if (Modernizr.localstorage) {
-                    localStorage[_legendaryActiveKey] = _legendaryActive();
-                }
-                break;
+    var showHeroImage = function() {
+        var heroData = _.find(_classDatas, function(classData) {
+            return classData.isActive() && !classData.isNeutralOrCommon();
+        });
+
+        if (heroData) {
+            _heroData(heroData);
+        }
+    };
+
+    var filterButtonClick = function(filterData) {
+        // process clicks from class filter buttons
+        // make sure only one hero is on at a time
+        var clickedClassData = _.find(_classDatas, function(classData) {
+            return classData.name === filterData.name;
+        });
+
+        if (clickedClassData) {
+            if (!clickedClassData.isNeutralOrCommon()) {
+                _.chain(_classDatas)
+                    .filter(function(classData) {
+                        return !classData.isNeutralOrCommon() &&
+                            classData.name !== clickedClassData.name && classData.isActive();
+                    })
+                    .forEach(function(classData) {
+                        classData.setActive(false);
+                    });
+            }
+
+            clickedClassData.setActive(!clickedClassData.isActive());
+
+            if (_.all(_classDatas, function(classData) { return !classData.isActive(); })) {
+                clickedClassData.setActive(true);
+            }
         }
 
-        if (!_commonActive() && !_rareActive() && !_epicActive() && !_legendaryActive()) {
-            filterButtonClick(name);
+        // process clicks from rarity filter buttons
+        // make sure at least one is on at all times
+        var clickedRarityData = _.find(_rarityDatas, function(rarityData) {
+            return rarityData.name === filterData.name;
+        });
+
+        if (clickedRarityData) {
+            clickedRarityData.setActive(!clickedRarityData.isActive());
+
+            if (_.all(_rarityDatas, function(rarityData) { return !rarityData.isActive(); })) {
+                clickedRarityData.setActive(true);
+            }
+        }
+
+        var activeClasses = _.filter(_classDatas, function(heroData) {
+            return heroData.isActive();
+        });
+
+        // if only one hero class is selected, make sure all the rarities are selected
+        // otherwise, there aren't enough cards of the same mana to compare
+        if (activeClasses.length === 1 && !activeClasses[0].isNeutralOrCommon()) {
+            _.forEach(_rarityDatas, function(rarityData) {
+                rarityData.setActive(true);
+            });
+        }
+
+        if (clickedClassData.name !== filterData.name) {
+            showHeroImage();
+            clearMatchup();
+            newMatchup();
         }
     };
     
@@ -89,14 +185,26 @@ var viewModel = (function() {
                 _score(localScore);
             }
 
-            var commonActive = localStorage[_commonActiveKey];
-            var rareActive = localStorage[_rareActiveKey];
-            var epicActive = localStorage[_epicActiveKey];
-            var legendaryActive = localStorage[_legendaryActiveKey];
-            _commonActive(commonActive === undefined ? true : commonActive === 'true');
-            _rareActive(rareActive === undefined ? true : rareActive === 'true');
-            _epicActive(epicActive === undefined ? true : epicActive === 'true');
-            _legendaryActive(legendaryActive === undefined ? true : legendaryActive === 'true');
+            // class filter button are off by default
+            _.forEach(_classDatas, function(classData) {
+                classData.loadSettings();
+            });
+
+            // rarity filter buttons are on by default
+            _.forEach(_rarityDatas, function(rarityData) {
+                rarityData.loadSettings();
+            });
+
+            // make sure that one class filter button is active
+            if (_.all(_classDatas, function(classData) {
+                return !classData.isActive();
+            })) {
+                //noinspection JSUnresolvedFunction
+                var first = _.first(_classDatas);
+                if (first) {
+                    first.setActive(true);
+                }
+            }
         }
     };
     
@@ -118,8 +226,8 @@ var viewModel = (function() {
     };
 
     var setMatchupText = function(cardOne, cardTwo) {
-        var rankOne = cardOne.neutralRank;
-        var rankTwo = cardTwo.neutralRank;
+        var rankOne = cardOne.currentRank;
+        var rankTwo = cardTwo.currentRank;
         var rankDiff = Math.abs(rankOne - rankTwo);
 
         if (rankDiff < 10) {
@@ -140,24 +248,29 @@ var viewModel = (function() {
     };
 
     var newMatchup = function() {
-        var rarities = [];
-        if (_commonActive()) {
-            rarities.push('common');
-        }
-        if (_rareActive()) {
-            rarities.push('rare');
-        }
-        if (_epicActive()) {
-            rarities.push('epic');
-        }
-        if (_legendaryActive()) {
-            rarities.push('legendary');
-        }
+        var rarities = _.chain(_rarityDatas)
+            .filter(function(rarityData) {
+                return rarityData.isActive();
+            })
+            .map(function(rarityData) {
+                return rarityData.name;
+            })
+            .value();
+
+        var classes = _.chain(_classDatas)
+            .filter(function(classData) {
+                return classData.isActive();
+            })
+            .map(function(classData) {
+                return classData.name;
+            })
+            .value();
 
         var sendData = {
             manaSkip: _currentMana,
-            rarities: rarities
-        };
+            rarities: rarities,
+            classes: classes
+            };
 
         $.post('/api/newmatchup/', sendData, function(data) {
             setImageUrl(data.cardOne, 'original');
@@ -165,6 +278,7 @@ var viewModel = (function() {
             _cardOneData(data.cardOne);
             _cardTwoData(data.cardTwo);
             _currentMana = data.mana;
+            _currentMatchupClass = data.class;
             setMatchupText(data.cardOne, data.cardTwo);
             _matchupStartTime = new Date().getTime();
         });
@@ -173,19 +287,17 @@ var viewModel = (function() {
     var processMatchup = function(pickedCard, unpickedCard) {
         var matchupStopTime = new Date().getTime();
         var decisionTime = matchupStopTime - _matchupStartTime;
-        var pickedRank = pickedCard.neutralRank;
-        var unpickedRank = unpickedCard.neutralRank;
+        var pickedRank = pickedCard.currentRank;
+        var unpickedRank = unpickedCard.currentRank;
         var pickedBest = pickedRank > unpickedRank;
 
-        pickedCard.neutralRank = ((100 - pickedRank) / 2) + pickedRank;
-        unpickedCard.neutralRank = unpickedRank - (unpickedRank / 2);
         _matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
         setScore(pickedBest);
         clearMatchup();
 
         var saveMatchupSendStr = '/api/savematchup/' + pickedCard.id +
-            '/' + unpickedCard.id + '/' + pickedCard.neutralRank +
-            '/' + unpickedCard.neutralRank + '/' + decisionTime;
+            '/' + unpickedCard.id + '/' + pickedCard.currentRank +
+            '/' + unpickedCard.currentRank + '/' + decisionTime + '/' + _currentMatchupClass;
         $.get(saveMatchupSendStr);
 
         setTimeout(function() {
@@ -194,10 +306,6 @@ var viewModel = (function() {
     };
 
     return {
-        commonActive: _commonActive,
-        rareActive: _rareActive,
-        epicActive: _epicActive,
-        legendaryActive: _legendaryActive,
         filterButtonClick: filterButtonClick,
         cardOneData: _cardOneData,
         cardTwoData: _cardTwoData,
@@ -207,11 +315,15 @@ var viewModel = (function() {
         matchupSubtext: _matchupSubtext,
         initialize: initialize,
         score: _score,
-        rank: userRank
+        rank: userRank,
+        classes: _classDatas,
+        rarities: _rarityDatas,
+        heroData: _heroData
     };
 }());
 
 $(document).ready(function() {
-    ko.applyBindings(viewModel);
+//    localStorage.clear();
     viewModel.initialize();
+    ko.applyBindings(viewModel);
 });
