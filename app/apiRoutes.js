@@ -7,7 +7,7 @@ exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
         var data = req.body;
         var manaSkip = parseInt(data.manaSkip, 10);
-        var cardData = cardProvider.getTwoRandomNeutralCards(manaSkip, data.classes, data.rarities);
+        var cardData = cardProvider.getTwoRandomCards(manaSkip, data.classes, data.rarities);
         var cardClass = data.classes.length === 1 ? data.classes[0] : _.find(data.classes, function(cardClass) {
             return cardClass !== 'neutral';
         });

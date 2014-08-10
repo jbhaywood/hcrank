@@ -206,7 +206,7 @@ var getFilteredCards = function(manaSkip, includeClasses, includeRarities) {
     }
 };
 
-var getTwoRandomNeutralCards = function(manaSkip, includeClasses, includeRarities) {
+var getTwoRandomCards = function(manaSkip, includeClasses, includeRarities) {
     var cards = getFilteredCards(manaSkip, includeClasses, includeRarities);
     var twoCards = getTwoRandomCards(cards);
 
@@ -302,7 +302,7 @@ var resetCardRanks = function (){
 };
 
 exports.initialize = initialize;
-exports.getTwoRandomNeutralCards = getTwoRandomNeutralCards;
+exports.getTwoRandomCards = getTwoRandomCards;
 exports.getCardDatasByClass = getCardDatasByClass;
 exports.resetCardRanks = resetCardRanks;
 exports.saveAllCards = saveAllCards;

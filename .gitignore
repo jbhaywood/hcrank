@@ -4,3 +4,4 @@ heroku-client.tgz
 node_modules/
 config/
 graphics/
+test/simulatedRanking.js
