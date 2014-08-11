@@ -20,7 +20,8 @@ var _shamanIdx = 7;
 var _warlockIdx = 8;
 var _warriorIdx = 9;
 
-function CardData(id, cardClass, mana, url, rarity) {
+function CardData(name, id, cardClass, mana, url, rarity) {
+    this.name = name;
     this.id = id;
     this.class = cardClass;
     this.mana = mana;
@@ -102,7 +103,7 @@ var getCardDatas = function() {
             return card.collectible && card.category !== 'ability' && card.category !== 'hero';
         });
         _cardDatas = _.map(rawDatas, function(data) {
-            return new CardData(data.id, data.hero, data.mana, data.image_url, data.quality);
+            return new CardData(data.name, data.id, data.hero, data.mana, data.image_url, data.quality);
         });
     }
     return _cardDatas;
@@ -174,7 +175,7 @@ var initialize = function() {
     return deferred.promise;
 };
 
-var getFilteredCards = function(manaSkip, includeClasses, includeRarities) {
+var getFilteredCards = function(includeClasses, includeRarities, manaSkip) {
     var randomInd;
     var randomMana;
 
@@ -200,14 +201,14 @@ var getFilteredCards = function(manaSkip, includeClasses, includeRarities) {
     });
 
     if (cards.length < 2) {
-        return getFilteredCards(manaSkip, includeClasses, includeRarities);
+        return getFilteredCards(includeClasses, includeRarities, manaSkip);
     } else {
         return cards;
     }
 };
 
-var getTwoRandomCards = function(manaSkip, includeClasses, includeRarities) {
-    var cards = getFilteredCards(manaSkip, includeClasses, includeRarities);
+var getTwoRandomCards = function(includeClasses, includeRarities, manaSkip) {
+    var cards = getFilteredCards(includeClasses, includeRarities, manaSkip);
     var twoCards = getTwoRandomCardsInternal(cards);
 
     return {

@@ -7,7 +7,7 @@ exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
         var data = req.body;
         var manaSkip = parseInt(data.manaSkip, 10);
-        var cardData = cardProvider.getTwoRandomCards(manaSkip, data.classes, data.rarities);
+        var cardData = cardProvider.getTwoRandomCards(data.classes, data.rarities, manaSkip);
         var cardClass = data.classes.length === 1 ? data.classes[0] : _.find(data.classes, function(cardClass) {
             return cardClass !== 'neutral';
         });
@@ -62,8 +62,8 @@ exports.initialize = function(router) {
                 rankOne = ((100 - rankOne) / 2) + rankOne;
                 rankTwo = rankTwo - (rankTwo / 2);
 
-                rankOne = rankOne.toFixed(2);
-                rankTwo = rankTwo.toFixed(2);
+                rankOne = +rankOne.toFixed(2);
+                rankTwo = +rankTwo.toFixed(2);
 
                 cardProvider.setCardRank(idOne, rankOne, cardClass);
                 cardProvider.setCardRank(idTwo, rankTwo, cardClass);
