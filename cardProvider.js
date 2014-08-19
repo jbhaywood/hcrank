@@ -27,7 +27,7 @@ function CardData(name, id, cardClass, mana, url, rarity) {
     this.mana = mana;
     this.url = url;
     this.rarity = rarity;
-    this.ranks = [ 0,0,0,0,0,0,0,0,0,0 ];
+    this.ranks = [ 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300 ];
     this.totalMatchups = 0;
     this.totalWins = 0;
     this.updated = new Date();
@@ -264,7 +264,7 @@ var resetCardRanks = function (){
             if (card) {
                 card.ranks = [];
                 var dbCard = _.find(dbCards, { id: minCardData.id });
-                var newRanks = [1300,1300,1300,1300,1300,1300,1300,1300,1300,1300];
+                var newRanks = [ 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300 ];
                 switch (card.class) {
                     case 'neutral':
                         newRanks[_neutralIdx] = dbCard ? dbCard.ranks[_neutralIdx] : minCardData.rank;
