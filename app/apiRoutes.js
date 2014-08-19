@@ -1,5 +1,6 @@
 'use strict';
 var _ = require('lodash');
+var elo = require('elo-rank')();
 var cardProvider = require('../cardProvider');
 var dbProvider = require('../dbProvider');
 
@@ -32,43 +33,40 @@ exports.initialize = function(router) {
         return typeof int === 'number' && (int % 1) === 0;
     };
 
-    // cardOne is the one the user picked, cardTwo is the one they didn't
-    var saveMatchupParams = '/savematchup/:cardOneId/:cardTwoId/:cardOneRank/:cardTwoRank/:milliseconds/:class';
-    router.get(saveMatchupParams, function(req, res) {
-        var params = req.params;
+    router.post('/savematchup/', function(req, res) {
+        var data = req.body;
 
-        if (params.cardOneId && params.cardTwoId && params.cardOneRank &&
-            params.cardTwoRank && params.milliseconds && params.class) {
-            var idOne = parseInt(params.cardOneId);
-            var idTwo = parseInt(params.cardTwoId);
-            var cardClass = params.class;
+        if (data.cardWinnerId && data.cardLoserId && data.cardWinnerRank &&
+            data.cardLoserRank && data.milliseconds && data.class) {
+            var idWinner = parseInt(data.cardWinnerId);
+            var idLoser = parseInt(data.cardLoserId);
+            var cardClass = data.class;
 
-            if (intCheck(idOne) && intCheck(idTwo)) {
-                var rankOne = parseFloat(params.cardOneRank);
-                var rankTwo = parseFloat(params.cardTwoRank);
-                var milliseconds = parseInt(params.milliseconds);
+            if (intCheck(idWinner) && intCheck(idLoser)) {
+                var rankWinner = parseFloat(data.cardWinnerRank);
+                var rankLoser = parseFloat(data.cardLoserRank);
+                var milliseconds = parseInt(data.milliseconds);
 
-                if (isNaN(rankOne) || rankOne < 0 || rankOne > 100) {
-                    rankOne = 50;
+                if (isNaN(rankWinner) || rankWinner < 0 || rankWinner > 100) {
+                    rankWinner = 50;
                 }
-                if (isNaN(rankTwo) || rankTwo < 0 || rankTwo > 100) {
-                    rankTwo = 50;
+                if (isNaN(rankLoser) || rankLoser < 0 || rankLoser > 100) {
+                    rankLoser = 50;
                 }
                 if (!intCheck(milliseconds)) {
                     milliseconds = 0;
                 }
 
-                // calculate new rank
-                rankOne = ((100 - rankOne) / 2) + rankOne;
-                rankTwo = rankTwo - (rankTwo / 2);
+                var winnerExpected = elo.getExpected(rankWinner, rankLoser);
+                var loserExpected = elo.getExpected(rankLoser, rankWinner);
 
-                rankOne = +rankOne.toFixed(2);
-                rankTwo = +rankTwo.toFixed(2);
+                rankWinner = elo.updateRating(winnerExpected, 1, rankWinner);
+                rankLoser = elo.updateRating(loserExpected, 0, rankLoser);
 
-                cardProvider.setCardRank(idOne, rankOne, cardClass);
-                cardProvider.setCardRank(idTwo, rankTwo, cardClass);
+                cardProvider.setCardRank(idWinner, rankWinner, cardClass, true);
+                cardProvider.setCardRank(idLoser, rankLoser, cardClass, false);
                 cardProvider.saveAllCards();
-                dbProvider.saveMatchup(idOne, idTwo, rankOne, rankTwo, idOne, cardClass, milliseconds);
+                dbProvider.saveMatchup(idWinner, idLoser, rankWinner, rankLoser, idWinner, cardClass, milliseconds);
             }
         }
 

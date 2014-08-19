@@ -296,14 +296,20 @@ var viewModel = (function() {
         setScore(pickedBest);
         clearMatchup();
 
-        var saveMatchupSendStr = '/api/savematchup/' + pickedCard.id +
-            '/' + unpickedCard.id + '/' + pickedCard.currentRank +
-            '/' + unpickedCard.currentRank + '/' + decisionTime + '/' + _currentMatchupClass;
-        $.get(saveMatchupSendStr);
+        var sendData = {
+            cardWinnerId: pickedCard.id,
+            cardLoserId: unpickedCard.id,
+            cardWinnerRank: pickedCard.currentRank,
+            cardLoserRank: unpickedCard.currentRank,
+            milliseconds: decisionTime,
+            class: _currentMatchupClass
+        };
 
-        setTimeout(function() {
-            newMatchup();
-        }, 1000);
+        $.post('/api/savematchup/', sendData, function() {
+            setTimeout(function() {
+                newMatchup();
+            }, 1000);
+        });
     };
 
     return {

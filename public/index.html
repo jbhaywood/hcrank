@@ -41,13 +41,13 @@
 			<div class="col-md-1 col-sm-1"></div>
 			<div class="col-md-1 col-sm-1 text-center" style="padding-top: 30px">
 				<h3>Class</h3>
-				<div class="btn-group-vertical btn-block" data-bind="template: { foreach: classes }">
+				<div class="btn-group-vertical btn-block" data-bind="foreach: classes">
 					<button type="button" class="btn btn-default" data-bind="text: displayName,
 					css: { 'btn-success': isActive },
 					click: function() { $root.filterButtonClick($data) }"></button>
 				</div>
 				<h3>Rarity</h3>
-				<div class="btn-group-vertical btn-block" data-bind="template: { foreach: rarities }">
+				<div class="btn-group-vertical btn-block" data-bind="foreach: rarities">
 					<button type="button" class="btn btn-default" data-bind="text: name,
 					css: { 'btn-success': isActive },
 					click: function() { $root.filterButtonClick($data) }"></button>

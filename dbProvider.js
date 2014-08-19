@@ -44,7 +44,9 @@ var initialize = function() {
     Card = mongoose.model('Card', mongoose.Schema({
         id: Number,
         ranks: [Number],
-        updated: Date
+        updated: Date,
+        totalMatchups: Number,
+        totalWins: Number
     }));
 
     Matchup = mongoose.model('Matchup', mongoose.Schema({
@@ -72,19 +74,19 @@ var getCardsByIds = function(cardIds) {
     return Card.where('id').in(cardIds).exec();
 };
 
-var saveMatchup = function(cardOneId, cardTwoId, cardOneRank, cardTwoRank, winnerId, cardClass, milliseconds) {
+var saveMatchup = function(cardWinnerId, cardLoserId, cardWinnerRank, cardLOserRank, winnerId, cardClass, milliseconds) {
     // always order cards by id to make looking up matchups between specific ones easier
     var id1, id2, rank1, rank2;
-    if (cardOneId < cardTwoId) {
-        id1 = cardOneId;
-        id2 = cardTwoId;
-        rank1 = cardOneRank;
-        rank2 = cardTwoRank;
+    if (cardWinnerId < cardLoserId) {
+        id1 = cardWinnerId;
+        id2 = cardLoserId;
+        rank1 = cardWinnerRank;
+        rank2 = cardLOserRank;
     } else {
-        id1 = cardTwoId;
-        id2 = cardOneId;
-        rank1 = cardTwoRank;
-        rank2 = cardOneRank;
+        id1 = cardLoserId;
+        id2 = cardWinnerId;
+        rank1 = cardLOserRank;
+        rank2 = cardWinnerRank;
     }
     var matchup = new Matchup({
         cardOneId: id1,
@@ -106,11 +108,15 @@ var saveUpdatedCards = function(cardDatas) {
                 dbCard = new Card({
                     id: cardData.id,
                     ranks: cardData.ranks.slice(),
-                    updated: new Date()
+                    updated: new Date(),
+                    totalMatchups: 0,
+                    totalWins: 0
                 });
             } else if (cardData.updated > dbCard.updated) {
                 dbCard.ranks = cardData.ranks.slice();
                 dbCard.updated = cardData.updated;
+                dbCard.totalMatchups = cardData.totalMatchups;
+                dbCard.totalWins = cardData.totalWins;
             }
             dbCard.save();
         }, function(err) {

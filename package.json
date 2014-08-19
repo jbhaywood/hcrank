@@ -12,10 +12,13 @@
     "errorhandler": "~1.1.1",
     "express": "~4.6.1",
     "body-parser": "~1.5.0",
-    "q": "~1.0.1"
+    "q": "~1.0.1",
+    "elo-rank": "~0.2.2"
   },
   "devDependencies": {
-    "mocha": "~1.20.1"
+    "mocha": "~1.20.1",
+    "chance": "~0.5.9",
+    "sprintf-js": "0.0.7"
   },
   "engines": {
     "node": "0.10.x",

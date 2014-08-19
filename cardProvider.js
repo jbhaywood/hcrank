@@ -28,6 +28,8 @@ function CardData(name, id, cardClass, mana, url, rarity) {
     this.url = url;
     this.rarity = rarity;
     this.ranks = [ 0,0,0,0,0,0,0,0,0,0 ];
+    this.totalMatchups = 0;
+    this.totalWins = 0;
     this.updated = new Date();
 }
 
@@ -160,6 +162,8 @@ var initialize = function() {
             if (card) {
                 card.ranks = dbCard.ranks.slice();
                 card.updated = dbCard.updated;
+                card.totalMatchups = dbCard.totalMatchups ? dbCard.totalMatchups : 0;
+                card.totalWins = dbCard.totalWins ? dbCard.totalWins : 0;
             }
         });
 
@@ -228,10 +232,12 @@ var saveAllCards = function() {
     }
 };
 
-var setCardRank = function(cardId, rank, cardClass) {
+var setCardRank = function(cardId, rank, cardClass, cardWon) {
     var card = _cardDatasHash[cardId];
     if (card) {
         card.setRankForClass(cardClass, rank);
+        card.totalMatchups = card.totalMatchups + 1;
+        card.totalWins = cardWon ? card.totalWins + 1 : card.totalWins;
         card.updated = new Date();
     }
 };
