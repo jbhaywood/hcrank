@@ -264,7 +264,7 @@ var resetCardRanks = function (){
             if (card) {
                 card.ranks = [];
                 var dbCard = _.find(dbCards, { id: minCardData.id });
-                var newRanks = [0,0,0,0,0,0,0,0,0,0];
+                var newRanks = [1300,1300,1300,1300,1300,1300,1300,1300,1300,1300];
                 switch (card.class) {
                     case 'neutral':
                         newRanks[_neutralIdx] = dbCard ? dbCard.ranks[_neutralIdx] : minCardData.rank;
