@@ -3,12 +3,15 @@ var _ = require('lodash');
 var elo = require('elo-rank')();
 var cardProvider = require('../cardProvider');
 var dbProvider = require('../dbProvider');
+var sprintf = require('sprintf-js').sprintf;
 
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
         var data = req.body;
-        var manaSkip = parseInt(data.manaSkip, 10);
-        var cardData = cardProvider.getTwoRandomCards(data.classes, data.rarities, manaSkip);
+        var manasSkip = _.map(data.manasSkip, function(str) {
+            return parseInt(str, 10);
+        });
+        var cardData = cardProvider.getTwoRandomCards(data.classes, data.rarities, manasSkip);
         var cardClass = data.classes.length === 1 ? data.classes[0] : _.find(data.classes, function(cardClass) {
             return cardClass !== 'neutral';
         });
@@ -43,25 +46,30 @@ exports.initialize = function(router) {
             var cardClass = data.class;
 
             if (intCheck(idWinner) && intCheck(idLoser)) {
-                var rankWinner = parseFloat(data.cardWinnerRank);
-                var rankLoser = parseFloat(data.cardLoserRank);
+                var oldWinnerRank = parseFloat(data.cardWinnerRank);
+                var oldLoserRank = parseFloat(data.cardLoserRank);
                 var milliseconds = parseInt(data.milliseconds);
 
-                if (isNaN(rankWinner) || rankWinner < 0 || rankWinner > 100) {
-                    rankWinner = 50;
+                if (isNaN(oldWinnerRank)) {
+                    oldWinnerRank = 1300;
                 }
-                if (isNaN(rankLoser) || rankLoser < 0 || rankLoser > 100) {
-                    rankLoser = 50;
+                if (isNaN(oldLoserRank)) {
+                    oldLoserRank = 1300;
                 }
                 if (!intCheck(milliseconds)) {
                     milliseconds = 0;
                 }
 
-                var winnerExpected = elo.getExpected(rankWinner, rankLoser);
-                var loserExpected = elo.getExpected(rankLoser, rankWinner);
+                elo.setKFactor(128);
 
-                rankWinner = elo.updateRating(winnerExpected, 1, rankWinner);
-                rankLoser = elo.updateRating(loserExpected, 0, rankLoser);
+                var winnerExpected = elo.getExpected(oldWinnerRank, oldLoserRank);
+                var loserExpected = elo.getExpected(oldLoserRank, oldWinnerRank);
+
+                var rankWinner = elo.updateRating(winnerExpected, 1, oldWinnerRank);
+                var rankLoser = elo.updateRating(loserExpected, 0, oldLoserRank);
+
+                console.log(sprintf('winner rank %s, new rank: %s', oldWinnerRank, rankWinner));
+                console.log(sprintf('loser rank %s, new rank: %s', oldLoserRank, rankLoser));
 
                 cardProvider.setCardRank(idWinner, rankWinner, cardClass, true);
                 cardProvider.setCardRank(idLoser, rankLoser, cardClass, false);

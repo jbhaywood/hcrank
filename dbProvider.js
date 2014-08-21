@@ -20,6 +20,7 @@ if (process.env.NODE_ENV === 'production') {
 // PUBLIC
 
 var initialize = function() {
+    var promise = new mongoose.Promise;
     var connect = function () {
         var options = { server: { socketOptions: { keepAlive: 1 } } };
         mongoose.connect(_connectUri, options);
@@ -39,6 +40,7 @@ var initialize = function() {
 
     mongoose.connection.on('connected', function() {
         console.log('Connected to ' + _dbServer);
+        promise.fulfill();
     });
 
     Card = mongoose.model('Card', mongoose.Schema({
@@ -60,10 +62,7 @@ var initialize = function() {
         created: Date
     }));
 
-    // uncomment to remove all card documents
-//    Card.remove({}, function(err) {
-//        console.log('collection removed');
-//    });
+    return promise;
 };
 
 var getCard = function(cardId) {
@@ -135,7 +134,29 @@ var shutDown = function() {
     return promise;
 };
 
+var deleteCards = function() {
+    Card.remove({}, function(err) {
+        if (err) {
+            console.log('error removing card collection:' + err.message);
+        } else {
+            console.log('card collection removed');
+        }
+    }).exec();
+};
+
+var deleteMatchups = function() {
+    Matchup.remove({}, function(err) {
+        if (err) {
+            console.log('error removing matchup collection:' + err.message);
+        } else {
+            console.log('matchup collection removed');
+        }
+    }).exec();
+};
+
 exports.initialize = initialize;
+exports.deleteCards = deleteCards;
+exports.deleteMatchups = deleteMatchups;
 exports.getCard = getCard;
 exports.getCardsByIds = getCardsByIds;
 exports.saveMatchup = saveMatchup;

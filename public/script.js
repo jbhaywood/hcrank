@@ -66,6 +66,7 @@ var viewModel = (function() {
     });
 
     var _scoreKey = 'score';
+    var _lastManas = [];
     var _currentMana = 0;
     var _currentMatchupClass = '';
 
@@ -208,7 +209,8 @@ var viewModel = (function() {
             }
         }
     };
-    
+
+    // changing to just keep track of cards ranked for now
     var setScore = function(pickedBest) {
         var currentScore = _score();
         if (pickedBest) {
@@ -231,9 +233,9 @@ var viewModel = (function() {
         var rankTwo = cardTwo.currentRank;
         var rankDiff = Math.abs(rankOne - rankTwo);
 
-        if (rankDiff < 10) {
+        if (rankDiff < 260) {
             _matchupSubtext('(careful, this one\'s tricky)');
-        } else if (rankDiff < 50) {
+        } else if (rankDiff < 1300) {
             _matchupSubtext('(hmm...)');
         } else {
             _matchupSubtext('(piece of cake)');
@@ -268,6 +270,7 @@ var viewModel = (function() {
             .value();
 
         var sendData = {
+            manasSkip: _lastManas,
             manaSkip: _currentMana,
             rarities: rarities,
             classes: classes
@@ -290,7 +293,13 @@ var viewModel = (function() {
         var decisionTime = matchupStopTime - _matchupStartTime;
         var pickedRank = pickedCard.currentRank;
         var unpickedRank = unpickedCard.currentRank;
-        var pickedBest = pickedRank > unpickedRank;
+        var pickedBest = pickedRank >= unpickedRank;
+
+        if (_lastManas.length === 5) {
+            _lastManas.pop(_currentMana);
+        }
+
+        _lastManas.unshift(_currentMana);
 
         _matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
         setScore(pickedBest);

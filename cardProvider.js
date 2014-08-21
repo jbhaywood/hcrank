@@ -6,7 +6,6 @@ var allCardsRawData = require('./data/all-cards.json');
 
 var _cardDatas = [];
 var _cardDatasHash = {};
-var _manaVals = [];
 var _saveCounter = 0;
 
 var _neutralIdx = 0;
@@ -150,10 +149,6 @@ var initialize = function() {
     var deferred = Q.defer();
     var cards = getCardDatas();
 
-    // get all the mana values for the purpose of getting
-    // a random one weighted by the number of cards per mana cost
-    _manaVals = _.pluck(cards, 'mana');
-
     // add rankings to cards
     var ids = _.pluck(cards, 'id');
     dbProvider.getCardsByIds(ids).then(function(dbCards) {
@@ -179,14 +174,23 @@ var initialize = function() {
     return deferred.promise;
 };
 
-var getFilteredCards = function(includeClasses, includeRarities, manaSkip) {
+var getFilteredCards = function(includeClasses, includeRarities, manasSkip) {
     var randomInd;
     var randomMana;
+    var numLoops = 0;
+
+    var cards = _.filter(_cardDatas, function(card) {
+        return (_.contains(includeClasses, card.class) && _.contains(includeRarities, card.rarity));
+    });
+
+    // skew the randomMana result towards the more common mana values
+    var manaVals = _.pluck(cards, 'mana');
 
     do {
-        randomInd = Math.floor(Math.random() * _manaVals.length);
-        randomMana = _manaVals[randomInd];
-    } while ( randomMana === manaSkip );
+        randomInd = Math.floor(Math.random() * manaVals.length);
+        randomMana = manaVals[randomInd];
+        numLoops = numLoops + 1;
+    } while ( numLoops < 50 && _.contains(manasSkip, randomMana) );
 
     // group all mana cost cards greater than 10 with the 10 cards
     // and any zero cost cards with the one mana cards
@@ -196,23 +200,21 @@ var getFilteredCards = function(includeClasses, includeRarities, manaSkip) {
         randomMana = 1;
     }
 
-    var cards = _.filter(_cardDatas, function(card) {
+    cards = _.filter(cards, function(card) {
         return ((randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
             (randomMana >= 10 && card.mana >= 10) ||
-            (randomMana <= 1 && card.mana <= 1)) &&
-            _.contains(includeClasses, card.class) &&
-            _.contains(includeRarities, card.rarity);
+            (randomMana <= 1 && card.mana <= 1));
     });
 
     if (cards.length < 2) {
-        return getFilteredCards(includeClasses, includeRarities, manaSkip);
+        return getFilteredCards(includeClasses, includeRarities, manasSkip);
     } else {
         return cards;
     }
 };
 
-var getTwoRandomCards = function(includeClasses, includeRarities, manaSkip) {
-    var cards = getFilteredCards(includeClasses, includeRarities, manaSkip);
+var getTwoRandomCards = function(includeClasses, includeRarities, manasSkip) {
+    var cards = getFilteredCards(includeClasses, includeRarities, manasSkip);
     var twoCards = getTwoRandomCardsInternal(cards);
 
     return {
@@ -242,75 +244,19 @@ var setCardRank = function(cardId, rank, cardClass, cardWon) {
     }
 };
 
-var resetCardRanks = function (){
-    var cards = getCardDatas();
-    var ids = _.pluck(cards, 'id');
-    dbProvider.getCardsByIds(ids).then(function(dbCards) {
-        var rankedCards = require('./data/rankedCardsList.js');
-        var rankDatas = rankedCards.cardList;
-        var minCardDatas = _.map(rankDatas, function(data) {
-            var avgRank = 	_.reduce(data.ranks, function(sum, num)
-            {
-                return sum + num;
-            }, 0) / data.ranks.length;
-
-            return {
-                id: data.id,
-                rank: avgRank
-            };
-        });
-        _.forEach(minCardDatas, function(minCardData) {
-            var card = _.find(cards, { id: minCardData.id });
-            if (card) {
-                card.ranks = [];
-                var dbCard = _.find(dbCards, { id: minCardData.id });
-                var newRanks = [ 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300 ];
-                switch (card.class) {
-                    case 'neutral':
-                        newRanks[_neutralIdx] = dbCard ? dbCard.ranks[_neutralIdx] : minCardData.rank;
-                        break;
-                    case 'druid':
-                        newRanks[_druidIdx] = dbCard ? dbCard.ranks[_druidIdx] : minCardData.rank;
-                        break;
-                    case 'hunter':
-                        newRanks[_hunterIdx] = dbCard ? dbCard.ranks[_hunterIdx] : minCardData.rank;
-                        break;
-                    case 'mage':
-                        newRanks[_mageIdx] = dbCard ? dbCard.ranks[_mageIdx] : minCardData.rank;
-                        break;
-                    case 'paladin':
-                        newRanks[_paladinIdx] = dbCard ? dbCard.ranks[_paladinIdx] : minCardData.rank;
-                        break;
-                    case 'priest':
-                        newRanks[_priestIdx] = dbCard ? dbCard.ranks[_priestIdx] : minCardData.rank;
-                        break;
-                    case 'rogue':
-                        newRanks[_rogueIdx] = dbCard ? dbCard.ranks[_rogueIdx] : minCardData.rank;
-                        break;
-                    case 'shaman':
-                        newRanks[_shamanIdx] = dbCard ? dbCard.ranks[_shamanIdx] : minCardData.rank;
-                        break;
-                    case 'warlock':
-                        newRanks[_warlockIdx] = dbCard ? dbCard.ranks[_warlockIdx] : minCardData.rank;
-                        break;
-                    case 'warrior':
-                        newRanks[_warriorIdx] = dbCard ? dbCard.ranks[_warriorIdx] : minCardData.rank;
-                        break;
-                    default:
-                        console.log('Hero not found: ' + card.class);
-                        break;
-                }
-                card.ranks = newRanks.slice();
-                card.updated = new Date();
-            }
-        });
-        dbProvider.saveUpdatedCards(_cardDatas);
-    });
-};
-
 exports.initialize = initialize;
-exports.getTwoRandomCards = getTwoRandomCards;
+exports.getCardDatas = getCardDatas;
 exports.getCardDatasByClass = getCardDatasByClass;
-exports.resetCardRanks = resetCardRanks;
+exports.getTwoRandomCards = getTwoRandomCards;
 exports.saveAllCards = saveAllCards;
 exports.setCardRank = setCardRank;
+exports.neutralIdx = _neutralIdx;
+exports.druidIdx = _druidIdx;
+exports.hunterIdx = _hunterIdx;
+exports.mageIdx = _mageIdx;
+exports.paladinIdx = _paladinIdx;
+exports.priestIdx = _priestIdx;
+exports.rogueIdx = _rogueIdx;
+exports.shamanIdx = _shamanIdx;
+exports.warlockIdx = _warlockIdx;
+exports.warriorIdx = _warriorIdx;

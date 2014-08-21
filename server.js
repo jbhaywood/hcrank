@@ -8,29 +8,30 @@ var dbProvider = require('./dbProvider');
 var apiRoutes = require('./app/apiRoutes');
 var routes = require('./app/routes');
 
-dbProvider.initialize();
-cardProvider.initialize().done(function() {
-    var app = express();
-    var apiRouter = express.Router();
-    var router = express.Router();
-    var port = process.env.PORT || 3000;
+dbProvider.initialize().then(function() {
+    cardProvider.initialize().done(function() {
+        var app = express();
+        var apiRouter = express.Router();
+        var router = express.Router();
+        var port = process.env.PORT || 3000;
 
-    app.use(express.static('public'));
-    app.use(bodyParser.urlencoded({
-        extended: true
-    }));
-    app.use('/', router);
-    app.use('/api', apiRouter);
+        app.use(express.static('public'));
+        app.use(bodyParser.urlencoded({
+            extended: true
+        }));
+        app.use('/', router);
+        app.use('/api', apiRouter);
 
-    if (process.env.NODE_ENV !== 'production') {
-        app.use(morgan('combined'));
-        app.use(errorHandler());
-    }
+        if (process.env.NODE_ENV !== 'production') {
+            app.use(morgan('combined'));
+            app.use(errorHandler());
+        }
 
-    routes.initialize(router);
-    apiRoutes.initialize(apiRouter);
+        routes.initialize(router);
+        apiRoutes.initialize(apiRouter);
 
-    app.listen(port);
+        app.listen(port);
+    });
 });
 
 var gracefulExit = function() {
