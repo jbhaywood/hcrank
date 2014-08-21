@@ -68,8 +68,8 @@ exports.initialize = function(router) {
                 var rankWinner = elo.updateRating(winnerExpected, 1, oldWinnerRank);
                 var rankLoser = elo.updateRating(loserExpected, 0, oldLoserRank);
 
-                console.log(sprintf('winner rank %s, new rank: %s', oldWinnerRank, rankWinner));
-                console.log(sprintf('loser rank %s, new rank: %s', oldLoserRank, rankLoser));
+//                console.log(sprintf('winner rank %s, new rank: %s', oldWinnerRank, rankWinner));
+//                console.log(sprintf('loser rank %s, new rank: %s', oldLoserRank, rankLoser));
 
                 cardProvider.setCardRank(idWinner, rankWinner, cardClass, true);
                 cardProvider.setCardRank(idLoser, rankLoser, cardClass, false);
