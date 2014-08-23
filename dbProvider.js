@@ -5,24 +5,25 @@ var mongoose = require('mongoose');
 var Card;
 var Matchup;
 
-var _dbServer;
+var _dbServer = 'test_db';
 var _restartOnDisconnect = true;
 
-var getConnectionString = function(useProductionDb) {
-    var connectToProduction = process.env.NODE_ENV === 'production' || useProductionDb;
-    _dbServer = connectToProduction ? 'hcrank' : 'test_db';
-    var config = require('./config/config');
-    return connectToProduction ? process.env.DB_CONNECT_URI || config.productionDbUri : config.testDbUri;
-};
+var _connectUri;
+var config;
+if (process.env.NODE_ENV === 'production') {
+    _connectUri = process.env.DB_CONNECT_URI;
+} else {
+    config = require('./config/config');
+    _connectUri = config.dbConnectUri;
+}
 
 // PUBLIC
 
-var initialize = function(useProductionDb) {
+var initialize = function() {
     var promise = new mongoose.Promise;
     var connect = function () {
-        var connectString = getConnectionString(useProductionDb);
         var options = { server: { socketOptions: { keepAlive: 1 } } };
-        mongoose.connect(connectString, options);
+        mongoose.connect(_connectUri, options);
     };
     connect();
 
@@ -125,8 +126,7 @@ var saveUpdatedCards = function(cardDatas) {
 
 var getNumMatchups = function(theClass) {
     var promise = new mongoose.Promise;
-    var filter = theClass ? { class: theClass } : { };
-    Matchup.count(filter, function(err, c)
+    Matchup.count({ }, function(err, c)
     {
         promise.fulfill(c);
     });
