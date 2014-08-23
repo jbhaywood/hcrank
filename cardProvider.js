@@ -8,16 +8,18 @@ var _cardDatas = [];
 var _cardDatasHash = {};
 var _saveCounter = 0;
 
-var _neutralIdx = 0;
-var _druidIdx = 1;
-var _hunterIdx = 2;
-var _mageIdx = 3;
-var _paladinIdx = 4;
-var _priestIdx = 5;
-var _rogueIdx = 6;
-var _shamanIdx = 7;
-var _warlockIdx = 8;
-var _warriorIdx = 9;
+var neutralIdx = 0;
+var druidIdx = 1;
+var hunterIdx = 2;
+var mageIdx = 3;
+var paladinIdx = 4;
+var priestIdx = 5;
+var rogueIdx = 6;
+var shamanIdx = 7;
+var warlockIdx = 8;
+var warriorIdx = 9;
+
+var classList = [ 'neutral', 'druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
 
 function CardData(name, id, cardClass, mana, url, rarity) {
     this.name = name;
@@ -35,25 +37,25 @@ function CardData(name, id, cardClass, mana, url, rarity) {
 CardData.prototype.getRankForClass = function(cardClass) {
     switch (cardClass) {
         case 'neutral':
-            return this.ranks[_neutralIdx];
+            return this.ranks[neutralIdx];
         case 'druid':
-            return this.ranks[_druidIdx];
+            return this.ranks[druidIdx];
         case 'hunter':
-            return this.ranks[_hunterIdx];
+            return this.ranks[hunterIdx];
         case 'mage':
-            return this.ranks[_mageIdx];
+            return this.ranks[mageIdx];
         case 'paladin':
-            return this.ranks[_paladinIdx];
+            return this.ranks[paladinIdx];
         case 'priest':
-            return this.ranks[_priestIdx];
+            return this.ranks[priestIdx];
         case 'rogue':
-            return this.ranks[_rogueIdx];
+            return this.ranks[rogueIdx];
         case 'shaman':
-            return this.ranks[_shamanIdx];
+            return this.ranks[shamanIdx];
         case 'warlock':
-            return this.ranks[_warlockIdx];
+            return this.ranks[warlockIdx];
         case 'warrior':
-            return this.ranks[_warriorIdx];
+            return this.ranks[warriorIdx];
         default:
             console.log('Class not found: ' + cardClass);
             return null;
@@ -63,34 +65,34 @@ CardData.prototype.getRankForClass = function(cardClass) {
 CardData.prototype.setRankForClass = function(cardClass, rank) {
     switch (cardClass) {
         case 'neutral':
-            this.ranks[_neutralIdx] = rank;
+            this.ranks[neutralIdx] = rank;
             break;
         case 'druid':
-            this.ranks[_druidIdx] = rank;
+            this.ranks[druidIdx] = rank;
             break;
         case 'hunter':
-            this.ranks[_hunterIdx] = rank;
+            this.ranks[hunterIdx] = rank;
             break;
         case 'mage':
-            this.ranks[_mageIdx] = rank;
+            this.ranks[mageIdx] = rank;
             break;
         case 'paladin':
-            this.ranks[_paladinIdx] = rank;
+            this.ranks[paladinIdx] = rank;
             break;
         case 'priest':
-            this.ranks[_priestIdx] = rank;
+            this.ranks[priestIdx] = rank;
             break;
         case 'rogue':
-            this.ranks[_rogueIdx] = rank;
+            this.ranks[rogueIdx] = rank;
             break;
         case 'shaman':
-            this.ranks[_shamanIdx] = rank;
+            this.ranks[shamanIdx] = rank;
             break;
         case 'warlock':
-            this.ranks[_warlockIdx] = rank;
+            this.ranks[warlockIdx] = rank;
             break;
         case 'warrior':
-            this.ranks[_warriorIdx] = rank;
+            this.ranks[warriorIdx] = rank;
             break;
         default:
             console.log('Class not found: ' + cardClass);
@@ -250,13 +252,14 @@ exports.getCardDatasByClass = getCardDatasByClass;
 exports.getTwoRandomCards = getTwoRandomCards;
 exports.saveAllCards = saveAllCards;
 exports.setCardRank = setCardRank;
-exports.neutralIdx = _neutralIdx;
-exports.druidIdx = _druidIdx;
-exports.hunterIdx = _hunterIdx;
-exports.mageIdx = _mageIdx;
-exports.paladinIdx = _paladinIdx;
-exports.priestIdx = _priestIdx;
-exports.rogueIdx = _rogueIdx;
-exports.shamanIdx = _shamanIdx;
-exports.warlockIdx = _warlockIdx;
-exports.warriorIdx = _warriorIdx;
+exports.classList = classList;
+exports.neutralIdx = neutralIdx;
+exports.druidIdx = druidIdx;
+exports.hunterIdx = hunterIdx;
+exports.mageIdx = mageIdx;
+exports.paladinIdx = paladinIdx;
+exports.priestIdx = priestIdx;
+exports.rogueIdx = rogueIdx;
+exports.shamanIdx = shamanIdx;
+exports.warlockIdx = warlockIdx;
+exports.warriorIdx = warriorIdx;

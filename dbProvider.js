@@ -5,25 +5,24 @@ var mongoose = require('mongoose');
 var Card;
 var Matchup;
 
-var _dbServer = 'test_db';
+var _dbServer;
 var _restartOnDisconnect = true;
 
-var _connectUri;
-var config;
-if (process.env.NODE_ENV === 'production') {
-    _connectUri = process.env.DB_CONNECT_URI;
-} else {
-    config = require('./config/config');
-    _connectUri = config.dbConnectUri;
-}
+var getConnectionString = function(useProductionDb) {
+    var connectToProduction = process.env.NODE_ENV === 'production' || useProductionDb;
+    _dbServer = connectToProduction ? 'hcrank' : 'test_db';
+    var config = require('./config/config');
+    return connectToProduction ? process.env.DB_CONNECT_URI || config.productionDbUri : config.testDbUri;
+};
 
 // PUBLIC
 
-var initialize = function() {
+var initialize = function(useProductionDb) {
     var promise = new mongoose.Promise;
     var connect = function () {
+        var connectString = getConnectionString(useProductionDb);
         var options = { server: { socketOptions: { keepAlive: 1 } } };
-        mongoose.connect(_connectUri, options);
+        mongoose.connect(connectString, options);
     };
     connect();
 
@@ -124,6 +123,16 @@ var saveUpdatedCards = function(cardDatas) {
     });
 };
 
+var getNumMatchups = function(theClass) {
+    var promise = new mongoose.Promise;
+    var filter = theClass ? { class: theClass } : { };
+    Matchup.count(filter, function(err, c)
+    {
+        promise.fulfill(c);
+    });
+    return promise;
+};
+
 var shutDown = function() {
     var promise = new mongoose.Promise;
     _restartOnDisconnect = false;
@@ -159,6 +168,7 @@ exports.deleteCards = deleteCards;
 exports.deleteMatchups = deleteMatchups;
 exports.getCard = getCard;
 exports.getCardsByIds = getCardsByIds;
+exports.getNumMatchups = getNumMatchups;
 exports.saveMatchup = saveMatchup;
 exports.saveUpdatedCards = saveUpdatedCards;
 exports.shutDown = shutDown;
