@@ -5,25 +5,29 @@ var mongoose = require('mongoose');
 var Card;
 var Matchup;
 
-var _dbServer = 'test_db';
+var _dbServer;
 var _restartOnDisconnect = true;
 
-var _connectUri;
-var config;
-if (process.env.NODE_ENV === 'production') {
-    _connectUri = process.env.DB_CONNECT_URI;
-} else {
-    config = require('./config/config');
-    _connectUri = config.dbConnectUri;
-}
+var getConnectionString = function(useProductionDb) {
+    _dbServer = process.env.NODE_ENV === 'production' || useProductionDb ? 'hcrank' : 'test_db';
+    var connectString;
+
+    if (process.env.NODE_ENV === 'production') {
+        connectString = process.env.DB_CONNECT_URI;
+    } else {
+        var config = require('./config/config');
+        connectString = useProductionDb ? config.productionDbUri : config.testDbUri;
+    }
+    return connectString;
+};
 
 // PUBLIC
 
-var initialize = function() {
+var initialize = function(useProductionDb) {
     var promise = new mongoose.Promise;
     var connect = function () {
         var options = { server: { socketOptions: { keepAlive: 1 } } };
-        mongoose.connect(_connectUri, options);
+        mongoose.connect(getConnectionString(useProductionDb), options);
     };
     connect();
 
