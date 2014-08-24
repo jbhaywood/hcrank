@@ -3,7 +3,6 @@ var _ = require('lodash');
 var elo = require('elo-rank')();
 var cardProvider = require('../cardProvider');
 var dbProvider = require('../dbProvider');
-var sprintf = require('sprintf-js').sprintf;
 
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
@@ -80,7 +79,7 @@ exports.initialize = function(router) {
 
     router.post('/getcards/', function(req, res) {
         var data = req.body;
-        var cardClass = data.class;
+        var cardClass = data.class || 'neutral';
         var cardDatas = cardProvider.getCardDatasByClass(cardClass);
         var sortedDatas = _.chain(cardDatas)
             .sortBy(function(cardData) {
@@ -90,12 +89,17 @@ exports.initialize = function(router) {
             .map(function(cardData) {
                 return {
                     name: cardData.name,
+                    class: cardData.class,
+                    mana: cardData.mana,
+                    totalMatchups: cardData.totalMatchups,
+                    totalWins: cardData.totalWins,
+                    rank: cardData.getRankForClass(),
                     url: cardData.url
                 };
             })
             .value();
         var sendData = {
-            cards: sortedDatas
+            data: sortedDatas
         };
         res.send(sendData);
     });

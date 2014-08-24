@@ -8,7 +8,7 @@ var dbProvider = require('./dbProvider');
 var apiRoutes = require('./app/apiRoutes');
 var routes = require('./app/routes');
 
-dbProvider.initialize().then(function() {
+dbProvider.initialize(true).then(function() {
     cardProvider.initialize().done(function() {
         var app = express();
         var apiRouter = express.Router();

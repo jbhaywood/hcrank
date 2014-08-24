@@ -35,6 +35,9 @@ function CardData(name, id, cardClass, mana, url, rarity) {
 }
 
 CardData.prototype.getRankForClass = function(cardClass) {
+    if (!cardClass) {
+        cardClass = this.class;
+    }
     switch (cardClass) {
         case 'neutral':
             return this.ranks[neutralIdx];
