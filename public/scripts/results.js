@@ -9,31 +9,30 @@ var viewModel = (function() {
     };
 
     var update = function() {
-        if (table) {
-            table.ajax.reload();
-        } else {
-            table = $('#table_id').dataTable({
-                serverSide: true,
-                paging: false,
-                searching: false,
-                ordering: false,
-//                order: [ 2, 'desc' ],
-                ajax: {
-                    'url': '/api/getcards/',
-                    'type': 'POST',
-                    'data': function(d) {
-                        d.class = selectedClass();
-                    },
-                    'dataType': 'json'
-                },
-                columns: [
-                    { data: 'name', title: 'Name' },
-                    { data: 'rank', title: 'Rank' },
-                    { data: 'totalMatchups', title: 'Total Matchups' },
-                    { data: 'totalWins', title: 'Total Wins' }
-                ]
-            });
-        }
+        $.post('/api/getcards/', { class: selectedClass() }, function(data) {
+            if (table) {
+                table.clear();
+                table.rows.add(data.data);
+                table.draw();
+            } else {
+                table = $('#table_id').DataTable({
+                    data: data.data,
+                    paging: false,
+                    searching: false,
+                    order: [ 1, 'desc' ],
+                    columns: [
+                        { data: 'name', title: 'Name' },
+                        { data: 'rank', title: 'Rank' },
+                        { data: 'totalMatchups', title: 'Total Matchups' },
+                        { data: 'totalWins', title: 'Total Wins' },
+                        { render: function(data, type, row, meta)
+                            {
+                                return (row.totalMatchups ? (row.totalWins / row.totalMatchups * 100).toFixed(2) : 0) + '%';
+                            }, title: 'Win Ratio' }
+                    ]
+                });
+            }
+        });
     };
 
     return {
