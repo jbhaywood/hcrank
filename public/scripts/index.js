@@ -201,8 +201,7 @@ var viewModel = (function() {
             if (_.all(_classDatas, function(classData) {
                 return !classData.isActive();
             })) {
-                //noinspection JSUnresolvedFunction
-                var first = _.first(_classDatas);
+                var first = _.find(_classDatas);
                 if (first) {
                     first.setActive(true);
                 }

@@ -52,7 +52,9 @@ var initialize = function(useProductionDb) {
         ranks: [Number],
         updated: Date,
         totalMatchups: Number,
-        totalWins: Number
+        totalWins: Number,
+        matchupTotals: [Number],
+        winTotals: [Number]
     }));
 
     Matchup = mongoose.model('Matchup', mongoose.Schema({
@@ -113,13 +115,17 @@ var saveUpdatedCards = function(cardDatas) {
                     ranks: cardData.ranks.slice(),
                     updated: new Date(),
                     totalMatchups: 0,
-                    totalWins: 0
+                    totalWins: 0,
+                    matchupTotals: cardData.matchupTotals.slice(),
+                    winTotals: cardData.winTotals.slice()
                 });
             } else if (cardData.updated > dbCard.updated) {
                 dbCard.ranks = cardData.ranks.slice();
                 dbCard.updated = cardData.updated;
                 dbCard.totalMatchups = cardData.totalMatchups;
                 dbCard.totalWins = cardData.totalWins;
+                dbCard.matchupTotals = cardData.matchupTotals;
+                dbCard.winTotals = cardData.winTotals;
             }
             dbCard.save();
         }, function(err) {
@@ -128,7 +134,7 @@ var saveUpdatedCards = function(cardDatas) {
     });
 };
 
-var getNumMatchups = function(theClass) {
+var getTotalMatchups = function() {
     var promise = new mongoose.Promise;
     Matchup.count({ }, function(err, c)
     {
@@ -172,7 +178,7 @@ exports.deleteCards = deleteCards;
 exports.deleteMatchups = deleteMatchups;
 exports.getCard = getCard;
 exports.getCardsByIds = getCardsByIds;
-exports.getNumMatchups = getNumMatchups;
+exports.getTotalMatchups = getTotalMatchups;
 exports.saveMatchup = saveMatchup;
 exports.saveUpdatedCards = saveUpdatedCards;
 exports.shutDown = shutDown;

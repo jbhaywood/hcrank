@@ -7,6 +7,7 @@ var allCardsRawData = require('./data/all-cards.json');
 var _cardDatas = [];
 var _cardDatasHash = {};
 var _saveCounter = 0;
+var _defaultTotals = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
 
 var neutralIdx = 0;
 var druidIdx = 1;
@@ -27,10 +28,12 @@ function CardData(name, id, cardClass, mana, url, rarity) {
     this.class = cardClass;
     this.mana = mana;
     this.url = url;
-    this.rarity = rarity;
+    this.rarity = rarity === 'free' ? 'common' : rarity;
     this.ranks = [ 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300 ];
     this.totalMatchups = 0;
     this.totalWins = 0;
+    this.matchupTotals = _defaultTotals.slice();
+    this.winTotals = _defaultTotals.slice();
     this.updated = new Date();
 }
 
@@ -60,8 +63,150 @@ CardData.prototype.getRankForClass = function(cardClass) {
         case 'warrior':
             return this.ranks[warriorIdx];
         default:
-            console.log('Class not found: ' + cardClass);
+            console.log('Class not found (getRankForClass): ' + cardClass);
             return null;
+    }
+};
+
+CardData.prototype.getMatchupTotalForClass = function(cardClass) {
+    if (!cardClass) {
+        cardClass = this.class;
+    }
+    switch (cardClass) {
+        case 'neutral':
+            return this.matchupTotals[neutralIdx];
+        case 'druid':
+            return this.matchupTotals[druidIdx];
+        case 'hunter':
+            return this.matchupTotals[hunterIdx];
+        case 'mage':
+            return this.matchupTotals[mageIdx];
+        case 'paladin':
+            return this.matchupTotals[paladinIdx];
+        case 'priest':
+            return this.matchupTotals[priestIdx];
+        case 'rogue':
+            return this.matchupTotals[rogueIdx];
+        case 'shaman':
+            return this.matchupTotals[shamanIdx];
+        case 'warlock':
+            return this.matchupTotals[warlockIdx];
+        case 'warrior':
+            return this.matchupTotals[warriorIdx];
+        default:
+            console.log('Class not found (getMatchupTotalForClass): ' + cardClass);
+            return null;
+    }
+};
+
+CardData.prototype.getWinTotalForClass = function(cardClass) {
+    if (!cardClass) {
+        cardClass = this.class;
+    }
+    switch (cardClass) {
+        case 'neutral':
+            return this.winTotals[neutralIdx];
+        case 'druid':
+            return this.winTotals[druidIdx];
+        case 'hunter':
+            return this.winTotals[hunterIdx];
+        case 'mage':
+            return this.winTotals[mageIdx];
+        case 'paladin':
+            return this.winTotals[paladinIdx];
+        case 'priest':
+            return this.winTotals[priestIdx];
+        case 'rogue':
+            return this.winTotals[rogueIdx];
+        case 'shaman':
+            return this.winTotals[shamanIdx];
+        case 'warlock':
+            return this.winTotals[warlockIdx];
+        case 'warrior':
+            return this.winTotals[warriorIdx];
+        default:
+            console.log('Class not found (getWinTotalForClass): ' + cardClass);
+            return null;
+    }
+};
+
+CardData.prototype.setMatchupTotalForClass = function(cardClass) {
+    if (!cardClass) {
+        cardClass = this.class;
+    }
+    switch (cardClass) {
+        case 'neutral':
+            this.matchupTotals[neutralIdx] = this.matchupTotals[neutralIdx] + 1;
+            break;
+        case 'druid':
+            this.matchupTotals[druidIdx] = this.matchupTotals[druidIdx] + 1;
+            break;
+        case 'hunter':
+            this.matchupTotals[hunterIdx] = this.matchupTotals[hunterIdx] + 1;
+            break;
+        case 'mage':
+            this.matchupTotals[mageIdx] = this.matchupTotals[mageIdx] + 1;
+            break;
+        case 'paladin':
+            this.matchupTotals[paladinIdx] = this.matchupTotals[paladinIdx] + 1;
+            break;
+        case 'priest':
+            this.matchupTotals[priestIdx] = this.matchupTotals[priestIdx] + 1;
+            break;
+        case 'rogue':
+            this.matchupTotals[rogueIdx] = this.matchupTotals[rogueIdx] + 1;
+            break;
+        case 'shaman':
+            this.matchupTotals[shamanIdx] = this.matchupTotals[shamanIdx] + 1;
+            break;
+        case 'warlock':
+            this.matchupTotals[warlockIdx] = this.matchupTotals[warlockIdx] + 1;
+            break;
+        case 'warrior':
+            this.matchupTotals[warriorIdx] = this.matchupTotals[warriorIdx] + 1;
+            break;
+        default:
+            console.log('Class not found (setWinTotalForClass): ' + cardClass);
+    }
+};
+
+CardData.prototype.setWinTotalForClass = function(cardClass) {
+    if (!cardClass) {
+        cardClass = this.class;
+    }
+    switch (cardClass) {
+        case 'neutral':
+            this.winTotals[neutralIdx] = this.winTotals[neutralIdx] + 1;
+            break;
+        case 'druid':
+            this.winTotals[druidIdx] = this.winTotals[druidIdx] + 1;
+            break;
+        case 'hunter':
+            this.winTotals[hunterIdx] = this.winTotals[hunterIdx] + 1;
+            break;
+        case 'mage':
+            this.winTotals[mageIdx] = this.winTotals[mageIdx] + 1;
+            break;
+        case 'paladin':
+            this.winTotals[paladinIdx] = this.winTotals[paladinIdx] + 1;
+            break;
+        case 'priest':
+            this.winTotals[priestIdx] = this.winTotals[priestIdx] + 1;
+            break;
+        case 'rogue':
+            this.winTotals[rogueIdx] = this.winTotals[rogueIdx] + 1;
+            break;
+        case 'shaman':
+            this.winTotals[shamanIdx] = this.winTotals[shamanIdx] + 1;
+            break;
+        case 'warlock':
+            this.winTotals[warlockIdx] = this.winTotals[warlockIdx] + 1;
+            break;
+        case 'warrior':
+            this.winTotals[warriorIdx] = this.winTotals[warriorIdx] + 1;
+            break;
+        default:
+            console.log('Class not found (setWinTotalForClass): ' + cardClass);
     }
 };
 
@@ -120,14 +265,16 @@ var getCardDatasByClass = function(className) {
     return _.where(cards, { class: className });
 };
 
-var getTwoRandomCardsInternal = function(cards) {
+var getTwoRandomCardsInternal = function(cards, className) {
     var sorted;
     // if there are enough cards, make sure all them get matched up more or less evenly
     if (cards.length > 4) {
-        // sort cards so that the most recently updated are last
-        sorted = _.sortBy(cards, 'updated');
-        // then pick randomly from the first third
-        sorted.length = Math.ceil(sorted.length / 3);
+        // sort cards so that the ones with the fewest matchups are first
+        sorted = _.sortBy(cards, function(cardData) {
+            return cardData.totalMatchups + cardData.getMatchupTotalForClass(className);
+        });
+        // only the first quarter
+        sorted.length = Math.ceil(sorted.length / 4);
     } else {
         sorted = cards.slice();
     }
@@ -164,6 +311,10 @@ var initialize = function() {
                 card.updated = dbCard.updated;
                 card.totalMatchups = dbCard.totalMatchups ? dbCard.totalMatchups : 0;
                 card.totalWins = dbCard.totalWins ? dbCard.totalWins : 0;
+                card.matchupTotals = dbCard.matchupTotals && dbCard.matchupTotals.length > 0 ?
+                    dbCard.matchupTotals.slice() : _defaultTotals.slice();
+                card.winTotals = dbCard.winTotals && dbCard.winTotals.length > 0 ?
+                    dbCard.winTotals.slice() : _defaultTotals.slice();
             }
         });
 
@@ -220,7 +371,10 @@ var getFilteredCards = function(includeClasses, includeRarities, manasSkip) {
 
 var getTwoRandomCards = function(includeClasses, includeRarities, manasSkip) {
     var cards = getFilteredCards(includeClasses, includeRarities, manasSkip);
-    var twoCards = getTwoRandomCardsInternal(cards);
+    var className = includeClasses.length === 1 ? includeClasses[0] : _.find(includeClasses, function(className) {
+        return className !== 'neutral';
+    });
+    var twoCards = getTwoRandomCardsInternal(cards, className);
 
     return {
         cardOne: twoCards.cardOne,
@@ -232,20 +386,25 @@ var getTwoRandomCards = function(includeClasses, includeRarities, manasSkip) {
 var saveAllCards = function() {
     _saveCounter = _saveCounter + 1;
 
-    var saveCount = process.env.NODE_ENV === 'production' ? 5 : 1;
-    if (_saveCounter === saveCount) {
+    var saveCount = process.env.NODE_ENV === 'production' ? 10 : 1;
+    if (_saveCounter > saveCount) {
         dbProvider.saveUpdatedCards(_cardDatas);
         _saveCounter = 0;
     }
 };
 
-var setCardRank = function(cardId, rank, cardClass, cardWon) {
-    var card = _cardDatasHash[cardId];
-    if (card) {
-        card.setRankForClass(cardClass, rank);
-        card.totalMatchups = card.totalMatchups + 1;
-        card.totalWins = cardWon ? card.totalWins + 1 : card.totalWins;
-        card.updated = new Date();
+var setCardRank = function(cardId, rank, className, didWin) {
+    var cardData = _cardDatasHash[cardId];
+    if (cardData) {
+        cardData.setRankForClass(className, rank);
+        cardData.setMatchupTotalForClass(className);
+        cardData.totalMatchups = cardData.totalMatchups + 1;
+        cardData.updated = new Date();
+
+        if (didWin) {
+            cardData.setWinTotalForClass(className);
+            cardData.totalWins = cardData.totalWins + 1;
+        }
     }
 };
 

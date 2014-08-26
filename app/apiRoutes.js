@@ -42,7 +42,7 @@ exports.initialize = function(router) {
             data.cardLoserRank && data.milliseconds && data.class) {
             var idWinner = parseInt(data.cardWinnerId);
             var idLoser = parseInt(data.cardLoserId);
-            var cardClass = data.class;
+            var className = data.class;
 
             if (intCheck(idWinner) && intCheck(idLoser)) {
                 var oldWinnerRank = parseFloat(data.cardWinnerRank);
@@ -64,13 +64,13 @@ exports.initialize = function(router) {
                 var winnerExpected = elo.getExpected(oldWinnerRank, oldLoserRank);
                 var loserExpected = elo.getExpected(oldLoserRank, oldWinnerRank);
 
-                var rankWinner = elo.updateRating(winnerExpected, 1, oldWinnerRank);
-                var rankLoser = elo.updateRating(loserExpected, 0, oldLoserRank);
+                var rankWinner = Math.floor(elo.updateRating(winnerExpected, 1, oldWinnerRank));
+                var rankLoser = Math.floor(elo.updateRating(loserExpected, 0, oldLoserRank));
 
-                cardProvider.setCardRank(idWinner, rankWinner, cardClass, true);
-                cardProvider.setCardRank(idLoser, rankLoser, cardClass, false);
+                cardProvider.setCardRank(idWinner, rankWinner, className, true);
+                cardProvider.setCardRank(idLoser, rankLoser, className, false);
                 cardProvider.saveAllCards();
-                dbProvider.saveMatchup(idWinner, idLoser, rankWinner, rankLoser, idWinner, cardClass, milliseconds);
+                dbProvider.saveMatchup(idWinner, idLoser, rankWinner, rankLoser, idWinner, className, milliseconds);
             }
         }
 
@@ -91,8 +91,8 @@ exports.initialize = function(router) {
                     name: cardData.name,
                     class: cardData.class,
                     mana: cardData.mana,
-                    totalMatchups: cardData.totalMatchups,
-                    totalWins: cardData.totalWins,
+                    totalMatchups: cardData.totalMatchups + cardData.getMatchupTotalForClass(),
+                    totalWins: cardData.totalWins + cardData.getWinTotalForClass(),
                     rank: cardData.getRankForClass(),
                     url: cardData.url
                 };
