@@ -30,8 +30,6 @@ function CardData(name, id, cardClass, mana, url, rarity) {
     this.url = url;
     this.rarity = rarity === 'free' ? 'common' : rarity;
     this.ranks = [ 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300 ];
-    this.totalMatchups = 0;
-    this.totalWins = 0;
     this.matchupTotals = _defaultTotals.slice();
     this.winTotals = _defaultTotals.slice();
     this.updated = new Date();
@@ -66,7 +64,7 @@ CardData.prototype.getRankForClass = function(cardClass) {
             console.log('Class not found (getRankForClass): ' + cardClass);
             return null;
     }
-};
+_defaultTotals};
 
 CardData.prototype.getMatchupTotalForClass = function(cardClass) {
     if (!cardClass) {
@@ -271,7 +269,7 @@ var getTwoRandomCardsInternal = function(cards, className) {
     if (cards.length > 4) {
         // sort cards so that the ones with the fewest matchups are first
         sorted = _.sortBy(cards, function(cardData) {
-            return cardData.totalMatchups + cardData.getMatchupTotalForClass(className);
+            return cardData.getMatchupTotalForClass(className);
         });
         // only the first quarter
         sorted.length = Math.ceil(sorted.length / 4);
@@ -309,8 +307,6 @@ var initialize = function() {
             if (card) {
                 card.ranks = dbCard.ranks.slice();
                 card.updated = dbCard.updated;
-                card.totalMatchups = dbCard.totalMatchups ? dbCard.totalMatchups : 0;
-                card.totalWins = dbCard.totalWins ? dbCard.totalWins : 0;
                 card.matchupTotals = dbCard.matchupTotals && dbCard.matchupTotals.length > 0 ?
                     dbCard.matchupTotals.slice() : _defaultTotals.slice();
                 card.winTotals = dbCard.winTotals && dbCard.winTotals.length > 0 ?
@@ -398,12 +394,10 @@ var setCardRank = function(cardId, rank, className, didWin) {
     if (cardData) {
         cardData.setRankForClass(className, rank);
         cardData.setMatchupTotalForClass(className);
-        cardData.totalMatchups = cardData.totalMatchups + 1;
         cardData.updated = new Date();
 
         if (didWin) {
             cardData.setWinTotalForClass(className);
-            cardData.totalWins = cardData.totalWins + 1;
         }
     }
 };

@@ -91,8 +91,8 @@ exports.initialize = function(router) {
                     name: cardData.name,
                     class: cardData.class,
                     mana: cardData.mana,
-                    totalMatchups: cardData.totalMatchups + cardData.getMatchupTotalForClass(),
-                    totalWins: cardData.totalWins + cardData.getWinTotalForClass(),
+                    totalMatchups: cardData.getMatchupTotalForClass(),
+                    totalWins: cardData.getWinTotalForClass(),
                     rank: cardData.getRankForClass(),
                     url: cardData.url
                 };
