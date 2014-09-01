@@ -1,15 +1,15 @@
 'use strict';
 var _ = require('lodash');
 var mongoose = require('mongoose');
-var cardProvider = require('./cardProvider');
 
 var _prodDb;
 var _testDb;
+var _testEnv;
 
 var Card;
 var Matchup;
-var TestCard;
-var TestMatchup;
+var TestCard = null;
+var TestMatchup = null;
 
 var CardObj = function() {
     return {
@@ -41,7 +41,7 @@ var Options = function() {
 var getConnectionString = function(useProductionDb) {
     var connectString;
 
-    if (process.env.NODE_ENV === 'production') {
+    if (!_testEnv) {
         connectString = process.env.DB_CONNECT_URI;
     } else {
         var config = require('./config/config');
@@ -50,18 +50,28 @@ var getConnectionString = function(useProductionDb) {
     return connectString;
 };
 
+var getCard = function(cardId) {
+    return _testEnv ?
+        TestCard.findOne({ id: cardId }).exec() :
+        Card.findOne({ id: cardId }).exec();
+};
+
 // PUBLIC
 var initialize = function() {
+    _testEnv = process.env.NODE_ENV !== 'production';
     var promise = new mongoose.Promise;
 
     var prodCon = getConnectionString(true);
     _prodDb = mongoose.createConnection(prodCon, new Options());
 
     _prodDb.once('open', function() {
+        Card = _prodDb.model('Card', mongoose.Schema(new CardObj()));
+        Matchup = _prodDb.model('Matchup', mongoose.Schema(new MatchupObj()));
+
         console.log('Connected to ' + _prodDb.name);
-        if (process.env.NODE_ENV === 'production') {
+        if (!_testEnv) {
             promise.fulfill();
-        } else if (_testDb._hasOpened) {
+        } else if (_testDb && _testDb._hasOpened) {
                 promise.fulfill();
         }
     });
@@ -70,41 +80,36 @@ var initialize = function() {
         console.log('Error onnecting to ' + _prodDb.name + ': ' + err);
     });
 
-    mongoose.connection.on('disconnected', function () {
-        console.log('Mongoose connection to ' + mongoose.connection.name + ' disconnected');
+    _prodDb.on('disconnected', function () {
+        console.log('Mongoose connection to ' + _prodDb.name + ' disconnected');
     });
 
-    Card = _prodDb.model('Card', mongoose.Schema(new CardObj()));
-    Matchup = _prodDb.model('Matchup', mongoose.Schema(new MatchupObj()));
-
-    if (process.env.NODE_ENV !== 'production') {
+    if (_testEnv) {
         var testCon = getConnectionString(false);
         _testDb = mongoose.createConnection(testCon, new Options());
 
-        TestCard = _testDb.model('TestCard', mongoose.Schema(new CardObj()));
-        TestMatchup = _testDb.model('TestMatchup', mongoose.Schema(new MatchupObj()));
-
         _testDb.once('open', function() {
+            TestCard = _testDb.model('TestCard', mongoose.Schema(new CardObj()));
+            TestMatchup = _testDb.model('TestMatchup', mongoose.Schema(new MatchupObj()));
+
             console.log('Connected to ' + _testDb.name);
-            if (_prodDb._hasOpened) {
+            if (_prodDb && _prodDb._hasOpened) {
                 promise.fulfill();
             }
         });
 
         _testDb.on('error', function (err) {
-            console.log('Error onnecting to ' + _prodDb.name + ': ' + err);
+            console.log('Error onnecting to ' + _testDb.name + ': ' + err);
         });
     }
 
     return promise;
 };
 
-var getCard = function(cardId) {
-    return Card.findOne({ id: cardId }).exec();
-};
-
 var getCardsByIds = function(cardIds) {
-    return Card.where('id').in(cardIds).exec();
+    return _testEnv ?
+        TestCard.where('id').in(cardIds).exec() :
+        Card.where('id').in(cardIds).exec();
 };
 
 var saveMatchup = function(cardWinnerId, cardLoserId, cardWinnerRank, cardLOserRank, winnerId, cardClass, milliseconds) {
@@ -121,7 +126,8 @@ var saveMatchup = function(cardWinnerId, cardLoserId, cardWinnerRank, cardLOserR
         rank1 = cardLOserRank;
         rank2 = cardWinnerRank;
     }
-    var matchup = new Matchup({
+
+    var matchupObj = {
         cardOneId: id1,
         cardTwoId: id2,
         cardOneRank: rank1,
@@ -130,7 +136,9 @@ var saveMatchup = function(cardWinnerId, cardLoserId, cardWinnerRank, cardLOserR
         class: cardClass,
         secondsToDecide: (milliseconds / 1000),
         created: new Date()
-    });
+    };
+
+    var matchup = _testEnv ? new TestMatchup(matchupObj) : new Matchup(matchupObj);
     matchup.save();
 };
 
@@ -138,13 +146,14 @@ var saveUpdatedCards = function(cardDatas) {
     _.forEach(cardDatas, function(cardData) {
         getCard(cardData.id).then(function(dbCard) {
             if (!dbCard) {
-                dbCard = new Card({
+                var cardObj = {
                     id: cardData.id,
                     ranks: cardData.ranks.slice(),
                     updated: new Date(),
                     matchupTotals: cardData.matchupTotals.slice(),
                     winTotals: cardData.winTotals.slice()
-                });
+                };
+                dbCard = _testEnv ? new TestCard(cardObj) : new Card(cardObj);
             } else if (cardData.updated > dbCard.updated) {
                 dbCard.ranks = cardData.ranks.slice();
                 dbCard.updated = cardData.updated;
@@ -160,198 +169,190 @@ var saveUpdatedCards = function(cardDatas) {
 
 var getTotalMatchups = function() {
     var promise = new mongoose.Promise;
-    Matchup.count({ }, function(err, c)
-    {
-        promise.fulfill(c);
-    });
+    if (_testEnv) {
+        TestMatchup.count({ }, function(err, c)
+        {
+            promise.fulfill(c);
+        });
+    } else {
+        Matchup.count({ }, function(err, c)
+        {
+            promise.fulfill(c);
+        });
+    }
     return promise;
 };
 
 var shutDown = function() {
     var promise = new mongoose.Promise;
-    mongoose.connection.close(function () {
-        console.log('Mongoose default connection with DB :' + mongoose.connection.name + ' is disconnected through app termination');
+    _prodDb.close(function () {
+        console.log('Mongoose default connection with DB :' + _prodDb.name + ' is disconnected through app termination');
         promise.fulfill();
     });
+    if (_testEnv) {
+        _testDb.close(function () {
+            console.log('Mongoose default connection with DB :' + _testDb.name + ' is disconnected through app termination');
+            promise.fulfill();
+        });
+    }
     return promise;
 };
 
 var deleteCards = function() {
-    Card.remove({}, function(err) {
-        if (err) {
-            console.log('error removing card collection:' + err.message);
-        } else {
-            console.log('card collection removed');
-        }
-    }).exec();
+    if (_testEnv) {
+        TestCard.remove({}, function(err) {
+            if (err) {
+                console.log('error removing card collection:' + err.message);
+            } else {
+                console.log('card collection removed');
+            }
+        }).exec();
+    } else {
+        Card.remove({}, function(err) {
+            if (err) {
+                console.log('error removing card collection:' + err.message);
+            } else {
+                console.log('card collection removed');
+            }
+        }).exec();
+    }
 };
 
 var deleteMatchups = function() {
-    Matchup.remove({}, function(err) {
-        if (err) {
-            console.log('error removing matchup collection:' + err.message);
-        } else {
-            console.log('matchup collection removed');
-        }
-    }).exec();
+    if (_testEnv) {
+        TestMatchup.remove({}, function(err) {
+            if (err) {
+                console.log('error removing matchup collection:' + err.message);
+            } else {
+                console.log('matchup collection removed');
+            }
+        }).exec();
+    } else {
+        Matchup.remove({}, function(err) {
+            if (err) {
+                console.log('error removing matchup collection:' + err.message);
+            } else {
+                console.log('matchup collection removed');
+            }
+        }).exec();
+    }
 };
 
 var backupProdDb = function() {
-    // clear documents from test database collections
-//    TestMatchup.remove({}, function(err) {
-//        if (err) {
-//            console.log('error removing matchup collection:' + err.message);
-//        } else {
-//            console.log('matchup collection removed');
-//        }
-//    }).exec();
-
-//    TestCard.remove({}, function(err) {
-//        if (err) {
-//            console.log('error removing matchup collection:' + err.message);
-//        } else {
-//            console.log('matchup collection removed');
-//        }
-//    }).exec();
-
-    // backup cards from production to test
-//    Card.find({}, function(err, dbCards) {
-//        _.forEach(dbCards, function(dbCard) {
-//            var dbTestCard = new TestCard({
-//                id: dbCard.id,
-//                ranks: dbCard.ranks.slice(),
-//                updated: new Date(),
-//                matchupTotals: dbCard.matchupTotals.slice(),
-//                winTotals: dbCard.winTotals.slice()
-//            });
-//            dbTestCard.save();
-//        });
-//    });
-
-    // backup matchups from production to test
+    var cardProvider = require('./cardProvider');
+    // set total matchups and wins on cards from saved matchups
 //    Matchup.find({}, function(err, dbMatchups) {
-//        _.forEach(dbMatchups, function(dbMatchup) {
-//            var testDbMatchup = new TestMatchup({
-//                cardOneId: dbMatchup.cardOneId,
-//                cardTwoId: dbMatchup.cardTwoId,
-//                cardOneRank: dbMatchup.cardOneRank,
-//                cardTwoRank: dbMatchup.cardTwoRank,
-//                winnerId: dbMatchup.winnerId,
-//                class: dbMatchup.class,
-//                secondsToDecide: dbMatchup.secondsToDecide,
-//                created: dbMatchup.created
+//        Card.find({}, function(err, dbCards) {
+//            _.forEach(dbCards, function(dbCard) {
+//                dbCard.matchupTotals = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+//                dbCard.winTotals = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+//                var cardMatchups = _.where(dbMatchups, function(dbMatchup) {
+//                    return dbMatchup.cardOneId === dbCard.id || dbMatchup.cardTwoId === dbCard.id;
+//                });
+//                var matchupGroups = _.groupBy(cardMatchups, 'class');
+//                var keys = Object.keys(matchupGroups);
+//                _.forEach(keys, function(key) {
+//                    var group;
+//                    switch (key) {
+//                        case 'neutral':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.neutralIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.neutralIdx] = group.length;
+//                            break;
+//                        case 'druid':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.druidIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.druidIdx] = group.length;
+//                            break;
+//                        case 'hunter':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.hunterIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.hunterIdx] = group.length;
+//                            break;
+//                        case 'mage':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.mageIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.mageIdx] = group.length;
+//                            break;
+//                        case 'paladin':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.paladinIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.paladinIdx] = group.length;
+//                            break;
+//                        case 'priest':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.priestIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.priestIdx] = group.length;
+//                            break;
+//                        case 'rogue':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.rogueIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.rogueIdx] = group.length;
+//                            break;
+//                        case 'shaman':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.shamanIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.shamanIdx] = group.length;
+//                            break;
+//                        case 'warlock':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.warlockIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.warlockIdx] = group.length;
+//                            break;
+//                        case 'warrior':
+//                            group = matchupGroups[key];
+//                            dbCard.winTotals[cardProvider.warriorIdx] = _.filter(group, function(matchup) {
+//                                return matchup.winnerId === dbCard.id;
+//                            }).length;
+//                            dbCard.matchupTotals[cardProvider.warriorIdx] = group.length;
+//                            break;
+//                        default:
+//                            console.log('Class not found (getRankForClass): ' + key);
+//                            return null;
+//                    }
+//                });
+//                dbCard.updated = new Date();
+//                dbCard.save();
+//                console.log(dbCard.id);
 //            });
-//            testDbMatchup.save();
 //        });
 //    });
+};
 
-    Card.findOne({id: 374}, function(err, dbCard) {
-        console.log();
-    });
-
-    Matchup.find({}, function(err, dbMatchups) {
-        Card.find({}, function(err, dbCards) {
-            _.forEach(dbCards, function(dbCard) {
-                dbCard.matchupTotals = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
-                dbCard.winTotals = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
-                var cardMatchups = _.where(dbMatchups, function(dbMatchup) {
-                    return dbMatchup.cardOneId === dbCard.id || dbMatchup.cardTwoId === dbCard.id;
-                });
-                var matchupGroups = _.groupBy(cardMatchups, 'class');
-                var keys = Object.keys(matchupGroups);
-                _.forEach(keys, function(key) {
-                    var group;
-                    switch (key) {
-                        case 'neutral':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.neutralIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.neutralIdx] = group.length;
-                            break;
-                        case 'druid':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.druidIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.druidIdx] = group.length;
-                            break;
-                        case 'hunter':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.hunterIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.hunterIdx] = group.length;
-                            break;
-                        case 'mage':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.mageIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.mageIdx] = group.length;
-                            break;
-                        case 'paladin':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.paladinIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.paladinIdx] = group.length;
-                            break;
-                        case 'priest':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.priestIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.priestIdx] = group.length;
-                            break;
-                        case 'rogue':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.rogueIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.rogueIdx] = group.length;
-                            break;
-                        case 'shaman':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.shamanIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.shamanIdx] = group.length;
-                            break;
-                        case 'warlock':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.warlockIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.warlockIdx] = group.length;
-                            break;
-                        case 'warrior':
-                            group = matchupGroups[key];
-                            dbCard.winTotals[cardProvider.warriorIdx] = _.filter(group, function(matchup) {
-                                return matchup.winnerId === dbCard.id;
-                            }).length;
-                            dbCard.matchupTotals[cardProvider.warriorIdx] = group.length;
-                            break;
-                        default:
-                            console.log('Class not found (getRankForClass): ' + key);
-                            return null;
-                    }
-                });
-                dbCard.updated = new Date();
-                dbCard.save();
-                console.log(dbCard.id);
-            });
-        });
-    });
+var getDbModels = function() {
+    return {
+        Card: Card,
+        Matchup: Matchup,
+        TestCard: TestCard,
+        TestMatchup: TestMatchup
+    };
 };
 
 exports.initialize = initialize;
 exports.backupProdDb = backupProdDb;
 exports.deleteCards = deleteCards;
 exports.deleteMatchups = deleteMatchups;
-exports.getCard = getCard;
 exports.getCardsByIds = getCardsByIds;
 exports.getTotalMatchups = getTotalMatchups;
 exports.saveMatchup = saveMatchup;
 exports.saveUpdatedCards = saveUpdatedCards;
 exports.shutDown = shutDown;
+exports.getDbModels = getDbModels;

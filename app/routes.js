@@ -3,8 +3,12 @@ var path = require('path');
 var cardProvider = require('../cardProvider');
 
 exports.initialize = function(router) {
+    router.get('/stats/', function(req, res) {
+        res.sendfile(path.join(__dirname, '../public/stats.html'));
+    });
+
     router.get('/results/', function(req, res) {
-        res.sendfile(path.join(__dirname, '../public/results.html'));
+        res.sendfile(path.join(__dirname, '../public/stats.html'));
     });
 
     router.get('/classrank/:class/', function(req, res) {

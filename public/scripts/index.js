@@ -54,32 +54,28 @@ var viewModel = (function() {
             'http://media-hearth.cursecdn.com/avatars/80/377/635.png', false)
     ];
 
-    var _rarityNames = [
-        'Common',
-        'Rare',
-        'Epic',
-        'Legendary'
-    ];
-
-    var _rarityDatas = _.map(_rarityNames, function(name) {
-        return new FilterData(name.toLocaleLowerCase(), name, '', true);
-    });
-
-    var _scoreKey = 'score';
-    var _lastManas = [];
-    var _currentMana = 0;
+    var _totalPicksKey = 'totalpicks';
+    var _totalWinsKey = 'totalwins';
+    var _avgPickTimeKey = 'averagepicktime';
+    var _cardHistory = [];
+    var _maxCardHistory = 20;
     var _currentMatchupClass = '';
+    var _matchupStartTime;
+    var _summaryCountdown = 4 + Math.floor(Math.random() * 3);
 
     var _heroData = ko.observable('');
-    var _score = ko.observable(0);
+    var _totalPicks = ko.observable(0);
+    var _totalWins = ko.observable(0);
     var _matchupText = ko.observable('');
     var _matchupSubtext = ko.observable('');
     var _cardOneData = ko.observable({});
     var _cardTwoData = ko.observable({});
-    var _matchupStartTime;
-    
+    var _avgPickTime = ko.observable(0);
+    var _showSummary = ko.observable(false);
+    var _hideCards = ko.observable(false);
+
     var userRank = ko.computed(function() {
-        var localScore = _score();
+        var localScore = _totalPicks();
         var localRank;
         
         if (localScore < 10) {
@@ -101,13 +97,39 @@ var viewModel = (function() {
         showHeroImage();
         newMatchup();
     };
-    
-    var cardOneClick = function() {
-        processMatchup(_cardOneData(), _cardTwoData());
-    };
-    
-    var cardTwoClick = function() {
-        processMatchup(_cardTwoData(), _cardOneData());
+
+    var loadSettings = function() {
+        if (Modernizr.localstorage) {
+            var avgPickTime = parseInt(localStorage[_avgPickTimeKey], 10);
+            if (!isNaN(avgPickTime)) {
+                _avgPickTime(avgPickTime);
+            }
+
+            var totalPicks = parseInt(localStorage[_totalPicksKey], 10);
+            if (!isNaN(totalPicks)) {
+                _totalPicks(totalPicks);
+            }
+
+            var totalWins = parseInt(localStorage[_totalWinsKey], 10);
+            if (!isNaN(totalWins)) {
+                _totalWins(totalWins);
+            }
+
+            // class filter button are off by default
+            _.forEach(_classDatas, function(classData) {
+                classData.loadSettings();
+            });
+
+            // make sure that one class filter button is active
+            if (_.all(_classDatas, function(classData) {
+                return !classData.isActive();
+            })) {
+                var first = _.find(_classDatas);
+                if (first) {
+                    first.setActive(true);
+                }
+            }
+        }
     };
 
     var showHeroImage = function() {
@@ -149,77 +171,59 @@ var viewModel = (function() {
             }
         }
 
-        // process clicks from rarity filter buttons
-        // make sure at least one is on at all times
-        var clickedRarityData = _.find(_rarityDatas, function(rarityData) {
-            return rarityData.name === filterData.name;
-        });
-
-        if (clickedRarityData) {
-            clickedRarityData.setActive(!clickedRarityData.isActive());
-
-            if (_.all(_rarityDatas, function(rarityData) { return !rarityData.isActive(); })) {
-                clickedRarityData.setActive(true);
-            }
-        }
-
-        var activeClasses = _.filter(_classDatas, function(heroData) {
-            return heroData.isActive();
-        });
-
-        // if only one hero class is selected, make sure all the rarities are selected
-        // otherwise, there aren't enough cards of the same mana to compare
-        if (activeClasses.length === 1 && !activeClasses[0].isNeutralOrCommon()) {
-            _.forEach(_rarityDatas, function(rarityData) {
-                rarityData.setActive(true);
-            });
-        }
-
         showHeroImage();
         clearMatchup();
         newMatchup();
     };
+
+    var cardOneClick = function() {
+        processMatchup(_cardOneData(), _cardTwoData());
+        checkForSummary();
+    };
     
-    var loadSettings = function() {
-        if (Modernizr.localstorage) {
-            var localScore = parseInt(localStorage[_scoreKey], 10);
-            if (!isNaN(localScore)) {
-                _score(localScore);
-            }
+    var cardTwoClick = function() {
+        processMatchup(_cardTwoData(), _cardOneData());
+        checkForSummary();
+    };
 
-            // class filter button are off by default
-            _.forEach(_classDatas, function(classData) {
-                classData.loadSettings();
-            });
+    var summaryClick = function() {
+        newMatchup();
+    };
 
-            // rarity filter buttons are on by default
-            _.forEach(_rarityDatas, function(rarityData) {
-                rarityData.loadSettings();
-            });
-
-            // make sure that one class filter button is active
-            if (_.all(_classDatas, function(classData) {
-                return !classData.isActive();
-            })) {
-                var first = _.find(_classDatas);
-                if (first) {
-                    first.setActive(true);
-                }
-            }
+    var checkForSummary = function() {
+        _summaryCountdown = _summaryCountdown - 1;
+        if (_summaryCountdown === 0) {
+            _summaryCountdown = 8 + Math.floor(Math.random() * 5);
+            _hideCards(true);
+            _showSummary(true);
+            _matchupText('');
+        } else {
+            setTimeout(function() {
+                newMatchup();
+            }, 1000);
         }
     };
 
-    // changing to just keep track of cards ranked for now
-    var setScore = function(pickedBest) {
-        var currentScore = _score();
+    var updateSummaryInfo = function(pickedBest, decisionTime) {
+        var picks = _totalPicks();
+        _totalPicks(picks + 1);
+
+        var wins = _totalWins();
         if (pickedBest) {
-            _score(currentScore + 1);
-        } else if (currentScore > 0) {
-            _score(currentScore - 1);
+            _totalWins(wins + 1);
+        }
+
+        var avgPickTime = _avgPickTime();
+        if (avgPickTime === 0) {
+            _avgPickTime(decisionTime);
+        } else {
+            _avgPickTime((avgPickTime + decisionTime) / 2);
         }
 
         if (Modernizr.localstorage) {
-            localStorage[_scoreKey] = _score();
+            localStorage[_totalPicksKey] = _totalPicks();
+            localStorage[_totalWinsKey] = _totalWins();
+            localStorage[_avgPickTimeKey] = _avgPickTime();
         }
     };
 
@@ -240,25 +244,15 @@ var viewModel = (function() {
             _matchupSubtext('(piece of cake)');
         }
 
-        _matchupText('Choose wisely');
+        _matchupText('');
     };
 
     var clearMatchup = function() {
-        _cardOneData({});
-        _cardTwoData({});
-        _matchupSubtext('...');
+        _hideCards(true);
+        _matchupSubtext('');
     };
 
     var newMatchup = function() {
-        var rarities = _.chain(_rarityDatas)
-            .filter(function(rarityData) {
-                return rarityData.isActive();
-            })
-            .map(function(rarityData) {
-                return rarityData.name;
-            })
-            .value();
-
         var classes = _.chain(_classDatas)
             .filter(function(classData) {
                 return classData.isActive();
@@ -268,22 +262,24 @@ var viewModel = (function() {
             })
             .value();
 
+        _cardOneData({ url: ''});
+        _cardTwoData({ url: ''});
+
         var sendData = {
-            manasSkip: _lastManas,
-            manaSkip: _currentMana,
-            rarities: rarities,
+            cardHistory: _cardHistory,
             classes: classes
-            };
+        };
 
         $.post('/api/newmatchup/', sendData, function(data) {
+            setMatchupText(data.cardOne, data.cardTwo);
             setImageUrl(data.cardOne, 'original');
             setImageUrl(data.cardTwo, 'original');
             _cardOneData(data.cardOne);
             _cardTwoData(data.cardTwo);
-            _currentMana = data.mana;
             _currentMatchupClass = data.class;
-            setMatchupText(data.cardOne, data.cardTwo);
             _matchupStartTime = new Date().getTime();
+            _hideCards(false);
+            _showSummary(false);
         });
     };
 
@@ -294,14 +290,15 @@ var viewModel = (function() {
         var unpickedRank = unpickedCard.currentRank;
         var pickedBest = pickedRank >= unpickedRank;
 
-        if (_lastManas.length === 5) {
-            _lastManas.pop(_currentMana);
+        if (_cardHistory.length === _maxCardHistory) {
+            _cardHistory.length = _maxCardHistory - 2;
         }
 
-        _lastManas.unshift(_currentMana);
+        _cardHistory.unshift(pickedCard.id);
+        _cardHistory.unshift(unpickedCard.id);
 
         _matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
-        setScore(pickedBest);
+        updateSummaryInfo(pickedBest, decisionTime);
         clearMatchup();
 
         var sendData = {
@@ -314,31 +311,32 @@ var viewModel = (function() {
         };
 
         $.post('/api/savematchup/', sendData, function() {
-            setTimeout(function() {
-                newMatchup();
-            }, 1000);
         });
     };
 
     return {
+        initialize: initialize,
         filterButtonClick: filterButtonClick,
-        cardOneData: _cardOneData,
-        cardTwoData: _cardTwoData,
+        summaryClick: summaryClick,
         cardOneClick: cardOneClick,
         cardTwoClick: cardTwoClick,
+        cardOneData: _cardOneData,
+        cardTwoData: _cardTwoData,
         matchupText: _matchupText,
         matchupSubtext: _matchupSubtext,
-        initialize: initialize,
-        score: _score,
+        totalPicks: _totalPicks,
+        totalWins: _totalWins,
         rank: userRank,
         classes: _classDatas,
-        rarities: _rarityDatas,
-        heroData: _heroData
+        heroData: _heroData,
+        averagePickTime: _avgPickTime,
+        showSummary: _showSummary,
+        hideCards: _hideCards
     };
 }());
 
 $(document).ready(function() {
-//    localStorage.clear();
+    //    localStorage.clear();
     viewModel.initialize();
     ko.applyBindings(viewModel);
 });

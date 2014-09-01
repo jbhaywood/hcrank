@@ -7,10 +7,10 @@ var dbProvider = require('../dbProvider');
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
         var data = req.body;
-        var manasSkip = _.map(data.manasSkip, function(str) {
-            return parseInt(str, 10);
-        });
-        var cardData = cardProvider.getTwoRandomCards(data.classes, data.rarities, manasSkip);
+        var cardHistory = _.map(data.cardHistory, function(id) {
+            return parseInt(id, 10);
+        }) || [];
+        var cardData = cardProvider.getTwoRandomCards(data.classes, cardHistory);
         var cardClass = data.classes.length === 1 ? data.classes[0] : _.find(data.classes, function(cardClass) {
             return cardClass !== 'neutral';
         });
@@ -25,7 +25,6 @@ exports.initialize = function(router) {
                 url: cardData.cardTwo.url,
                 currentRank: cardData.cardTwo.getRankForClass(cardClass)
             },
-            mana: cardData.mana,
             class: cardClass
         };
         res.send(sendData);

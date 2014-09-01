@@ -23,8 +23,8 @@ var viewModel = (function() {
                     columns: [
                         { data: 'name', title: 'Name' },
                         { data: 'rank', title: 'Rank' },
-                        { data: 'totalMatchups', title: 'Total Matchups' },
-                        { data: 'totalWins', title: 'Total Wins' },
+                        { data: 'totalMatchups', title: 'Total Matchups', visible: false },
+                        { data: 'totalWins', title: 'Total Wins', visible: false },
                         { render: function(data, type, row, meta)
                             {
                                 return (row.totalMatchups ? (row.totalWins / row.totalMatchups * 100).toFixed(2) : 0) + '%';

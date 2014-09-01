@@ -64,7 +64,7 @@ CardData.prototype.getRankForClass = function(cardClass) {
             console.log('Class not found (getRankForClass): ' + cardClass);
             return null;
     }
-_defaultTotals};
+};
 
 CardData.prototype.getMatchupTotalForClass = function(cardClass) {
     if (!cardClass) {
@@ -326,56 +326,84 @@ var initialize = function() {
     return deferred.promise;
 };
 
-var getFilteredCards = function(includeClasses, includeRarities, manasSkip) {
+var getFilteredCards = function(includeClasses) {
     var randomInd;
     var randomMana;
-    var numLoops = 0;
 
     var cards = _.filter(_cardDatas, function(card) {
-        return (_.contains(includeClasses, card.class) && _.contains(includeRarities, card.rarity));
+        return (_.contains(includeClasses, card.class));
     });
 
-    // skew the randomMana result towards the more common mana values
-    var manaVals = _.pluck(cards, 'mana');
+    // pick cards either by rarity or mana
+    var pickByMana = Math.random() < 0.5;
 
-    do {
+    if (pickByMana) {
+        // skew the randomMana result towards the more common mana values
+        var manaVals = _.pluck(cards, 'mana');
         randomInd = Math.floor(Math.random() * manaVals.length);
         randomMana = manaVals[randomInd];
-        numLoops = numLoops + 1;
-    } while ( numLoops < 50 && _.contains(manasSkip, randomMana) );
 
-    // group all mana cost cards greater than 10 with the 10 cards
-    // and any zero cost cards with the one mana cards
-    if (randomMana > 10) {
-        randomMana = 10;
-    } else if (randomMana < 1) {
-        randomMana = 1;
+        // group all mana cost cards greater than 10 with the 10 cards
+        // and any zero cost cards with the one mana cards
+        if (randomMana > 10) {
+            randomMana = 10;
+        } else if (randomMana < 1) {
+            randomMana = 1;
+        }
+
+        cards = _.filter(cards, function(card) {
+            return ((randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
+                (randomMana >= 10 && card.mana >= 10) ||
+                (randomMana <= 1 && card.mana <= 1));
+        });
+    } else {
+        var rarities = [1,1,1,1,2,2,2,3,3,4];
+        var randomRarity = Math.floor(Math.random() * rarities.length);
+        var rarity;
+        switch (randomRarity) {
+            case 1:
+                rarity = 'common';
+                break;
+            case 2:
+                rarity = 'rare';
+                break;
+            case 3:
+                rarity = 'epic';
+                break;
+            case 4:
+                rarity = 'legendary';
+                break;
+        }
+
+        cards = _.filter(cards, function(card) {
+            return (card.rarity === rarity);
+        });
     }
 
-    cards = _.filter(cards, function(card) {
-        return ((randomMana > 1 && randomMana < 10 && card.mana === randomMana) ||
-            (randomMana >= 10 && card.mana >= 10) ||
-            (randomMana <= 1 && card.mana <= 1));
-    });
-
     if (cards.length < 2) {
-        return getFilteredCards(includeClasses, includeRarities, manasSkip);
+        return getFilteredCards(includeClasses);
     } else {
         return cards;
     }
 };
 
-var getTwoRandomCards = function(includeClasses, includeRarities, manasSkip) {
-    var cards = getFilteredCards(includeClasses, includeRarities, manasSkip);
+var getTwoRandomCards = function(includeClasses, cardHistory) {
     var className = includeClasses.length === 1 ? includeClasses[0] : _.find(includeClasses, function(className) {
         return className !== 'neutral';
     });
+
+    var cards = getFilteredCards(includeClasses, cardHistory);
     var twoCards = getTwoRandomCardsInternal(cards, className);
+
+    var numLoops = 0;
+    while (numLoops < 20 && (_.contains(cardHistory, twoCards.cardOne.id) || _.contains(cardHistory, twoCards.cardTwo.id))) {
+        numLoops = numLoops + 1;
+        twoCards = getTwoRandomCards(includeClasses, cardHistory);
+    }
 
     return {
         cardOne: twoCards.cardOne,
-        cardTwo: twoCards.cardTwo,
-        mana: twoCards.cardOne.mana
+        cardTwo: twoCards.cardTwo
     };
 };
 
