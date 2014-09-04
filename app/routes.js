@@ -7,6 +7,10 @@ exports.initialize = function(router) {
         res.sendfile(path.join(__dirname, '../public/stats.html'));
     });
 
+    router.get('/statsall/', function(req, res) {
+        res.sendfile(path.join(__dirname, '../public/stats.html'));
+    });
+
     router.get('/results/', function(req, res) {
         res.sendfile(path.join(__dirname, '../public/stats.html'));
     });

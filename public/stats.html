@@ -5,6 +5,7 @@
 	<title>HearthCrowdRank Results</title>
 	<link rel="stylesheet" href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css">
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -17,7 +18,11 @@
 		<p>
 			Choose Class:
 		</p>
-		<select data-bind="options: classes, value: selectedClass, event: { change: update }"></select>
+		<div class="btn-group-horizontal btn-block" data-bind="foreach: classes">
+			<button type="button" class="btn btn-default" data-bind="text: displayName,
+					css: { 'btn-success': isActive },
+					click: function() { $root.filterButtonClick($data) }"></button>
+		</div>
 		<table id="table_id" class="display"></table>
 	</div>
 	<!-- Start of StatCounter Code for Default Guide -->

@@ -259,22 +259,22 @@ var getCardDatas = function() {
 };
 
 var getCardDatasByClass = function(className) {
-    var cards = getCardDatas();
-    return _.where(cards, { class: className });
+    var cardDatas = getCardDatas();
+    return _.where(cardDatas, { class: className });
 };
 
-var getTwoRandomCardsInternal = function(cards, className) {
+var getTwoRandomCardsInternal = function(cardDatas, className) {
     var sorted;
     // if there are enough cards, make sure all them get matched up more or less evenly
-    if (cards.length > 4) {
+    if (cardDatas.length > 4) {
         // sort cards so that the ones with the fewest matchups are first
-        sorted = _.sortBy(cards, function(cardData) {
+        sorted = _.sortBy(cardDatas, function(cardData) {
             return cardData.getMatchupTotalForClass(className);
         });
         // only the first quarter
         sorted.length = Math.ceil(sorted.length / 4);
     } else {
-        sorted = cards.slice();
+        sorted = cardDatas.slice();
     }
 
     var indOne = Math.floor(Math.random() * sorted.length);
@@ -297,25 +297,25 @@ var getTwoRandomCardsInternal = function(cards, className) {
 
 var initialize = function() {
     var deferred = Q.defer();
-    var cards = getCardDatas();
+    var cardDatas = getCardDatas();
 
     // add rankings to cards
-    var ids = _.pluck(cards, 'id');
+    var ids = _.pluck(cardDatas, 'id');
     dbProvider.getCardsByIds(ids).then(function(dbCards) {
         _.forEach(dbCards, function(dbCard) {
-            var card = _.find(cards, { id: dbCard.id });
-            if (card) {
-                card.ranks = dbCard.ranks.slice();
-                card.updated = dbCard.updated;
-                card.matchupTotals = dbCard.matchupTotals && dbCard.matchupTotals.length > 0 ?
+            var cardData = _.find(cardDatas, { id: dbCard.id });
+            if (cardData) {
+                cardData.ranks = dbCard.ranks.slice();
+                cardData.updated = dbCard.updated;
+                cardData.matchupTotals = dbCard.matchupTotals && dbCard.matchupTotals.length > 0 ?
                     dbCard.matchupTotals.slice() : _defaultTotals.slice();
-                card.winTotals = dbCard.winTotals && dbCard.winTotals.length > 0 ?
+                cardData.winTotals = dbCard.winTotals && dbCard.winTotals.length > 0 ?
                     dbCard.winTotals.slice() : _defaultTotals.slice();
             }
         });
 
-        _.forEach(cards, function(card) {
-            _cardDatasHash[card.id] = card;
+        _.forEach(cardDatas, function(cardData) {
+            _cardDatasHash[cardData.id] = cardData;
         });
 
         deferred.resolve();

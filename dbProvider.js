@@ -238,105 +238,6 @@ var deleteMatchups = function() {
     }
 };
 
-var backupProdDb = function() {
-    var cardProvider = require('./cardProvider');
-    // set total matchups and wins on cards from saved matchups
-//    Matchup.find({}, function(err, dbMatchups) {
-//        Card.find({}, function(err, dbCards) {
-//            _.forEach(dbCards, function(dbCard) {
-//                dbCard.matchupTotals = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
-//                dbCard.winTotals = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
-//                var cardMatchups = _.where(dbMatchups, function(dbMatchup) {
-//                    return dbMatchup.cardOneId === dbCard.id || dbMatchup.cardTwoId === dbCard.id;
-//                });
-//                var matchupGroups = _.groupBy(cardMatchups, 'class');
-//                var keys = Object.keys(matchupGroups);
-//                _.forEach(keys, function(key) {
-//                    var group;
-//                    switch (key) {
-//                        case 'neutral':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.neutralIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.neutralIdx] = group.length;
-//                            break;
-//                        case 'druid':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.druidIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.druidIdx] = group.length;
-//                            break;
-//                        case 'hunter':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.hunterIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.hunterIdx] = group.length;
-//                            break;
-//                        case 'mage':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.mageIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.mageIdx] = group.length;
-//                            break;
-//                        case 'paladin':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.paladinIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.paladinIdx] = group.length;
-//                            break;
-//                        case 'priest':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.priestIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.priestIdx] = group.length;
-//                            break;
-//                        case 'rogue':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.rogueIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.rogueIdx] = group.length;
-//                            break;
-//                        case 'shaman':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.shamanIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.shamanIdx] = group.length;
-//                            break;
-//                        case 'warlock':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.warlockIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.warlockIdx] = group.length;
-//                            break;
-//                        case 'warrior':
-//                            group = matchupGroups[key];
-//                            dbCard.winTotals[cardProvider.warriorIdx] = _.filter(group, function(matchup) {
-//                                return matchup.winnerId === dbCard.id;
-//                            }).length;
-//                            dbCard.matchupTotals[cardProvider.warriorIdx] = group.length;
-//                            break;
-//                        default:
-//                            console.log('Class not found (getRankForClass): ' + key);
-//                            return null;
-//                    }
-//                });
-//                dbCard.updated = new Date();
-//                dbCard.save();
-//                console.log(dbCard.id);
-//            });
-//        });
-//    });
-};
-
 var getDbModels = function() {
     return {
         Card: Card,
@@ -347,7 +248,6 @@ var getDbModels = function() {
 };
 
 exports.initialize = initialize;
-exports.backupProdDb = backupProdDb;
 exports.deleteCards = deleteCards;
 exports.deleteMatchups = deleteMatchups;
 exports.getCardsByIds = getCardsByIds;
