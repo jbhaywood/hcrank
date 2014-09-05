@@ -5,6 +5,7 @@
 	<title>HearthCrowdRank Results</title>
 	<link rel="stylesheet" href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css">
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
@@ -14,11 +15,15 @@
 </head>
 <body>
 	<div class="container">
-		<div style="height: 10px"></div>
-		<p>
-			Choose Class:
-		</p>
+		<div class="vertical-spacer"></div>
+		<p>Class:</p>
 		<div class="btn-group-horizontal btn-block" data-bind="foreach: classes">
+			<button type="button" class="btn btn-default" data-bind="text: displayName,
+					css: { 'btn-success': isActive },
+					click: function() { $root.filterButtonClick($data) }"></button>
+		</div>
+		<p>Rarity:</p>
+		<div class="btn-group-horizontal btn-block" data-bind="foreach: rarities">
 			<button type="button" class="btn btn-default" data-bind="text: displayName,
 					css: { 'btn-success': isActive },
 					click: function() { $root.filterButtonClick($data) }"></button>

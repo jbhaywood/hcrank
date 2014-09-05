@@ -21,8 +21,19 @@ var viewModel = (function() {
         new FilterData('warrior', 'Garrosh', false)
     ];
 
+    var _rarityDatas = [
+        new FilterData('all', 'All', true),
+        new FilterData('common', 'Common', false),
+        new FilterData('rare', 'Rare', false),
+        new FilterData('epic', 'Epic', false),
+        new FilterData('legendary', 'Lengendary', false)
+    ];
+
     var initialize = function() {
-        update();
+        var activeClassData = _.find(_classDatas, function(classData) {
+            return classData.isActive();
+        });
+        updateClass(activeClassData);
     };
 
     var filterButtonClick = function(filterData) {
@@ -32,23 +43,31 @@ var viewModel = (function() {
             return classData.name === filterData.name;
         });
 
+        var clickedRarityData = _.find(_rarityDatas, function(rarityData) {
+            return rarityData.name === filterData.name;
+        });
+
         if (clickedClassData) {
             _.forEach(_classDatas, function(classData) {
                     classData.isActive(false);
                 });
 
             clickedClassData.isActive(!clickedClassData.isActive());
+            updateClass(clickedClassData);
         }
 
-        update();
+        if (clickedRarityData) {
+            _.forEach(_rarityDatas, function(rarityData) {
+                rarityData.isActive(false);
+            });
+
+            clickedRarityData.isActive(!clickedRarityData.isActive());
+            updateRarity(clickedRarityData);
+        }
     };
 
-    var update = function() {
-        var activeClass = _.find(_classDatas, function(classData) {
-            return classData.isActive();
-        });
-
-        $.post('/api/getcards/', { class: activeClass.name }, function(data) {
+    var updateClass = function(classData) {
+        $.post('/api/getcards/', { class: classData.name }, function(data) {
             if (table) {
                 table.clear();
                 table.rows.add(data.data);
@@ -58,12 +77,15 @@ var viewModel = (function() {
                 var verbose = urlBits[urlBits.length - 1] === 'statsall';
 
                 table = $('#table_id').DataTable({
+                    dom: 'lrtip',
                     data: data.data,
                     paging: false,
-                    searching: false,
-                    order: [ 1, 'desc' ],
+//                    searching: false,
+                    order:  [ 1, 'desc' ],
                     columns: [
                         { data: 'name', title: 'Name' },
+                        { data: 'rarity', title: 'Rarity', visible: verbose },
+                        { data: 'mana', title: 'Mana', visible: verbose },
                         { data: 'rank', title: 'Rank' },
                         { data: 'totalMatchups', title: 'Total Matchups', visible: verbose },
                         { data: 'totalWins', title: 'Total Wins', visible: verbose },
@@ -77,9 +99,15 @@ var viewModel = (function() {
         });
     };
 
+    var updateRarity = function(rarityData) {
+        var searchTerm = rarityData.name === 'all' ? '' : rarityData.name;
+        table.search(searchTerm).draw();
+    };
+
     return {
         initialize: initialize,
         classes: _classDatas,
+        rarities: _rarityDatas,
         filterButtonClick: filterButtonClick
     };
 }());

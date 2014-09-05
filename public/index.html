@@ -35,7 +35,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="row col-md-12"  style="height: 20px"></div>
+			<div class="row col-md-12 vertical-spacer"></div>
 			<div class="row col-md-12 text-center">
 				<h2 data-bind="style: { visibility: hideCards() ? 'hidden' : 'visible' }">Choose Wisely</h2>
 			</div>
@@ -43,8 +43,7 @@
 			<div class="col-md-12 text-center horizontal" data-bind="visible: showSummary, click: summaryClick">
 				<h1><bold>Progress Summary</bold></h1>
 				<h3>You're following the crowd:</h3>
-				<p data-bind="text: Math.ceil(totalWins() /  totalPicks() * 100) + '%'"
-					style="font-size: 48px"></p>
+				<p id="summary-percent" data-bind="text: Math.ceil(totalWins() /  totalPicks() * 100) + '%'"></p>
 				<h3>of the time.</h3>
 				<h3>Average seconds to decide: <span data-bind="text: (averagePickTime() / 1000).toFixed(2)"></span></h3>
 				<h4>Click to continue</h4>
@@ -57,7 +56,7 @@
 				visible: !showSummary()">
 				<img class="shadowfilter hoverover img-responsive center-block" data-bind="attr: { src: cardTwoData().url }, click: cardTwoClick">
 			</div>
-			<div class="col-md-1 col-sm-1 text-center" style="padding-top: 30px" data-bind="visible: !showSummary()">
+			<div class="col-md-1 col-sm-1 text-center" data-bind="visible: !showSummary()">
 				<h3>Class</h3>
 				<div class="btn-group-vertical btn-block" data-bind="foreach: classes">
 					<button type="button" class="btn btn-default" data-bind="text: displayName,
@@ -65,10 +64,8 @@
 					click: function() { $root.filterButtonClick($data) }"></button>
 				</div>
 			</div>
-			<div class="col-md-3 col-sm-3" style="padding-top: 70px" data-bind="visible: !showSummary()">
-				<img class="img-responsive"
-				     style="max-width: 50%"
-				     data-bind="attr: { src: heroData().url }">
+			<div class="col-md-3 col-sm-3" data-bind="visible: !showSummary()">
+				<img id="hero-image" class="img-responsive" data-bind="attr: { src: heroData().url }">
 			</div>
 		</div>
 		<div class="row col-md-12 text-center">

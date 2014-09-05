@@ -93,7 +93,8 @@ exports.initialize = function(router) {
                     totalMatchups: cardData.getMatchupTotalForClass(),
                     totalWins: cardData.getWinTotalForClass(),
                     rank: cardData.getRankForClass(),
-                    url: cardData.url
+                    url: cardData.url,
+                    rarity: cardData.rarity
                 };
             })
             .value();

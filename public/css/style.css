@@ -1,10 +1,32 @@
+/*general*/
+.horizontal {
+	vertical-align: middle;
+	margin-right: -4px;
+}
+
+.vertical-spacer {
+	height: 20px;
+}
+
+/*matchups*/
 .hoverover:hover {
 	cursor: pointer;
 	-webkit-filter: drop-shadow(0px 0px 20px rgb(0, 135, 255));
 	/*filter: url(shadow.svg#drop-shadow);*/
 }
 
-.horizontal {
-	vertical-align: middle;
-	margin-right: -4px;
+#summary-percent {
+	font-size: 48em;
+}
+
+#hero-image {
+	max-width: 50%;
+	padding-top: 60px;
+}
+
+/*data grid*/
+.gridStyle {
+	border: 1px solid rgb(212,212,212);
+	width: 400px;
+	height: 300px;
 }
