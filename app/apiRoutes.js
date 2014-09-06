@@ -94,7 +94,8 @@ exports.initialize = function(router) {
                     totalWins: cardData.getWinTotalForClass(),
                     rank: cardData.getRankForClass(),
                     url: cardData.url,
-                    rarity: cardData.rarity
+                    rarity: cardData.rarity,
+                    set: cardData.set
                 };
             })
             .value();

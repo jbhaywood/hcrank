@@ -22,13 +22,14 @@ var warriorIdx = 9;
 
 var classList = [ 'neutral', 'druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
 
-function CardData(name, id, cardClass, mana, url, rarity) {
+function CardData(name, id, cardClass, mana, url, rarity, setName) {
     this.name = name;
     this.id = id;
     this.class = cardClass;
     this.mana = mana;
     this.url = url;
     this.rarity = rarity === 'free' ? 'common' : rarity;
+    this.set = setName;
     this.ranks = [ 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300 ];
     this.matchupTotals = _defaultTotals.slice();
     this.winTotals = _defaultTotals.slice();
@@ -252,7 +253,7 @@ var getCardDatas = function() {
             return card.collectible && card.category !== 'ability' && card.category !== 'hero';
         });
         _cardDatas = _.map(rawDatas, function(data) {
-            return new CardData(data.name, data.id, data.hero, data.mana, data.image_url, data.quality);
+            return new CardData(data.name, data.id, data.hero, data.mana, data.image_url, data.quality, data.set);
         });
     }
     return _cardDatas;

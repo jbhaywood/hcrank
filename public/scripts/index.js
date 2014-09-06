@@ -193,7 +193,7 @@ var viewModel = (function() {
     var checkForSummary = function() {
         _summaryCountdown = _summaryCountdown - 1;
         if (_summaryCountdown === 0) {
-            _summaryCountdown = 8 + Math.floor(Math.random() * 5);
+            _summaryCountdown = 10 + Math.floor(Math.random() * 10);
             _hideCards(true);
             _showSummary(true);
             _matchupText('');

@@ -18,7 +18,8 @@ var viewModel = (function() {
         new FilterData('rogue', 'Valeera', false),
         new FilterData('shaman', 'Thrall', false),
         new FilterData('warlock', 'Gul\'dan', false),
-        new FilterData('warrior', 'Garrosh', false)
+        new FilterData('warrior', 'Garrosh', false),
+//        new FilterData('naxxramas', 'Naxxramas', false)
     ];
 
     var _rarityDatas = [
@@ -49,11 +50,16 @@ var viewModel = (function() {
 
         if (clickedClassData) {
             _.forEach(_classDatas, function(classData) {
-                    classData.isActive(false);
-                });
+                classData.isActive(false);
+            });
 
             clickedClassData.isActive(!clickedClassData.isActive());
-            updateClass(clickedClassData);
+
+            if (clickedClassData.name === 'naxxramas') {
+                updateRarity(clickedClassData);
+            } else {
+                updateClass(clickedClassData);
+            }
         }
 
         if (clickedRarityData) {
@@ -85,6 +91,7 @@ var viewModel = (function() {
                     columns: [
                         { data: 'name', title: 'Name' },
                         { data: 'rarity', title: 'Rarity', visible: verbose },
+                        { data: 'set', title: 'Set', visible: verbose },
                         { data: 'mana', title: 'Mana', visible: verbose },
                         { data: 'rank', title: 'Rank' },
                         { data: 'totalMatchups', title: 'Total Matchups', visible: verbose },
