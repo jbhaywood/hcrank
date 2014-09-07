@@ -87,7 +87,7 @@ var viewModel = (function() {
                     data: data.data,
                     paging: false,
 //                    searching: false,
-                    order:  [ 1, 'desc' ],
+                    order:  [ 4, 'desc' ],
                     columns: [
                         { data: 'name', title: 'Name' },
                         { data: 'rarity', title: 'Rarity', visible: verbose },
