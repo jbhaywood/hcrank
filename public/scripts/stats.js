@@ -105,7 +105,7 @@ var viewModel = (function() {
                     dom: 'lrtip',
                     data: data.data,
                     paging: false,
-                    order:  [ 6, 'desc' ],
+                    order:  [ 7, 'desc' ],
                     columns: [
                         { render: function(cellData, type, rowData, meta) {
                             return '<span class="card-preview text-highlight">' + rowData.name + '<span><img src="' + rowData.url + '"></span></span>';
