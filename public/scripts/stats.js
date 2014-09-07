@@ -105,7 +105,7 @@ var viewModel = (function() {
                     dom: 'lrtip',
                     data: data.data,
                     paging: false,
-                    order:  [ 7, 'desc' ],
+                    order:  [ 6, 'desc' ],
                     columns: [
                         { render: function(cellData, type, rowData, meta) {
                             return '<span class="card-preview text-highlight">' + rowData.name + '<span><img src="' + rowData.url + '"></span></span>';
@@ -115,10 +115,10 @@ var viewModel = (function() {
                         { data: 'set', title: 'Set', className: 'column-set', visible: verbose },
                         { data: 'totalMatchups', title: 'Total Matchups', visible: verbose },
                         { data: 'totalWins', title: 'Total Wins', visible: verbose },
-                        { data: 'rank', title: 'Rank' },
                         { render: function(cellData, type, rowData, meta) {
                             return (rowData.totalMatchups ? (rowData.totalWins / rowData.totalMatchups * 100).toFixed(2) : 0) + '%';
-                        }, title: 'Win Ratio' }
+                        }, title: 'Win Ratio' },
+                        { data: 'rank', title: 'Rank' }
                     ]
                 });
             }
