@@ -1,4 +1,8 @@
 /*general*/
+.text-highlight {
+	color: dodgerblue;
+}
+
 .horizontal {
 	vertical-align: middle;
 	margin-right: -4px;
@@ -29,4 +33,24 @@
 	border: 1px solid rgb(212,212,212);
 	width: 400px;
 	height: 300px;
+}
+
+.card-preview
+{
+	text-decoration: none;
+	position: relative;
+}
+
+.card-preview span
+{
+	display: none;
+}
+
+.card-preview:hover span
+{
+	display: block;
+	position: absolute;
+	z-index:1000;
+	margin-top:-100px;
+	margin-left:50px;
 }

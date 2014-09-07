@@ -16,18 +16,27 @@
 <body>
 	<div class="container">
 		<div class="vertical-spacer"></div>
-		<p>Class:</p>
+		<div>Class:</div>
 		<div class="btn-group-horizontal btn-block" data-bind="foreach: classes">
 			<button type="button" class="btn btn-default" data-bind="text: displayName,
 					css: { 'btn-success': isActive },
 					click: function() { $root.filterButtonClick($data) }"></button>
 		</div>
-		<p>Rarity:</p>
+		<div class="vertical-spacer"></div>
+		<div>Rarity:</div>
 		<div class="btn-group-horizontal btn-block" data-bind="foreach: rarities">
 			<button type="button" class="btn btn-default" data-bind="text: displayName,
 					css: { 'btn-success': isActive },
 					click: function() { $root.filterButtonClick($data) }"></button>
 		</div>
+		<div class="vertical-spacer"></div>
+		<div>Set:</div>
+		<div class="btn-group-horizontal btn-block" data-bind="foreach: sets">
+			<button type="button" class="btn btn-default" data-bind="text: displayName,
+					css: { 'btn-success': isActive },
+					click: function() { $root.filterButtonClick($data) }"></button>
+		</div>
+		<div class="vertical-spacer"></div>
 		<table id="table_id" class="display cell-border compact"></table>
 	</div>
 	<!-- Start of StatCounter Code for Default Guide -->
