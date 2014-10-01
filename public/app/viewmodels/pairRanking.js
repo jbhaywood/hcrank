@@ -1,57 +1,32 @@
 'use strict';
-var viewModel = (function() {
-    function FilterData(name, displayName, url, activeDefault) {
-        this.name = name;
-        this.displayName = displayName;
-        this.url = url;
-        this.isActive = ko.observable(activeDefault);
-        this.storageKey = name + '_active';
+define(function (require) {
+    var app = require('durandal/app');
+    var _ = require('lodash');
+    var ko = require('knockout');
+    var Modernizr = require('modernizr');
+    var FilterData = require('filterdata');
 
-        this.loadSettings = function() {
-            if (Modernizr.localstorage) {
-                var isActive = localStorage[this.storageKey];
-                if (isActive === undefined) {
-                    isActive = activeDefault;
-                    localStorage[this.storageKey] = isActive;
-                } else {
-                    isActive = isActive === 'true';
-                }
-                this.isActive(isActive);
-            }
-        };
-
-        this.setActive = function(isActive) {
-            this.isActive(isActive);
-            if (Modernizr.localstorage) {
-                localStorage[this.storageKey] = isActive;
-            }
-        };
-
-        this.isNeutralOrCommon = function() {
-            return this.name === 'neutral' || this.name === 'common';
-        };
-    }
-
+    // note: see about replacing jquery post with durandal http
     var _classDatas = [
-        new FilterData('neutral', 'Neutral', '', false),
-        new FilterData('druid', 'Malfurion',
-            'http://media-hearth.cursecdn.com/avatars/80/382/621.png', false),
-        new FilterData('hunter', 'Rexxar',
-            'http://media-hearth.cursecdn.com/avatars/80/381/484.png', false),
-        new FilterData('mage', 'Jaina',
-            'http://media-hearth.cursecdn.com/avatars/80/384/320.png', false),
-        new FilterData('paladin', 'Uther',
-            'http://media-hearth.cursecdn.com/avatars/80/380/257.png', false),
-        new FilterData('priest', 'Anduin',
-            'http://media-hearth.cursecdn.com/avatars/80/385/110.png', false),
-        new FilterData('rogue', 'Valeera',
-            'http://media-hearth.cursecdn.com/avatars/80/380/257.png', false),
-        new FilterData('shaman', 'Thrall',
-            'http://media-hearth.cursecdn.com/avatars/80/378/319.png', false),
-        new FilterData('warlock', 'Gul\'dan',
-            'http://media-hearth.cursecdn.com/avatars/80/383/618.png', false),
-        new FilterData('warrior', 'Garrosh',
-            'http://media-hearth.cursecdn.com/avatars/80/377/635.png', false)
+        new FilterData('neutral', 'Neutral', false, ''),
+        new FilterData('druid', 'Malfurion', false,
+            'http://media-hearth.cursecdn.com/avatars/80/382/621.png'),
+        new FilterData('hunter', 'Rexxar', false,
+            'http://media-hearth.cursecdn.com/avatars/80/381/484.png'),
+        new FilterData('mage', 'Jaina', false,
+            'http://media-hearth.cursecdn.com/avatars/80/384/320.png'),
+        new FilterData('paladin', 'Uther', false,
+            'http://media-hearth.cursecdn.com/avatars/80/380/257.png'),
+        new FilterData('priest', 'Anduin', false,
+            'http://media-hearth.cursecdn.com/avatars/80/385/110.png'),
+        new FilterData('rogue', 'Valeera', false,
+            'http://media-hearth.cursecdn.com/avatars/80/380/257.png'),
+        new FilterData('shaman', 'Thrall', false,
+            'http://media-hearth.cursecdn.com/avatars/80/378/319.png'),
+        new FilterData('warlock', 'Gul\'dan', false,
+            'http://media-hearth.cursecdn.com/avatars/80/383/618.png'),
+        new FilterData('warrior', 'Garrosh', false,
+            'http://media-hearth.cursecdn.com/avatars/80/377/635.png')
     ];
 
     var _totalPicksKey = 'totalpicks';
@@ -77,7 +52,7 @@ var viewModel = (function() {
     var userRank = ko.computed(function() {
         var localScore = _totalPicks();
         var localRank;
-        
+
         if (localScore < 50) {
             localRank = 'Basic';
         } else if (localScore >= 50 && localScore < 250) {
@@ -95,12 +70,6 @@ var viewModel = (function() {
     var winPercent = ko.computed(function() {
         return Math.ceil(_totalWins() /  _totalPicks() * 100) + '%';
     });
-
-    var initialize = function() {
-        loadSettings();
-        showHeroImage();
-        newMatchup();
-    };
 
     var loadSettings = function() {
         if (Modernizr.localstorage) {
@@ -184,7 +153,7 @@ var viewModel = (function() {
         processMatchup(_cardOneData(), _cardTwoData());
         checkForSummary();
     };
-    
+
     var cardTwoClick = function() {
         processMatchup(_cardTwoData(), _cardOneData());
         checkForSummary();
@@ -274,7 +243,7 @@ var viewModel = (function() {
             classes: classes
         };
 
-        $.post('/api/newmatchup/', sendData, function(data) {
+        return $.post('/api/newmatchup/', sendData, function(data) {
             setMatchupText(data.cardOne, data.cardTwo);
             setImageUrl(data.cardOne, 'original');
             setImageUrl(data.cardTwo, 'original');
@@ -319,7 +288,6 @@ var viewModel = (function() {
     };
 
     return {
-        initialize: initialize,
         filterButtonClick: filterButtonClick,
         summaryClick: summaryClick,
         cardOneClick: cardOneClick,
@@ -336,12 +304,12 @@ var viewModel = (function() {
         heroData: _heroData,
         averagePickTime: _avgPickTime,
         showSummary: _showSummary,
-        hideCards: _hideCards
+        hideCards: _hideCards,
+        displayName: 'Pair Ranking',
+        activate: function() {
+            loadSettings();
+            showHeroImage();
+            return newMatchup();
+        }
     };
-}());
-
-$(document).ready(function() {
-    //    localStorage.clear();
-    viewModel.initialize();
-    ko.applyBindings(viewModel);
 });

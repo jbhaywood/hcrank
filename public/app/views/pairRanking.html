@@ -1,0 +1,63 @@
+<!--<svg height="0" xmlns="http://www.w3.org/2000/svg">-->
+<!--<filter id="drop-shadow">-->
+<!--<feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/>-->
+<!--<feOffset dx="12" dy="12" result="offsetblur"/>-->
+<!--<feFlood flood-color="rgba(0,0,0,0.5)"/>-->
+<!--<feComposite in2="offsetblur" operator="in"/>-->
+<!--<feMerge>-->
+<!--<feMergeNode/>-->
+<!--<feMergeNode in="SourceGraphic"/>-->
+<!--</feMerge>-->
+<!--</filter>-->
+<!--</svg>-->
+
+<div class="container text-center">
+	<div class="row">
+		<!--user data-->
+		<div class="row col-md-12 text-right">
+			<h3>Total Picks: <span data-bind="text: totalPicks"></span></h3>
+			<h4>Crowd: <span data-bind="text: winPercent"></span></h4>
+			<h4>Rank: <span data-bind="text: rank"></span></h4>
+		</div>
+
+		<!--choose wisely-->
+		<div class="row col-md-12 text-center">
+			<h2 data-bind="visible: !showSummary()">Choose Wisely</h2>
+		</div>
+
+		<!--summary-->
+		<div class="col-md-12 text-center horizontal" data-bind="compose: 'summary.html', visible: showSummary, click: summaryClick"></div>
+
+		<!--card one-->
+		<div class="col-md-4" data-bind="style: { visibility: hideCards() ? 'hidden' : 'visible' },
+				visible: !showSummary()">
+			<img class="shadowfilter hoverover img-responsive center-block" data-bind="attr: { src: cardOneData().url }, click: cardOneClick">
+		</div>
+
+		<!--card two-->
+		<div class="col-md-4" data-bind="style: { visibility: hideCards() ? 'hidden' : 'visible' },
+				visible: !showSummary()">
+			<img class="shadowfilter hoverover img-responsive center-block" data-bind="attr: { src: cardTwoData().url }, click: cardTwoClick">
+		</div>
+
+		<!--class buttons-->
+		<div class="col-md-2 text-center" data-bind="visible: !showSummary()">
+			<h3>Class</h3>
+			<div class="btn-group-vertical btn-block" data-bind="foreach: classes">
+				<button type="button" class="btn btn-default" data-bind="text: displayName,
+					css: { 'btn-success': isActive },
+					click: function() { $root.filterButtonClick($data) }"></button>
+			</div>
+		</div>
+
+		<!--hero image-->
+		<div class="col-md-2 center-block" data-bind="visible: !showSummary()">
+			<img id="hero-image" class="img-responsive" data-bind="attr: { src: heroData().url }">
+		</div>
+	</div>
+
+	<!--matchup result message-->
+	<div class="row col-md-12 text-center">
+		<h2 data-bind="text: matchupText"></h2>
+	</div>
+</div>

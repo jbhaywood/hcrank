@@ -2,9 +2,9 @@
 var _ = require('lodash');
 var mongoose = require('mongoose');
 
+var _productionMode = process.env.NODE_ENV === 'production';
 var _prodDb;
 var _testDb;
-var _testEnv;
 
 var Card;
 var Matchup;
@@ -41,24 +41,23 @@ var Options = function() {
 var getConnectionString = function(useProductionDb) {
     var connectString;
 
-    if (!_testEnv) {
+    if (_productionMode) {
         connectString = process.env.DB_CONNECT_URI;
     } else {
-        var config = require('./config/config');
+        var config = require('./config');
         connectString = useProductionDb ? config.productionDbUri : config.testDbUri;
     }
     return connectString;
 };
 
 var getCard = function(cardId) {
-    return _testEnv ?
-        TestCard.findOne({ id: cardId }).exec() :
-        Card.findOne({ id: cardId }).exec();
+    return _productionMode ?
+        Card.findOne({ id: cardId }).exec() :
+        TestCard.findOne({ id: cardId }).exec();
 };
 
 // PUBLIC
 var initialize = function() {
-    _testEnv = process.env.NODE_ENV !== 'production';
     var promise = new mongoose.Promise;
 
     var prodCon = getConnectionString(true);
@@ -69,7 +68,7 @@ var initialize = function() {
         Matchup = _prodDb.model('Matchup', mongoose.Schema(new MatchupObj()));
 
         console.log('Connected to ' + _prodDb.name);
-        if (!_testEnv) {
+        if (_productionMode) {
             promise.fulfill();
         } else if (_testDb && _testDb._hasOpened) {
                 promise.fulfill();
@@ -84,7 +83,7 @@ var initialize = function() {
         console.log('Mongoose connection to ' + _prodDb.name + ' disconnected');
     });
 
-    if (_testEnv) {
+    if (!_productionMode) {
         var testCon = getConnectionString(false);
         _testDb = mongoose.createConnection(testCon, new Options());
 
@@ -93,7 +92,7 @@ var initialize = function() {
             TestMatchup = _testDb.model('TestMatchup', mongoose.Schema(new MatchupObj()));
 
             console.log('Connected to ' + _testDb.name);
-            if (_prodDb && _prodDb._hasOpened) {
+            if (_prodDb/* && _prodDb._hasOpened*/) {
                 promise.fulfill();
             }
         });
@@ -107,9 +106,9 @@ var initialize = function() {
 };
 
 var getCardsByIds = function(cardIds) {
-    return _testEnv ?
-        TestCard.where('id').in(cardIds).exec() :
-        Card.where('id').in(cardIds).exec();
+    return _productionMode ?
+        Card.where('id').in(cardIds).exec() :
+        TestCard.where('id').in(cardIds).exec();
 };
 
 var saveMatchup = function(cardWinnerId, cardLoserId, cardWinnerRank, cardLOserRank, winnerId, cardClass, milliseconds) {
@@ -138,7 +137,7 @@ var saveMatchup = function(cardWinnerId, cardLoserId, cardWinnerRank, cardLOserR
         created: new Date()
     };
 
-    var matchup = _testEnv ? new TestMatchup(matchupObj) : new Matchup(matchupObj);
+    var matchup = _productionMode ? new Matchup(matchupObj) : new TestMatchup(matchupObj);
     matchup.save();
 };
 
@@ -153,7 +152,7 @@ var saveUpdatedCards = function(cardDatas) {
                     matchupTotals: cardData.matchupTotals.slice(),
                     winTotals: cardData.winTotals.slice()
                 };
-                dbCard = _testEnv ? new TestCard(cardObj) : new Card(cardObj);
+                dbCard = _productionMode ? new Card(cardObj) : new TestCard(cardObj);
             } else if (cardData.updated > dbCard.updated) {
                 dbCard.ranks = cardData.ranks.slice();
                 dbCard.updated = cardData.updated;
@@ -169,13 +168,13 @@ var saveUpdatedCards = function(cardDatas) {
 
 var getTotalMatchups = function() {
     var promise = new mongoose.Promise;
-    if (_testEnv) {
-        TestMatchup.count({ }, function(err, c)
+    if (_productionMode) {
+        Matchup.count({ }, function(err, c)
         {
             promise.fulfill(c);
         });
     } else {
-        Matchup.count({ }, function(err, c)
+        TestMatchup.count({ }, function(err, c)
         {
             promise.fulfill(c);
         });
@@ -189,7 +188,7 @@ var shutDown = function() {
         console.log('Mongoose default connection with DB :' + _prodDb.name + ' is disconnected through app termination');
         promise.fulfill();
     });
-    if (_testEnv) {
+    if (!_productionMode) {
         _testDb.close(function () {
             console.log('Mongoose default connection with DB :' + _testDb.name + ' is disconnected through app termination');
             promise.fulfill();
@@ -199,8 +198,8 @@ var shutDown = function() {
 };
 
 var deleteCards = function() {
-    if (_testEnv) {
-        TestCard.remove({}, function(err) {
+    if (_productionMode) {
+        Card.remove({}, function(err) {
             if (err) {
                 console.log('error removing card collection:' + err.message);
             } else {
@@ -208,7 +207,7 @@ var deleteCards = function() {
             }
         }).exec();
     } else {
-        Card.remove({}, function(err) {
+        TestCard.remove({}, function(err) {
             if (err) {
                 console.log('error removing card collection:' + err.message);
             } else {
@@ -219,8 +218,8 @@ var deleteCards = function() {
 };
 
 var deleteMatchups = function() {
-    if (_testEnv) {
-        TestMatchup.remove({}, function(err) {
+    if (_productionMode) {
+        Matchup.remove({}, function(err) {
             if (err) {
                 console.log('error removing matchup collection:' + err.message);
             } else {
@@ -228,7 +227,7 @@ var deleteMatchups = function() {
             }
         }).exec();
     } else {
-        Matchup.remove({}, function(err) {
+        TestMatchup.remove({}, function(err) {
             if (err) {
                 console.log('error removing matchup collection:' + err.message);
             } else {

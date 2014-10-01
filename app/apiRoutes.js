@@ -1,8 +1,8 @@
 'use strict';
 var _ = require('lodash');
 var elo = require('elo-rank')();
-var cardProvider = require('../cardProvider');
-var dbProvider = require('../dbProvider');
+var cardProvider = require('./cardProvider');
+var dbProvider = require('./dbProvider');
 
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
@@ -58,7 +58,7 @@ exports.initialize = function(router) {
                     milliseconds = 0;
                 }
 
-                elo.setKFactor(64);
+                elo.setKFactor(128);
 
                 var winnerExpected = elo.getExpected(oldWinnerRank, oldLoserRank);
                 var loserExpected = elo.getExpected(oldLoserRank, oldWinnerRank);

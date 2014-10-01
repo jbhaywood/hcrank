@@ -3,10 +3,10 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var errorHandler = require('errorhandler');
-var cardProvider = require('./cardProvider');
-var dbProvider = require('./dbProvider');
 var apiRoutes = require('./app/apiRoutes');
 var routes = require('./app/routes');
+var cardProvider = require('./app/cardProvider');
+var dbProvider = require('./app/dbProvider');
 
 dbProvider.initialize().then(function() {
     cardProvider.initialize().done(function() {

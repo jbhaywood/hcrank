@@ -1,4 +1,20 @@
 /*general*/
+.bg-medium {
+	/*background: #865923;*/
+}
+
+.bg-dark {
+	/*background: #332113;*/
+}
+
+.bg-light {
+	/*background: #edc89e;*/
+}
+
+html, body, .full-height {
+	height: 100%;
+}
+
 .text-highlight {
 	color: dodgerblue;
 }
@@ -15,7 +31,7 @@
 /*matchups*/
 .hoverover:hover {
 	cursor: pointer;
-	-webkit-filter: drop-shadow(0px 0px 20px rgb(0, 135, 255));
+	-webkit-filter: drop-shadow(0px 0px 40px rgb(0, 115, 255));
 	/*filter: url(shadow.svg#drop-shadow);*/
 }
 
@@ -24,7 +40,6 @@
 }
 
 #hero-image {
-	max-width: 50%;
 	padding-top: 60px;
 }
 
