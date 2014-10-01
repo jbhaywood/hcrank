@@ -1,0 +1,35 @@
+﻿<div class="container bg-medium">
+	<nav class="navbar navbar-default" role="navigation">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle Navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">
+				<i class="fa fa-home"></i>
+				<span>HearthCrowdRank</span>
+			</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav" data-bind="foreach: router.navigationModel">
+				<li data-bind="css: { active: isActive }">
+					<a data-bind="attr: { href: hash }, text: title"></a>
+				</li>
+			</ul>
+
+			<!--<ul class="nav navbar-nav navbar-right">-->
+				<!--<li class="loader" data-bind="css: { active: router.isNavigating }">-->
+					<!--<i class="fa fa-spinner fa-spin fa-2x"></i>-->
+				<!--</li>-->
+			<!--</ul>-->
+		</div>
+	</nav>
+
+	<div class="row">
+		<!--<div class="page-host bg-light" data-bind="router: { transition:'entrance' }"></div>-->
+		<div class="page-host bg-light" data-bind="router"></div>
+	</div>
+</div>
