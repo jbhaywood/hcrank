@@ -18,7 +18,7 @@ var getCardDatas = function() {
             return card.collectible && card.category !== 'ability' && card.category !== 'hero';
         });
         _cardDatas = _.map(rawDatas, function(data) {
-            var url = '../lib/images/hs-images/' + data.id + '.png';
+            var url = _productionMode ? data.image_url : '../lib/images/hs-images/' + data.id + '.png';
             return new CardData(data.name, data.id, data.hero, data.mana, url, data.quality, data.set);
         });
     }
