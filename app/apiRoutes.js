@@ -39,14 +39,14 @@ exports.initialize = function(router) {
 
         if (data.cardWinnerId && data.cardLoserId && data.cardWinnerRank &&
             data.cardLoserRank && data.milliseconds && data.class) {
-            var idWinner = parseInt(data.cardWinnerId);
-            var idLoser = parseInt(data.cardLoserId);
+            var idWinner = parseInt(data.cardWinnerId, 10);
+            var idLoser = parseInt(data.cardLoserId, 10);
             var className = data.class;
 
             if (intCheck(idWinner) && intCheck(idLoser)) {
                 var oldWinnerRank = parseFloat(data.cardWinnerRank);
                 var oldLoserRank = parseFloat(data.cardLoserRank);
-                var milliseconds = parseInt(data.milliseconds);
+                var milliseconds = parseInt(data.milliseconds, 10);
 
                 if (isNaN(oldWinnerRank)) {
                     oldWinnerRank = 1300;
@@ -78,11 +78,13 @@ exports.initialize = function(router) {
 
     router.post('/getcards/', function(req, res) {
         var data = req.body;
-        var cardClass = data.class || 'neutral';
-        var cardDatas = cardProvider.getCardDatasByClass(cardClass);
+        var className = (data.class || 'neutral').toLowerCase();
+        var numCards = parseInt(data.numCards, 10);
+        var cardDatas = cardProvider.getCardDatasByClass(className);
+
         var sortedDatas = _.chain(cardDatas)
             .sortBy(function(cardData) {
-                return cardData.getRankForClass(cardClass);
+                return cardData.getRankForClass(className);
             })
             .reverse()
             .map(function(cardData) {
@@ -90,18 +92,25 @@ exports.initialize = function(router) {
                     name: cardData.name,
                     class: cardData.class,
                     mana: cardData.mana,
-                    totalMatchups: cardData.getMatchupTotalForClass(),
-                    totalWins: cardData.getWinTotalForClass(),
-                    rank: cardData.getRankForClass(),
+                    totalMatchups: cardData.getMatchupTotalForClass(className),
+                    totalWins: cardData.getWinTotalForClass(className),
+                    rank: cardData.getRankForClass(className),
                     url: cardData.url,
                     rarity: cardData.rarity,
-                    set: cardData.set
+                    set: cardData.set,
+                    category: cardData.category
                 };
             })
             .value();
+
+        if (numCards) {
+            sortedDatas.length = numCards;
+        }
+
         var sendData = {
             data: sortedDatas
         };
+
         res.send(sendData);
     });
 };

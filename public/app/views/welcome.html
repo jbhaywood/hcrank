@@ -1,4 +1,5 @@
-﻿<div class="container text-left bg-light">
-	<h1 data-bind="text:displayName" style="font-size: 8em; font-weight: bolder"></h1>
-	<p data-bind="text:description" style="font-size: 3em"></p>
+﻿<div id="welcome">
+	<h1 data-bind="text:displayName"></h1>
+	<h1 data-bind="text:description"></h1>
+	<div id="topCards" data-bind="compose: 'viewmodels/topCards'" style="display: none"></div>
 </div>

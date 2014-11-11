@@ -1,25 +1,21 @@
-<div class="container text-left">
-	<div class="vertical-spacer"></div>
-	<div>Class:</div>
-	<div class="btn-group-horizontal btn-block" data-bind="foreach: classes">
-		<button type="button" class="btn btn-default" data-bind="text: displayName,
-				css: { 'btn-success': isActive },
+<div id="stats">
+	<h3>Hero:</h3>
+	<div data-bind="foreach: classes">
+		<button class="pure-button" data-bind="text: displayName,
+				css: { 'pure-button-active': isActive },
 				click: function() { $root.filterButtonClick($data) }"></button>
 	</div>
-	<div class="vertical-spacer"></div>
-	<div>Rarity:</div>
-	<div class="btn-group-horizontal btn-block" data-bind="foreach: rarities">
-		<button type="button" class="btn btn-default" data-bind="text: displayName,
-				css: { 'btn-success': isActive },
+	<h3>Rarity:</h3>
+	<div data-bind="foreach: rarities">
+		<button class="pure-button" data-bind="text: displayName,
+				css: { 'pure-button-active': isActive },
 				click: function() { $root.filterButtonClick($data) }"></button>
 	</div>
-	<div class="vertical-spacer"></div>
-	<div>Set:</div>
-	<div class="btn-group-horizontal btn-block" data-bind="foreach: sets">
-		<button type="button" class="btn btn-default" data-bind="text: displayName,
-				css: { 'btn-success': isActive },
+	<h3>Set:</h3>
+	<div data-bind="foreach: sets">
+		<button class="pure-button" data-bind="text: displayName,
+				css: { 'pure-button-active': isActive },
 				click: function() { $root.filterButtonClick($data) }"></button>
 	</div>
-	<div class="vertical-spacer"></div>
 	<table id="table_id" class="display cell-border compact"></table>
 </div>

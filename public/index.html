@@ -3,13 +3,18 @@
 	<head>
 		<title>HearthCrowdRank</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/pure-min.css">
+		<link rel="stylesheet" href="css/pocketgrid.min.css">
 		<link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="lib/durandal/css/durandal.css" />
 		<link rel="stylesheet" href="lib/externals/jquery.dataTables.min.css">
 		<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/topCards.css">
+		<link rel="stylesheet" href="css/pairRanking.css">
+		<link rel="stylesheet" href="css/stats.css">
 	</head>
-	<body class="container text-center bg-dark">
+	<body>
 		<div id="applicationHost">
 			<div class="splash">
 				<div class="message">
@@ -19,6 +24,7 @@
 			</div>
 		</div>
 
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 		<script src="lib/require/require.js" data-main="app/main"></script>
 
 		<!-- Start of StatCounter Code for Default Guide -->

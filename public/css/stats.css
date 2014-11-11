@@ -1,0 +1,7 @@
+#stats h3 {
+	margin-bottom: 2px;
+}
+
+#stats h3:first-child {
+	margin-top: 50px;
+}

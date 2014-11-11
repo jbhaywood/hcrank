@@ -99,7 +99,7 @@ define(function (require) {
                     order:  [ 6, 'desc' ],
                     columns: [
                         { render: function(cellData, type, rowData, meta) {
-                            return '<span class="card-preview text-highlight">' + rowData.name + '<span><img src="' + rowData.url + '"></span></span>';
+                            return '<div class="card-preview ' + rowData.category + '">' + rowData.name + '<div><img src="' + rowData.url + '"></div></div>';
                         }, title: 'Name', width: '30%' },
                         { data: 'mana', title: 'Mana' },
                         { data: 'rarity', title: 'Rarity', className: 'column-rarity', visible: verbose },

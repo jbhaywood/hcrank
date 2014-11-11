@@ -1,0 +1,22 @@
+<div data-bind="fadeVisible: fade">
+	<p>
+		Current Top Rated
+		<span data-bind="text: currentClass"></span>
+		Cards
+	</p>
+	<div class="block-group">
+		<img class="block" data-bind="attr: { src: previewUrl }">
+		<table class="block pure-table pure-table-bordered pure-table-striped">
+			<tbody data-bind="foreach: topCards">
+				<tr>
+					<td>
+						<span data-bind="text: index"></span>
+					</td>
+					<td>
+						<span data-bind="text: name, css: category, event: { mouseover: $parent.updatePreview }"></span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

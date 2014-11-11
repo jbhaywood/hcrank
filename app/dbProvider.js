@@ -8,8 +8,12 @@ var _testDb;
 
 var Card;
 var Matchup;
+var Snapshot;
+var App;
 var TestCard = null;
 var TestMatchup = null;
+var TestSnapshot = null;
+var TestApp = null;
 
 var CardObj = function() {
     return {
@@ -34,6 +38,22 @@ var MatchupObj = function() {
     };
 };
 
+var SnapshotObj = function() {
+    return {
+        id: Number,
+        date: String,
+        ranks: [Number],
+        matchupTotals: [Number],
+        winTotals: [Number]
+    };
+};
+
+var AppObj = function() {
+    return {
+        lastSnapshot: Date
+    };
+};
+
 var Options = function() {
     return { server: { socketOptions: { keepAlive: 1 } } };
 };
@@ -51,9 +71,8 @@ var getConnectionString = function(useProductionDb) {
 };
 
 var getCard = function(cardId) {
-    return _productionMode ?
-        Card.findOne({ id: cardId }).exec() :
-        TestCard.findOne({ id: cardId }).exec();
+    var card = _productionMode ? Card : TestCard;
+    return card.findOne({ id: cardId }).exec();
 };
 
 // PUBLIC
@@ -66,6 +85,8 @@ var initialize = function() {
     _prodDb.once('open', function() {
         Card = _prodDb.model('Card', mongoose.Schema(new CardObj()));
         Matchup = _prodDb.model('Matchup', mongoose.Schema(new MatchupObj()));
+        Snapshot = _prodDb.model('Snapshot', mongoose.Schema(new SnapshotObj()));
+        App = _prodDb.model('App', mongoose.Schema(new AppObj()));
 
         console.log('Connected to ' + _prodDb.name);
         if (_productionMode) {
@@ -90,6 +111,8 @@ var initialize = function() {
         _testDb.once('open', function() {
             TestCard = _testDb.model('TestCard', mongoose.Schema(new CardObj()));
             TestMatchup = _testDb.model('TestMatchup', mongoose.Schema(new MatchupObj()));
+            TestSnapshot = _testDb.model('TestSnapshot', mongoose.Schema(new SnapshotObj()));
+            TestApp = _testDb.model('TestApp', mongoose.Schema(new AppObj()));
 
             console.log('Connected to ' + _testDb.name);
             if (_prodDb/* && _prodDb._hasOpened*/) {
@@ -168,17 +191,11 @@ var saveUpdatedCards = function(cardDatas) {
 
 var getTotalMatchups = function() {
     var promise = new mongoose.Promise;
-    if (_productionMode) {
-        Matchup.count({ }, function(err, c)
-        {
-            promise.fulfill(c);
-        });
-    } else {
-        TestMatchup.count({ }, function(err, c)
-        {
-            promise.fulfill(c);
-        });
-    }
+    var matchup = _productionMode ? Matchup : TestMatchup;
+    matchup.count({ }, function(err, c)
+    {
+        promise.fulfill(c);
+    });
     return promise;
 };
 
@@ -198,43 +215,91 @@ var shutDown = function() {
 };
 
 var deleteCards = function() {
-    if (_productionMode) {
-        Card.remove({}, function(err) {
-            if (err) {
-                console.log('error removing card collection:' + err.message);
-            } else {
-                console.log('card collection removed');
-            }
-        }).exec();
-    } else {
-        TestCard.remove({}, function(err) {
-            if (err) {
-                console.log('error removing card collection:' + err.message);
-            } else {
-                console.log('card collection removed');
-            }
-        }).exec();
-    }
+    var card = _productionMode ? Card : TestCard;
+    card.remove({}, function(err) {
+        if (err) {
+            console.log('error removing card collection:' + err.message);
+        } else {
+            console.log('card collection removed');
+        }
+    }).exec();
 };
 
 var deleteMatchups = function() {
-    if (_productionMode) {
-        Matchup.remove({}, function(err) {
-            if (err) {
-                console.log('error removing matchup collection:' + err.message);
+    var matchup = _productionMode ? Matchup : TestMatchup;
+    matchup.remove({}, function(err) {
+        if (err) {
+            console.log('error removing matchup collection:' + err.message);
+        } else {
+            console.log('matchup collection removed');
+        }
+    }).exec();
+};
+
+var getSnapshotDateString = function(date) {
+    var dayNum = date.getDate();
+    var monthNum = date.getMonth() + 1;
+    var dayStr = dayNum < 10 ? '0' + dayNum.toString() : dayNum.toString();
+    var monthStr = monthNum < 10 ? '0' + monthNum.toString() : monthNum.toString();
+    return date.getFullYear().toString() + monthStr + dayStr;
+};
+
+var getLastSnapshots = function() {
+    var promise = new mongoose.Promise;
+    var app = _productionMode ? App : TestApp;
+    var snapshot = _productionMode ? Snapshot : TestSnapshot;
+    app.findOne({}, function(err, appObj) {
+        var dateStr = getSnapshotDateString(appObj.lastSnapshot);
+        snapshot.where('date').equals(dateStr).exec(function(err, snapshots) {
+            promise.fulfill(snapshots);
+        });
+    });
+    return promise;
+};
+
+var getSnapshotsByIds = function(cardIds) {
+    var snapshot = _productionMode ? Snapshot : TestSnapshot;
+    return snapshot.where('id').in(cardIds).exec();
+};
+
+var saveAllSnapshots = function(cardDatas) {
+    var app = _productionMode ? App : TestApp;
+
+    app.findOne({}, function(err, data) {
+        if (err) {
+            console.log('error saving snapshots:' + err.message);
+        } else {
+            var curDate = new Date();
+            var doSave = false;
+
+            if (data) {
+                var hourDiff = Math.abs(curDate - data.lastSnapshot) / 3600000;
+                doSave = hourDiff >= 24;
             } else {
-                console.log('matchup collection removed');
+                var newDataObj = { lastSnapshot: curDate };
+                data = _productionMode ? new App(newDataObj) : new TestApp(newDataObj);
+                doSave = true;
             }
-        }).exec();
-    } else {
-        TestMatchup.remove({}, function(err) {
-            if (err) {
-                console.log('error removing matchup collection:' + err.message);
-            } else {
-                console.log('matchup collection removed');
+
+            if (doSave) {
+                var curDateStr = getSnapshotDateString(curDate);
+                _.forEach(cardDatas, function(cardData) {
+                    var snapshotObj = {
+                        id: cardData.id,
+                        date: curDateStr,
+                        ranks: cardData.ranks.slice(),
+                        matchupTotals: cardData.matchupTotals.slice(),
+                        winTotals: cardData.winTotals.slice()
+                    };
+                    var snapshot = _productionMode ? new Snapshot(snapshotObj) : new TestSnapshot(snapshotObj);
+                    snapshot.save();
+                });
+
+                data.lastSnapshot = curDate;
+                data.save();
             }
-        }).exec();
-    }
+        }
+    });
 };
 
 var getDbModels = function() {
@@ -249,9 +314,12 @@ var getDbModels = function() {
 exports.initialize = initialize;
 exports.deleteCards = deleteCards;
 exports.deleteMatchups = deleteMatchups;
+exports.getDbModels = getDbModels;
 exports.getCardsByIds = getCardsByIds;
+exports.getLastSnapshots = getLastSnapshots;
+exports.getSnapshotsByIds = getSnapshotsByIds;
 exports.getTotalMatchups = getTotalMatchups;
+exports.saveAllSnapshots = saveAllSnapshots;
 exports.saveMatchup = saveMatchup;
 exports.saveUpdatedCards = saveUpdatedCards;
 exports.shutDown = shutDown;
-exports.getDbModels = getDbModels;

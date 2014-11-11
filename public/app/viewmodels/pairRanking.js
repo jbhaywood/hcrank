@@ -6,9 +6,7 @@ define(function (require) {
     var Modernizr = require('modernizr');
     var FilterData = require('filterdata');
 
-    // note: see about replacing jquery post with durandal http
     var _classDatas = [
-        new FilterData('neutral', 'Neutral', false, ''),
         new FilterData('druid', 'Malfurion', false,
             'http://media-hearth.cursecdn.com/avatars/80/382/621.png'),
         new FilterData('hunter', 'Rexxar', false,
@@ -36,8 +34,6 @@ define(function (require) {
     var _maxCardHistory = 20;
     var _currentMatchupClass = '';
     var _matchupStartTime;
-    var _summaryCountdown = 4 + Math.floor(Math.random() * 3);
-
     var _heroData = ko.observable('');
     var _totalPicks = ko.observable(0);
     var _totalWins = ko.observable(0);
@@ -88,7 +84,7 @@ define(function (require) {
                 _totalWins(totalWins);
             }
 
-            // class filter button are off by default
+            // class filter buttons are off by default
             _.forEach(_classDatas, function(classData) {
                 classData.loadSettings();
             });
@@ -107,35 +103,23 @@ define(function (require) {
 
     var showHeroImage = function() {
         var heroData = _.find(_classDatas, function(classData) {
-            return classData.isActive() && !classData.isNeutralOrCommon();
+            return classData.isActive();
         });
 
-        if (heroData) {
-            _heroData(heroData);
-        }
-        else {
-            _heroData('');
-        }
+        _heroData(heroData);
     };
 
     var filterButtonClick = function(filterData) {
         // process clicks from class filter buttons
-        // make sure only one hero is on at a time
+        // make sure only one is on at a time
         var clickedClassData = _.find(_classDatas, function(classData) {
             return classData.name === filterData.name;
         });
 
         if (clickedClassData) {
-            if (!clickedClassData.isNeutralOrCommon()) {
-                _.chain(_classDatas)
-                    .filter(function(classData) {
-                        return !classData.isNeutralOrCommon() &&
-                            classData.name !== clickedClassData.name && classData.isActive();
-                    })
-                    .forEach(function(classData) {
-                        classData.setActive(false);
-                    });
-            }
+            _.forEach(_classDatas, function(classData) {
+                classData.setActive(false);
+            });
 
             clickedClassData.setActive(!clickedClassData.isActive());
 
@@ -151,30 +135,16 @@ define(function (require) {
 
     var cardOneClick = function() {
         processMatchup(_cardOneData(), _cardTwoData());
-        checkForSummary();
+        newMatchup();
     };
 
     var cardTwoClick = function() {
         processMatchup(_cardTwoData(), _cardOneData());
-        checkForSummary();
+        newMatchup();
     };
 
     var summaryClick = function() {
         newMatchup();
-    };
-
-    var checkForSummary = function() {
-        _summaryCountdown = _summaryCountdown - 1;
-        if (_summaryCountdown === 0) {
-            _summaryCountdown = 10 + Math.floor(Math.random() * 10);
-            _hideCards(true);
-            _showSummary(true);
-            _matchupText('');
-        } else {
-            setTimeout(function() {
-                newMatchup();
-            }, 1000);
-        }
     };
 
     var updateSummaryInfo = function(pickedBest, decisionTime) {
@@ -226,14 +196,11 @@ define(function (require) {
     };
 
     var newMatchup = function() {
-        var classes = _.chain(_classDatas)
-            .filter(function(classData) {
-                return classData.isActive();
-            })
-            .map(function(classData) {
-                return classData.name;
-            })
-            .value();
+        var curClass = _.find(_classDatas, function(classData) {
+            return classData.isActive();
+        });
+
+        var classes = [ 'neutral', curClass.name ];
 
         _cardOneData({ url: ''});
         _cardTwoData({ url: ''});
@@ -253,6 +220,15 @@ define(function (require) {
             _matchupStartTime = new Date().getTime();
             _hideCards(false);
             _showSummary(false);
+
+            // NOTE: automated clicker, used for testing
+            //setTimeout(function() {
+            //    if (Math.random() < 0.5) {
+            //        cardOneClick();
+            //    } else {
+            //        cardTwoClick();
+            //    }
+            //}, 100);
         });
     };
 
@@ -283,8 +259,7 @@ define(function (require) {
             class: _currentMatchupClass
         };
 
-        $.post('/api/savematchup/', sendData, function() {
-        });
+        $.post('/api/savematchup/', sendData, function() { });
     };
 
     return {

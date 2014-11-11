@@ -27,8 +27,5 @@ define(function (require) {
                 localStorage[this.storageKey] = isActive;
             }
         };
-        this.isNeutralOrCommon = function() {
-            return this.name === 'neutral' || this.name === 'common';
-        };
     };
 });

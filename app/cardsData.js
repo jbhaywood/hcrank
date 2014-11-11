@@ -12,87 +12,50 @@ var shamanIdx = 7;
 var warlockIdx = 8;
 var warriorIdx = 9;
 
-function CardData(name, id, cardClass, mana, url, rarity, setName) {
+function CardData(name, id, className, mana, url, rarity, setName, category) {
     this.name = name;
     this.id = id;
-    this.class = cardClass;
-    this.mana = mana;
     this.url = url;
+    this.class = className;
+    this.mana = mana;
     this.rarity = rarity === 'free' ? 'common' : rarity;
     this.set = setName;
+    this.category = category;
     this.ranks = [ 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300 ];
     this.matchupTotals = defaultTotals.slice();
     this.winTotals = defaultTotals.slice();
     this.updated = new Date();
 }
 
-CardData.prototype.getRankForClass = function(cardClass) {
-    if (!cardClass) {
-        cardClass = this.class;
+var getClassIdx = function(className) {
+    var idx = classList.indexOf(className);
+    if (idx === -1) {
+        console.log('Class not found (getClassIdx): ' + className);
     }
-    switch (cardClass) {
-        case 'neutral':
-            return this.ranks[neutralIdx];
-        case 'druid':
-            return this.ranks[druidIdx];
-        case 'hunter':
-            return this.ranks[hunterIdx];
-        case 'mage':
-            return this.ranks[mageIdx];
-        case 'paladin':
-            return this.ranks[paladinIdx];
-        case 'priest':
-            return this.ranks[priestIdx];
-        case 'rogue':
-            return this.ranks[rogueIdx];
-        case 'shaman':
-            return this.ranks[shamanIdx];
-        case 'warlock':
-            return this.ranks[warlockIdx];
-        case 'warrior':
-            return this.ranks[warriorIdx];
-        default:
-            console.log('Class not found (getRankForClass): ' + cardClass);
-            return null;
-    }
+    return idx;
 };
 
-CardData.prototype.getMatchupTotalForClass = function(cardClass) {
-    if (!cardClass) {
-        cardClass = this.class;
+CardData.prototype.getRankForClass = function(className) {
+    if (!className) {
+        className = this.class;
     }
-    switch (cardClass) {
-        case 'neutral':
-            return this.matchupTotals[neutralIdx];
-        case 'druid':
-            return this.matchupTotals[druidIdx];
-        case 'hunter':
-            return this.matchupTotals[hunterIdx];
-        case 'mage':
-            return this.matchupTotals[mageIdx];
-        case 'paladin':
-            return this.matchupTotals[paladinIdx];
-        case 'priest':
-            return this.matchupTotals[priestIdx];
-        case 'rogue':
-            return this.matchupTotals[rogueIdx];
-        case 'shaman':
-            return this.matchupTotals[shamanIdx];
-        case 'warlock':
-            return this.matchupTotals[warlockIdx];
-        case 'warrior':
-            return this.matchupTotals[warriorIdx];
-        default:
-            console.log('Class not found (getMatchupTotalForClass): ' + cardClass);
-            return null;
-    }
+    var idx = getClassIdx(className);
+    return this.ranks[idx];
 };
 
-CardData.prototype.getWinTotalForClass = function(cardClass) {
-    if (!cardClass) {
-        cardClass = this.class;
+CardData.prototype.getMatchupTotalForClass = function(className) {
+    if (!className) {
+        className = this.class;
     }
-    switch (cardClass) {
+    var idx = getClassIdx(className);
+    return this.matchupTotals[idx];
+};
+
+CardData.prototype.getWinTotalForClass = function(className) {
+    if (!className) {
+        className = this.class;
+    }
+    switch (className) {
         case 'neutral':
             return this.winTotals[neutralIdx];
         case 'druid':
@@ -114,16 +77,57 @@ CardData.prototype.getWinTotalForClass = function(cardClass) {
         case 'warrior':
             return this.winTotals[warriorIdx];
         default:
-            console.log('Class not found (getWinTotalForClass): ' + cardClass);
+            console.log('Class not found (getWinTotalForClass): ' + className);
             return null;
     }
 };
 
-CardData.prototype.setMatchupTotalForClass = function(cardClass) {
-    if (!cardClass) {
-        cardClass = this.class;
+CardData.prototype.getWinRatioForClass = function(className) {
+    if (!className) {
+        className = this.class;
     }
-    switch (cardClass) {
+    switch (className) {
+        case 'neutral':
+            return this.matchupTotals[neutralIdx] ?
+                Math.round(this.winTotals[neutralIdx] / this.matchupTotals[neutralIdx] * 100) : 0;
+        case 'druid':
+            return this.matchupTotals[druidIdx] ?
+                Math.round(this.winTotals[druidIdx] / this.matchupTotals[druidIdx] * 100) : 0;
+        case 'hunter':
+            return this.matchupTotals[hunterIdx] ?
+                Math.round(this.winTotals[hunterIdx] / this.matchupTotals[hunterIdx] * 100) : 0;
+        case 'mage':
+            return this.matchupTotals[mageIdx] ?
+                Math.round(this.winTotals[mageIdx] / this.matchupTotals[mageIdx] * 100) : 0;
+        case 'paladin':
+            return this.matchupTotals[paladinIdx] ?
+                Math.round(this.winTotals[paladinIdx] / this.matchupTotals[paladinIdx] * 100) : 0;
+        case 'priest':
+            return this.matchupTotals[priestIdx] ?
+                Math.round(this.winTotals[priestIdx] / this.matchupTotals[priestIdx] * 100) : 0;
+        case 'rogue':
+            return this.matchupTotals[rogueIdx] ?
+                Math.round(this.winTotals[rogueIdx] / this.matchupTotals[rogueIdx] * 100) : 0;
+        case 'shaman':
+            return this.matchupTotals[shamanIdx] ?
+                Math.round(this.winTotals[shamanIdx] / this.matchupTotals[shamanIdx] * 100) : 0;
+        case 'warlock':
+            return this.matchupTotals[warlockIdx] ?
+                Math.round(this.winTotals[warlockIdx] / this.matchupTotals[warlockIdx] * 100) : 0;
+        case 'warrior':
+            return this.matchupTotals[warriorIdx] ?
+                Math.round(this.winTotals[warriorIdx] / this.matchupTotals[warriorIdx] * 100) : 0;
+        default:
+            console.log('Class not found (getWinRatioForClass): ' + className);
+            return null;
+    }
+};
+
+CardData.prototype.setMatchupTotalForClass = function(className) {
+    if (!className) {
+        className = this.class;
+    }
+    switch (className) {
         case 'neutral':
             this.matchupTotals[neutralIdx] = this.matchupTotals[neutralIdx] + 1;
             break;
@@ -155,15 +159,15 @@ CardData.prototype.setMatchupTotalForClass = function(cardClass) {
             this.matchupTotals[warriorIdx] = this.matchupTotals[warriorIdx] + 1;
             break;
         default:
-            console.log('Class not found (setWinTotalForClass): ' + cardClass);
+            console.log('Class not found (setWinTotalForClass): ' + className);
     }
 };
 
-CardData.prototype.setWinTotalForClass = function(cardClass) {
-    if (!cardClass) {
-        cardClass = this.class;
+CardData.prototype.setWinTotalForClass = function(className) {
+    if (!className) {
+        className = this.class;
     }
-    switch (cardClass) {
+    switch (className) {
         case 'neutral':
             this.winTotals[neutralIdx] = this.winTotals[neutralIdx] + 1;
             break;
@@ -195,12 +199,12 @@ CardData.prototype.setWinTotalForClass = function(cardClass) {
             this.winTotals[warriorIdx] = this.winTotals[warriorIdx] + 1;
             break;
         default:
-            console.log('Class not found (setWinTotalForClass): ' + cardClass);
+            console.log('Class not found (setWinTotalForClass): ' + className);
     }
 };
 
-CardData.prototype.setRankForClass = function(cardClass, rank) {
-    switch (cardClass) {
+CardData.prototype.setRankForClass = function(className, rank) {
+    switch (className) {
         case 'neutral':
             this.ranks[neutralIdx] = rank;
             break;
@@ -232,11 +236,12 @@ CardData.prototype.setRankForClass = function(cardClass, rank) {
             this.ranks[warriorIdx] = rank;
             break;
         default:
-            console.log('Class not found: ' + cardClass);
+            console.log('Class not found: ' + className);
             break;
     }
 };
 
+exports.getClassIdx = getClassIdx;
 exports.CardData = CardData;
 exports.defaultTotals = defaultTotals;
 exports.neutralIdx = neutralIdx;

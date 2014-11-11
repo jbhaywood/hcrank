@@ -1,46 +1,92 @@
-/*general*/
-.bg-medium {
-	/*background: #865923;*/
+/*use box-sizing for all elements*/
+/** {*/
+	/*-webkit-box-sizing: border-box;*/
+	/*-moz-box-sizing: border-box;*/
+	/*box-sizing: border-box;*/
+/*}*/
+
+* {
+	/*border: 1px solid lightblue !important;*/
 }
 
-.bg-dark {
-	/*background: #332113;*/
+html {
+	font-family: sans-serif;
 }
 
-.bg-light {
-	/*background: #edc89e;*/
-}
-
-html, body, .full-height {
-	height: 100%;
-}
-
-.text-highlight {
-	color: dodgerblue;
-}
-
-.horizontal {
-	vertical-align: middle;
-	margin-right: -4px;
+/*GENERAL*/
+.centered {
+	margin-left: 20%;
+	margin-right: 20%;
 }
 
 .vertical-spacer {
 	height: 20px;
 }
 
-/*matchups*/
-.hoverover:hover {
-	cursor: pointer;
-	-webkit-filter: drop-shadow(0px 0px 40px rgb(0, 115, 255));
-	/*filter: url(shadow.svg#drop-shadow);*/
+.text-big {
+	font-size: 1.25em;
 }
 
-#summary-percent {
-	font-size: 48px;
+.text-title {
+	font-size: 8em;
+	font-weight: bold;
 }
 
-#hero-image {
-	padding-top: 60px;
+.pure-button-active {
+	background-color: #75bcff;
+}
+
+.pure-button {
+	/*height: 24px;*/
+	/*font-size: small;*/
+}
+#host {
+	margin-top: 40px;
+}
+
+#welcome h1:first-child {
+	font-size: 6em;
+	font-weight: bolder;
+}
+
+#welcome h1:nth-child(2) {
+	font-size: 1em;
+	margin-top: -50px;
+}
+
+#menu {
+	background-color: #000000;
+	color: lightgray;
+}
+
+#menu span {
+	font-weight: bolder;
+	color: inherit;
+}
+
+#menu a {
+	color: inherit;
+}
+
+#menu li.pure-menu-selected {
+	color: white;
+}
+
+#menu li a:hover {
+	background-color: #232323;
+}
+
+/*categories*/
+.minion {
+	color: darkorange;
+}
+
+.spell {
+	color: dodgerblue;
+}
+
+.weapon {
+	color: darkgreen;
 }
 
 /*data grid*/
@@ -56,16 +102,16 @@ html, body, .full-height {
 	position: relative;
 }
 
-.card-preview span
+.card-preview div
 {
 	display: none;
 }
 
-.card-preview:hover span
+.card-preview:hover div
 {
 	display: block;
 	position: absolute;
 	z-index:1000;
-	margin-top:-100px;
+	margin-top:-250px;
 	margin-left:50px;
 }

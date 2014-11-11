@@ -6,7 +6,6 @@ requirejs.config({
         'plugins' : '../lib/durandal/js/plugins',
         'transitions' : '../lib/durandal/js/transitions',
         'knockout': '../lib/knockout/knockout-3.1.0',
-        'bootstrap': '../lib/bootstrap/js/bootstrap.min',
         'jquery': '../lib/jquery/jquery-2.1.1.min',
         'datatables': '../lib/externals/jquery.dataTables.min',
         'modernizr': '../lib/externals/modernizr-custom-2.8.3.min',
@@ -27,7 +26,7 @@ requirejs.config({
     }
 });
 
-define(['durandal/system', 'durandal/app', 'durandal/viewLocator'],  function (system, app, viewLocator) {
+define(['durandal/system', 'durandal/app', 'durandal/viewLocator', 'durandal/composition'],  function (system, app, viewLocator) {
     system.debug(true);
 
     app.title = 'HearthCrowdRank';

@@ -12,22 +12,56 @@ var _cardDatasHash = {};
 var _saveCounter = 0;
 var _productionMode = process.env.NODE_ENV === 'production';
 
-var getCardDatas = function() {
-    if (_cardDatas.length === 0) {
-        var rawDatas = _.filter(allCardsRawData.cards, function(card) {
-            return card.collectible && card.category !== 'ability' && card.category !== 'hero';
+var storeCardDatas = function() {
+    var rawDatas = _.filter(allCardsRawData.cards, function(card) {
+        return card.collectible && card.category !== 'ability' && card.category !== 'hero';
+    });
+    _cardDatas = _.map(rawDatas, function(rawData) {
+        var imageUrl = _productionMode ? rawData.image_url : '../lib/images/hs-images/' + rawData.id + '.png';
+        var category = rawData.category === 'secret' ? 'spell' : rawData.category;
+        return new CardData(
+            rawData.name,
+            rawData.id,
+            rawData.hero,
+            rawData.mana,
+            imageUrl,
+            rawData.quality,
+            rawData.set,
+            category);
+    });
+};
+
+var initialize = function() {
+    var deferred = Q.defer();
+    storeCardDatas();
+
+    _.forEach(_cardDatas, function(cardData) {
+        _cardDatasHash[cardData.id] = cardData;
+    });
+
+    var ids = _.pluck(_cardDatas, 'id');
+    dbProvider.getCardsByIds(ids)
+        .then(function(dbCards) {
+            _.forEach(dbCards, function(dbCard) {
+                var cardData = _.find(_cardDatas, { id: dbCard.id });
+                if (cardData) {
+                    cardData.ranks = dbCard.ranks.slice();
+                    cardData.updated = dbCard.updated;
+                    cardData.matchupTotals = dbCard.matchupTotals && dbCard.matchupTotals.length > 0 ?
+                        dbCard.matchupTotals.slice() : _defaultTotals.slice();
+                    cardData.winTotals = dbCard.winTotals && dbCard.winTotals.length > 0 ?
+                        dbCard.winTotals.slice() : _defaultTotals.slice();
+                }
+            });
+
+            deferred.resolve();
         });
-        _cardDatas = _.map(rawDatas, function(data) {
-            var url = _productionMode ? data.image_url : '../lib/images/hs-images/' + data.id + '.png';
-            return new CardData(data.name, data.id, data.hero, data.mana, url, data.quality, data.set);
-        });
-    }
-    return _cardDatas;
+
+    return deferred.promise;
 };
 
 var getCardDatasByClass = function(className) {
-    var cardDatas = getCardDatas();
-    return _.where(cardDatas, { class: className });
+    return _.where(_cardDatas, { class: className });
 };
 
 var getTwoRandomCardsInternal = function(cardDatas, className) {
@@ -44,7 +78,6 @@ var getTwoRandomCardsInternal = function(cardDatas, className) {
     var heroCards = _.reject(sorted, { 'class': 'neutral' });
 
     neutralCards.length = neutralCards.length > 4 ? Math.ceil(neutralCards.length / 4) : neutralCards.length;
-//    heroCards.length = heroCards.length > 4 ? Math.ceil(heroCards.length / 2) : heroCards.length;
     sorted = _.union(neutralCards, heroCards);
 
     var indOne = _.random(sorted.length - 1);
@@ -61,39 +94,6 @@ var getTwoRandomCardsInternal = function(cardDatas, className) {
         cardOne: cardOne,
         cardTwo: cardTwo
     };
-};
-
-// PUBLIC 
-
-var initialize = function() {
-    var deferred = Q.defer();
-    var cardDatas = getCardDatas();
-
-    // add rankings to cards
-    var ids = _.pluck(cardDatas, 'id');
-    dbProvider.getCardsByIds(ids).then(function(dbCards) {
-        _.forEach(dbCards, function(dbCard) {
-            var cardData = _.find(cardDatas, { id: dbCard.id });
-            if (cardData) {
-                cardData.ranks = dbCard.ranks.slice();
-                cardData.updated = dbCard.updated;
-                cardData.matchupTotals = dbCard.matchupTotals && dbCard.matchupTotals.length > 0 ?
-                    dbCard.matchupTotals.slice() : _defaultTotals.slice();
-                cardData.winTotals = dbCard.winTotals && dbCard.winTotals.length > 0 ?
-                    dbCard.winTotals.slice() : _defaultTotals.slice();
-            }
-        });
-
-        _.forEach(cardDatas, function(cardData) {
-            _cardDatasHash[cardData.id] = cardData;
-        });
-
-        deferred.resolve();
-    }, function(err) {
-        console.log(err);
-    });
-
-    return deferred.promise;
 };
 
 var getFilteredCards = function(includeClasses) {
@@ -155,6 +155,7 @@ var saveAllCards = function() {
     var saveCount =  _productionMode ? 10 : 1;
     if (_saveCounter > saveCount) {
         dbProvider.saveUpdatedCards(_cardDatas);
+        dbProvider.saveAllSnapshots(_cardDatas);
         _saveCounter = 0;
     }
 };
@@ -170,6 +171,10 @@ var setCardRank = function(cardId, rank, className, didWin) {
             cardData.setWinTotalForClass(className);
         }
     }
+};
+
+var getCardDatas = function() {
+    return _cardDatas;
 };
 
 exports.initialize = initialize;
