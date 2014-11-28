@@ -1,48 +1,45 @@
 <div id="pairRanking">
 	<!--hero image-->
 	<div class="block-group">
-		<div class="block" style="width: 10%">
-			<img style="width: 100%" id="hero-image" data-bind="attr: { src: heroData().url }">
+		<div id="hero-image" class="block">
+			<img data-bind="attr: { src: heroData().url }">
 		</div>
 
-		<div class="block" style="width: 90%">
-			<h3>Pick the hero to rank cards for:</h3>
+		<div id="classPicker" class="block">
+			<!--<h3>Pick the hero to rank cards for:</h3>-->
 			<!--class buttons-->
-			<div id="pairButtons" class="block" style="width: 90%" data-bind="foreach: classes">
+			<div id="pairButtons" data-bind="foreach: classes">
+				<span class="fa fa-lock" data-bind="style: { visibility: isLocked() ? 'visible' : 'hidden' }"></span>
 				<button class="pure-button" data-bind="text: displayName,
-				css: { 'pure-button-active': isActive },
-				click: function() { $root.filterButtonClick($data) }"></button>
+					css: { 'pure-button-active': isActive },
+					click: function() { $root.filterButtonClick($data) },
+					style: { opacity: isLocked() ? '0.5' : '1',
+					'padding-left': isLocked() ? '2%' : '1.25%' }"></button>
 			</div>
+		</div>
+
+		<!--user data-->
+		<div id="userData" class="block">
+			<h3>Total Picks: <span data-bind="text: totalPicks"></span></h3>
+			<h4>Crowd: <span data-bind="text: winPercent"></span></h4>
+			<h4>Rank: <span data-bind="text: rank"></span></h4>
+			<h4 data-bind="style: { visibility: picksToNextHero() != undefined ? 'visible' : 'hidden' }">
+				Next Hero: <span data-bind="text: picksToNextHero"></span></h4>
 		</div>
 	</div>
 
 	<div class="block-group">
 		<!--choose wisely-->
-		<h1 class="block" data-bind="visible: !showSummary()">Choose Wisely</h1>
+		<h1 class="block" data-bind="text: matchupText"></h1>
 
 		<!--card one-->
-		<div id="cardOne" class="block" data-bind="style: { visible: !showSummary(),
-			visibility: hideCards() ? 'hidden' : 'visible' }">
+		<div id="cardOne" class="block" data-bind="style: { visibility: hideCards() ? 'hidden' : 'visible' }">
 			<img class="shadowfilter hoverover" data-bind="attr: { src: cardOneData().url }, click: cardOneClick">
 		</div>
 
 		<!--card two-->
-		<div id="cardTwo" class="block" data-bind="style: { visible: !showSummary(),
-			visibility: hideCards() ? 'hidden' : 'visible' }">
+		<div id="cardTwo" class="block" data-bind="style: { visibility: hideCards() ? 'hidden' : 'visible' }">
 			<img class="shadowfilter hoverover" data-bind="attr: { src: cardTwoData().url }, click: cardTwoClick">
 		</div>
 	</div>
-
-	<!--user data-->
-	<!--<div>-->
-		<!--<h3>Total Picks: <span data-bind="text: totalPicks"></span></h3>-->
-		<!--<h4>Crowd: <span data-bind="text: winPercent"></span></h4>-->
-		<!--<h4>Rank: <span data-bind="text: rank"></span></h4>-->
-	<!--</div>-->
-
-
-	<!--matchup result message-->
-	<!--<div>-->
-		<!--<h2 data-bind="text: matchupText"></h2>-->
-	<!--</div>-->
 </div>

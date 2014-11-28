@@ -1,6 +1,7 @@
 #topCards {
 	margin-top: 100px;
 	width: 730px;
+	display: none;
 }
 
 #topCards p {

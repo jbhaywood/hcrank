@@ -8,6 +8,7 @@ define(function (require) {
         this.displayName = displayName;
         this.url = url || '';
         this.isActive = ko.observable(activeDefault);
+        this.isLocked = ko.observable(true);
         this.storageKey = name + '_active';
         this.loadSettings = function() {
             if (Modernizr.localstorage) {

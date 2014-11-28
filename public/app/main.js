@@ -10,7 +10,8 @@ requirejs.config({
         'datatables': '../lib/externals/jquery.dataTables.min',
         'modernizr': '../lib/externals/modernizr-custom-2.8.3.min',
         'lodash': '../lib/externals/lodash-modern-2.4.1.min',
-        'filterdata': '../app/data/filterData'
+        'filterdata': '../app/data/filterData',
+        'userdata': '../app/data/userData'
     },
     shim: {
         'bootstrap': {

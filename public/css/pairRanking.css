@@ -2,12 +2,24 @@
 	margin-top: 50px;
 }
 
-#pairRanking #pairButtons {
-	margin: 0 -4px;
+#pairRanking #hero-image {
+	width: 13%;
 }
 
-#pairRanking button {
-	margin: -10px 0;
+#pairRanking #hero-image img {
+	width: 100%;
+}
+
+#pairRanking #classPicker {
+	width: 77%;
+}
+
+#pairRanking #pairButtons button {
+	margin: 50px 10px 0 -20px;
+}
+
+#pairRanking #userData {
+	width: 10%;
 }
 
 #pairRanking h1 {
