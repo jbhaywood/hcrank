@@ -1,6 +1,6 @@
 'use strict';
 define(function (require) {
-    localStorage.clear();
+    //localStorage.clear();
 
     var ko = require('knockout');
     var Modernizr = require('modernizr');
@@ -18,6 +18,7 @@ define(function (require) {
     var _averagePickTime = ko.observable(0);
     var _customClassDatas = ko.observableArray();
     var _currentClassData = ko.observable('');
+    var _nextClassData = ko.observable('');
     var _heroUnlockLevels = [0,50,100,150,200,250,300,350,400,450];
     //var _heroUnlockLevels = [0,2,4,6,8,10,12,14,16];
     var _curClassIdx = 0;
@@ -67,7 +68,7 @@ define(function (require) {
             localStorage[_classOrderKey] = orderStr;
         } else {
             _curClassIdx = parseInt(_curClassIdx);
-            unlockedIdx = parseInt(_curUnlockedIdx);
+            unlockedIdx = parseInt(unlockedIdx);
             _.forEach(orderStr, function(char) {
                 var idx = parseInt(char);
                 reorderedList.push(_classDatas[idx]);
@@ -79,6 +80,7 @@ define(function (require) {
             var isLocked = j > _curUnlockedIdx();
             reorderedList[j].isLocked(isLocked);
         }
+
         _.forEach(reorderedList, function(classData) {
             _customClassDatas().push(classData);
         });
@@ -86,6 +88,11 @@ define(function (require) {
         _.forEach(_customClassDatas(), function(classData) {
             classData.loadSettings();
         });
+
+        var nextHero = _.find(_customClassDatas(), function(classData) {
+            return classData.isLocked();
+        });
+        _nextClassData(nextHero);
 
         // make sure that one class filter button is active
         if (_.all(_customClassDatas(), function(classData) {
@@ -164,6 +171,10 @@ define(function (require) {
             if (_totalPicks() >= _heroUnlockLevels[nxtIdx]) {
                 _customClassDatas()[nxtIdx].isLocked(false);
                 _curUnlockedIdx(nxtIdx);
+                var nextHero = _customClassDatas()[nxtIdx + 1];
+                if (nextHero) {
+                    _nextClassData(nextHero);
+                }
             }
         }
     };
@@ -206,6 +217,7 @@ define(function (require) {
         winPercent: _winPercent,
         userRank: _userRank,
         currentHero: _currentClassData,
+        nextHero: _nextClassData,
         classDatas: _customClassDatas,
         updatePickData: updatePickData,
         updateCurrentHero: updateCurrentHero,

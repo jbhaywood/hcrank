@@ -156,7 +156,8 @@ define(function (require) {
         picksToNextHero: UserData.picksToNextHero,
         rank: UserData.userRank,
         classes: UserData.classDatas,
-        heroData: UserData.currentHero,
+        currentHero: UserData.currentHero,
+        nextHero: UserData.nextHero,
         hideCards: _hideCards,
         displayName: 'Pair Ranking',
         activate: function() {

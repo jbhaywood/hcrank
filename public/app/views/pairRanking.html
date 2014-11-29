@@ -2,7 +2,7 @@
 	<!--hero image-->
 	<div class="block-group">
 		<div id="hero-image" class="block">
-			<img data-bind="attr: { src: heroData().url }">
+			<img data-bind="attr: { src: currentHero().url }">
 		</div>
 
 		<div id="classPicker" class="block">
@@ -24,7 +24,11 @@
 			<h4>Crowd: <span data-bind="text: winPercent"></span></h4>
 			<h4>Rank: <span data-bind="text: rank"></span></h4>
 			<h4 data-bind="style: { visibility: picksToNextHero() != undefined ? 'visible' : 'hidden' }">
-				Next Hero: <span data-bind="text: picksToNextHero"></span></h4>
+				Unlock
+				<span data-bind="text: nextHero().displayName"></span>
+				<span>:</span>
+				<span data-bind="text: picksToNextHero"></span>
+			</h4>
 		</div>
 	</div>
 
