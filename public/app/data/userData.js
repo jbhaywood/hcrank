@@ -2,17 +2,22 @@
 define(function (require) {
     //localStorage.clear();
 
+    var app = require('durandal/app');
     var ko = require('knockout');
     var Modernizr = require('modernizr');
     var FilterData = require('filterdata');
 
+    var _versionKey = 'version';
+    var _userIdKey = 'userid';
     var _totalPicksKey = 'totalpicks';
     var _totalWinsKey = 'totalwins';
     var _avgPickTimeKey = 'averagepicktime';
     var _currentClassIndexKey = 'currentclassindex';
     var _currentUnlockedIndexKey = 'currentunlockedindex';
-    var _classOrderKey = 'classlocked';
+    var _classOrderKey = 'classorder';
 
+    var _curVersion = 2;
+    var _userId;
     var _totalPicks = ko.observable(0);
     var _totalWins = ko.observable(0);
     var _averagePickTime = ko.observable(0);
@@ -20,11 +25,11 @@ define(function (require) {
     var _currentClassData = ko.observable('');
     var _nextClassData = ko.observable('');
     var _heroUnlockLevels = [0,50,100,150,200,250,300,350,400,450];
-    //var _heroUnlockLevels = [0,2,4,6,8,10,12,14,16];
+    //var _heroUnlockLevels = [0,3,5,9,12,15,20,22,26];
     var _curClassIdx = 0;
     var _curUnlockedIdx = ko.observable(0);
 
-    var _classDatas = [
+    var _heroDatas = [
         new FilterData('druid', 'Malfurion', false,
             'http://media-hearth.cursecdn.com/avatars/128/6/621.png'),
         new FilterData('hunter', 'Rexxar', false,
@@ -45,43 +50,60 @@ define(function (require) {
             'http://media-hearth.cursecdn.com/avatars/127/991/635.png')
     ];
 
+    var guidGenerator = function() {
+        var S4 = function() {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+        };
+
+        return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4());
+    };
+
     if (Modernizr.localstorage) {
+        var version = localStorage[_versionKey];
+        if (!version || version < _curVersion) {
+            localStorage.clear();
+            localStorage[_versionKey] = 2;
+        }
+
         // randomize class order
         _curClassIdx = localStorage[_currentClassIndexKey];
         var unlockedIdx = localStorage[_currentUnlockedIndexKey];
         var orderStr = localStorage[_classOrderKey];
-        var reorderedList = [];
+        var reorderedDatas = [];
         if (!_curClassIdx) {
             _curClassIdx = 0;
             unlockedIdx = 0;
             orderStr = '';
-            var tempList = _classDatas.slice();
-            while (tempList.length !== 0) {
-                var idx = Math.floor(Math.random() * tempList.length);
-                var hero = tempList[idx];
-                var heroIdx = _classDatas.indexOf(hero);
+            var heroDatasCopy = _heroDatas.slice();
+            while (heroDatasCopy.length !== 0) {
+                var tempIdx = Math.floor(Math.random() * heroDatasCopy.length);
+                var heroDataCopy = heroDatasCopy[tempIdx];
+                var heroIdx = _heroDatas.indexOf(heroDataCopy);
                 orderStr = orderStr + heroIdx.toString();
-                reorderedList.push(hero);
-                tempList.splice(idx, 1);
+                reorderedDatas.push(heroDataCopy);
+                heroDatasCopy.splice(tempIdx, 1);
             }
+            _userId = guidGenerator();
+            localStorage[_userIdKey] = _userId;
             localStorage[_currentClassIndexKey] = 0;
             localStorage[_classOrderKey] = orderStr;
         } else {
+            _userId = localStorage[_userIdKey];
             _curClassIdx = parseInt(_curClassIdx);
             unlockedIdx = parseInt(unlockedIdx);
             _.forEach(orderStr, function(char) {
                 var idx = parseInt(char);
-                reorderedList.push(_classDatas[idx]);
+                reorderedDatas.push(_heroDatas[idx]);
             });
         }
 
         _curUnlockedIdx(unlockedIdx);
-        for (var j = 0; j < reorderedList.length; j = j + 1) {
+        for (var j = 0; j < reorderedDatas.length; j = j + 1) {
             var isLocked = j > _curUnlockedIdx();
-            reorderedList[j].isLocked(isLocked);
+            reorderedDatas[j].isLocked(isLocked);
         }
 
-        _.forEach(reorderedList, function(classData) {
+        _.forEach(reorderedDatas, function(classData) {
             _customClassDatas().push(classData);
         });
 
@@ -118,7 +140,7 @@ define(function (require) {
             _totalWins(tw);
         }
     } else {
-        _customClassDatas().push(_classDatas) ;
+        _customClassDatas().push(_heroDatas) ;
     }
 
     var _userRank = ko.computed(function() {
@@ -163,6 +185,16 @@ define(function (require) {
             localStorage[_currentClassIndexKey] = _curClassIdx;
             localStorage[_currentUnlockedIndexKey] = _curUnlockedIdx();
         }
+
+        var sendData = {
+            userId: _userId,
+            totalPicks: _totalPicks,
+            totalWins: _totalWins,
+            averagePickTime: _averagePickTime,
+            unlockLevel: _curUnlockedIdx
+        };
+
+        $.post('/api/saveuserdata/', sendData, function() { });
     };
 
     var unlockHero = function() {
@@ -171,6 +203,10 @@ define(function (require) {
             if (_totalPicks() >= _heroUnlockLevels[nxtIdx]) {
                 _customClassDatas()[nxtIdx].isLocked(false);
                 _curUnlockedIdx(nxtIdx);
+
+                app.showMessage('You just unlocked ' + _customClassDatas()[nxtIdx].displayName +
+                '.  Keep ranking cards to unlock the rest.', 'Congratulations!' );
+
                 var nextHero = _customClassDatas()[nxtIdx + 1];
                 if (nextHero) {
                     _nextClassData(nextHero);
@@ -179,7 +215,7 @@ define(function (require) {
         }
     };
 
-    var updatePickData = function(pickedBest, decisionTime) {
+    var updateAndSave = function(pickedBest, decisionTime) {
         _totalPicks(_totalPicks() + 1);
 
         if (pickedBest) {
@@ -219,7 +255,8 @@ define(function (require) {
         currentHero: _currentClassData,
         nextHero: _nextClassData,
         classDatas: _customClassDatas,
-        updatePickData: updatePickData,
+        userId: _userId,
+        updateAndSave: updateAndSave,
         updateCurrentHero: updateCurrentHero,
 
         activate: function() {

@@ -10,10 +10,12 @@ var Card;
 var Matchup;
 var Snapshot;
 var App;
+var User;
 var TestCard = null;
 var TestMatchup = null;
 var TestSnapshot = null;
 var TestApp = null;
+var TestUser = null;
 
 var CardObj = function() {
     return {
@@ -54,6 +56,17 @@ var AppObj = function() {
     };
 };
 
+var UserObj = function() {
+    return {
+        id: String,
+        totalPicks: Number,
+        totalWins: Number,
+        averagePickTime: Number,
+        unlockLevel: Number,
+        lastUpdated: Date
+    };
+};
+
 var Options = function() {
     return { server: { socketOptions: { keepAlive: 1 } } };
 };
@@ -87,6 +100,7 @@ var initialize = function() {
         Matchup = _prodDb.model('Matchup', mongoose.Schema(new MatchupObj()));
         Snapshot = _prodDb.model('Snapshot', mongoose.Schema(new SnapshotObj()));
         App = _prodDb.model('App', mongoose.Schema(new AppObj()));
+        User = _prodDb.model('User', mongoose.Schema(new UserObj()));
 
         console.log('Connected to ' + _prodDb.name);
         if (_productionMode) {
@@ -113,6 +127,7 @@ var initialize = function() {
             TestMatchup = _testDb.model('TestMatchup', mongoose.Schema(new MatchupObj()));
             TestSnapshot = _testDb.model('TestSnapshot', mongoose.Schema(new SnapshotObj()));
             TestApp = _testDb.model('TestApp', mongoose.Schema(new AppObj()));
+            TestUser = _testDb.model('TestUser', mongoose.Schema(new UserObj()));
 
             console.log('Connected to ' + _testDb.name);
             if (_prodDb/* && _prodDb._hasOpened*/) {
@@ -302,6 +317,40 @@ var saveAllSnapshots = function(cardDatas) {
     });
 };
 
+var saveUser = function(userData) {
+    var user = _productionMode ? User : TestUser;
+
+    user.findOne({ id: userData.userId }, function(err, data) {
+        if (err) {
+            console.log('error saving user:' + err.message);
+        } else {
+            var tPicks = parseInt(userData.totalPicks, 10);
+            var tWins = parseInt(userData.totalWins, 10);
+            var avgTime = parseInt(userData.averagePickTime, 10);
+            var uLevel = parseInt(userData.unlockLevel, 10);
+
+            if (data) {
+                data.totalPicks = tPicks;
+                data.totalWins = tWins;
+                data.averagePickTime = avgTime;
+                data.unlockLevel = uLevel;
+            } else {
+                var dataObj = {
+                    id: userData.userId,
+                    totalPicks: tPicks,
+                    totalWins: tWins,
+                    averagePickTime: avgTime,
+                    unlockLevel: uLevel
+                };
+                data = _productionMode ? new User(dataObj) : new TestUser(dataObj);
+            }
+
+            data.lastUpdated = new Date();
+            data.save();
+        }
+    });
+};
+
 var getDbModels = function() {
     return {
         Card: Card,
@@ -322,4 +371,5 @@ exports.getTotalMatchups = getTotalMatchups;
 exports.saveAllSnapshots = saveAllSnapshots;
 exports.saveMatchup = saveMatchup;
 exports.saveUpdatedCards = saveUpdatedCards;
+exports.saveUser = saveUser;
 exports.shutDown = shutDown;

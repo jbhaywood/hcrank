@@ -19,27 +19,15 @@ html {
 	margin-right: 10%;
 }
 
-.vertical-spacer {
-	height: 20px;
-}
-
-.text-big {
-	font-size: 1.25em;
-}
-
-.text-title {
-	font-size: 8em;
-	font-weight: bold;
-}
-
 .pure-button-active {
 	background-color: #75bcff;
 }
 
-.pure-button {
-	/*height: 24px;*/
-	/*font-size: small;*/
+.customMessageBox {
+	background-color: white;
+	padding: 5px 20px 20px 20px;
 }
+
 #host {
 	margin-top: 40px;
 }

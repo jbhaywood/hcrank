@@ -125,7 +125,7 @@ define(function (require) {
         _cardHistory.unshift(unpickedCard.id);
 
         _matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
-        UserData.updatePickData(pickedBest, decisionTime);
+        UserData.updateAndSave(pickedBest, decisionTime);
         clearMatchup();
 
         var sendData = {
@@ -159,7 +159,7 @@ define(function (require) {
         currentHero: UserData.currentHero,
         nextHero: UserData.nextHero,
         hideCards: _hideCards,
-        displayName: 'Pair Ranking',
+        displayName: 'Rank Cards',
         activate: function() {
             UserData.updateCurrentHero();
             return newMatchup();

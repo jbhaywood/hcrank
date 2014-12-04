@@ -113,4 +113,9 @@ exports.initialize = function(router) {
 
         res.send(sendData);
     });
+
+    router.post('/saveuserdata/', function(req, res) {
+        dbProvider.saveUser(req.body);
+        res.end();
+    });
 };
