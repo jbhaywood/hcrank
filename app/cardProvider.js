@@ -148,12 +148,10 @@ var getTwoRandomCards = function(includeClasses, cardHistory) {
 };
 
 var saveAllCards = function() {
-    console.log('enter saveAllCards');
     _saveCounter = _saveCounter + 1;
 
-    var saveCount =  _productionMode ? 1 : 1;
+    var saveCount =  _productionMode ? 5 : 1;
     if (_saveCounter > saveCount) {
-        console.log('saving all cards');
         dbProvider.saveUpdatedCards(_cardDatas);
         dbProvider.saveAllSnapshots(_cardDatas);
         _saveCounter = 0;

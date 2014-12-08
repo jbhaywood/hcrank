@@ -41,14 +41,12 @@ exports.initialize = function(router) {
     };
 
     router.post('/savematchup/', function(req, res) {
-        console.log('enter savematchup');
         var data = req.body;
 
         if (data.cardWinnerId && data.cardLoserId && data.cardWinnerRank &&
             data.cardLoserRank && data.milliseconds && data.class) {
-            console.log('start savematchup');
-            var idWinner = parseInt(data.cardWinnerId, 10);
-            var idLoser = parseInt(data.cardLoserId, 10);
+            var idWinner = data.cardWinnerId;
+            var idLoser = data.cardLoserId;
             var className = data.class;
             var oldWinnerRank = parseFloat(data.cardWinnerRank);
             var oldLoserRank = parseFloat(data.cardLoserRank);
