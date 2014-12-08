@@ -48,35 +48,32 @@ exports.initialize = function(router) {
             var idWinner = parseInt(data.cardWinnerId, 10);
             var idLoser = parseInt(data.cardLoserId, 10);
             var className = data.class;
+            var oldWinnerRank = parseFloat(data.cardWinnerRank);
+            var oldLoserRank = parseFloat(data.cardLoserRank);
+            var milliseconds = parseInt(data.milliseconds, 10);
 
-            if (intCheck(idWinner) && intCheck(idLoser)) {
-                var oldWinnerRank = parseFloat(data.cardWinnerRank);
-                var oldLoserRank = parseFloat(data.cardLoserRank);
-                var milliseconds = parseInt(data.milliseconds, 10);
-
-                if (isNaN(oldWinnerRank)) {
-                    oldWinnerRank = 1300;
-                }
-                if (isNaN(oldLoserRank)) {
-                    oldLoserRank = 1300;
-                }
-                if (!intCheck(milliseconds)) {
-                    milliseconds = 0;
-                }
-
-                elo.setKFactor(128);
-
-                var winnerExpected = elo.getExpected(oldWinnerRank, oldLoserRank);
-                var loserExpected = elo.getExpected(oldLoserRank, oldWinnerRank);
-
-                var rankWinner = Math.floor(elo.updateRating(winnerExpected, 1, oldWinnerRank));
-                var rankLoser = Math.floor(elo.updateRating(loserExpected, 0, oldLoserRank));
-
-                cardProvider.setCardRank(idWinner, rankWinner, className, true);
-                cardProvider.setCardRank(idLoser, rankLoser, className, false);
-                cardProvider.saveAllCards();
-                dbProvider.saveMatchup(idWinner, idLoser, rankWinner, rankLoser, idWinner, className, milliseconds);
+            if (isNaN(oldWinnerRank)) {
+                oldWinnerRank = 1300;
             }
+            if (isNaN(oldLoserRank)) {
+                oldLoserRank = 1300;
+            }
+            if (!intCheck(milliseconds)) {
+                milliseconds = 0;
+            }
+
+            elo.setKFactor(128);
+
+            var winnerExpected = elo.getExpected(oldWinnerRank, oldLoserRank);
+            var loserExpected = elo.getExpected(oldLoserRank, oldWinnerRank);
+
+            var rankWinner = Math.floor(elo.updateRating(winnerExpected, 1, oldWinnerRank));
+            var rankLoser = Math.floor(elo.updateRating(loserExpected, 0, oldLoserRank));
+
+            cardProvider.setCardRank(idWinner, rankWinner, className, true);
+            cardProvider.setCardRank(idLoser, rankLoser, className, false);
+            cardProvider.saveAllCards();
+            dbProvider.saveMatchup(idWinner, idLoser, rankWinner, rankLoser, idWinner, className, milliseconds);
         }
 
         res.end();
