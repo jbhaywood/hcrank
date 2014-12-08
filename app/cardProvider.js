@@ -148,6 +148,7 @@ var getTwoRandomCards = function(includeClasses, cardHistory) {
 };
 
 var saveAllCards = function() {
+    console.log('enter saveAllCards');
     _saveCounter = _saveCounter + 1;
 
     var saveCount =  _productionMode ? 1 : 1;
