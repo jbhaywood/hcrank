@@ -218,7 +218,7 @@ define(function (require) {
     var updateAndSave = function(pickedBest, decisionTime) {
         _totalPicks(_totalPicks() + 1);
 
-        if (pickedBest) {
+        if (pickedBest === undefined || pickedBest) {
             _totalWins(_totalWins() + 1);
         }
 

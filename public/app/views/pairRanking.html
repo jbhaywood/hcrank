@@ -6,7 +6,6 @@
 		</div>
 
 		<div id="classPicker" class="block">
-			<!--<h3>Pick the hero to rank cards for:</h3>-->
 			<!--class buttons-->
 			<div id="pairButtons" data-bind="foreach: classes">
 				<span class="fa fa-lock" data-bind="style: { visibility: isLocked() ? 'visible' : 'hidden' }"></span>
@@ -21,7 +20,7 @@
 		<!--user data-->
 		<div id="userData" class="block">
 			<h3>Total Picks: <span data-bind="text: totalPicks"></span></h3>
-			<h4>Crowd: <span data-bind="text: winPercent"></span></h4>
+			<h4>Crowd Affinity: <span data-bind="text: winPercent"></span></h4>
 			<h4>Rank: <span data-bind="text: rank"></span></h4>
 			<h4 data-bind="style: { visibility: picksToNextHero() != undefined ? 'visible' : 'hidden' }">
 				Unlock

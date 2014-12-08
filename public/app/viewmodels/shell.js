@@ -11,7 +11,7 @@ define(function (require) {
             router.map([
                 { route: '', title:'Welcome', moduleId: 'viewmodels/welcome', nav: true },
                 { route: 'pairRanking', title:'Rank Cards', moduleId: 'viewmodels/pairRanking', nav: true },
-                { route: 'stats', title: 'Card Stats', moduleId: 'viewmodels/stats', nav: true }
+                { route: 'stats', title: 'Card Reports', moduleId: 'viewmodels/stats', nav: true }
             ]).buildNavigationModel();
             
             return router.activate();

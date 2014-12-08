@@ -53,10 +53,6 @@ define(function (require) {
         newMatchup();
     };
 
-    var setImageUrl = function(card, size) {
-        card.url = card.url.replace('\/medium\/', '\/' + size + '\/');
-    };
-
     var setMatchupText = function(cardOne, cardTwo) {
         var rankOne = cardOne.currentRank;
         var rankTwo = cardTwo.currentRank;
@@ -91,8 +87,6 @@ define(function (require) {
 
         return $.post('/api/newmatchup/', sendData, function(data) {
             setMatchupText(data.cardOne, data.cardTwo);
-            setImageUrl(data.cardOne, 'original');
-            setImageUrl(data.cardTwo, 'original');
             _cardOneData(data.cardOne);
             _cardTwoData(data.cardTwo);
             _currentMatchupClass = data.class;
@@ -113,9 +107,10 @@ define(function (require) {
     var processMatchup = function(pickedCard, unpickedCard) {
         var matchupStopTime = new Date().getTime();
         var decisionTime = matchupStopTime - _matchupStartTime;
-        var pickedRank = pickedCard.currentRank;
-        var unpickedRank = unpickedCard.currentRank;
-        var pickedBest = pickedRank >= unpickedRank;
+        var pickedRank = pickedCard.rank;
+        var unpickedRank = unpickedCard.rank;
+        var undecided = pickedCard.unranked || unpickedCard.unranked;
+        var pickedBest = undecided ? undefined : pickedRank >= unpickedRank;
 
         if (_cardHistory.length === _maxCardHistory) {
             _cardHistory.length = _maxCardHistory - 2;
@@ -124,15 +119,20 @@ define(function (require) {
         _cardHistory.unshift(pickedCard.id);
         _cardHistory.unshift(unpickedCard.id);
 
-        _matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
+        if (undecided) {
+            _matchupText('The crowd hasn\'t decided yet');
+        } else {
+            _matchupText(pickedBest ? 'The crowd agrees' : 'The crowd does not agree');
+        }
+
         UserData.updateAndSave(pickedBest, decisionTime);
         clearMatchup();
 
         var sendData = {
             cardWinnerId: pickedCard.id,
             cardLoserId: unpickedCard.id,
-            cardWinnerRank: pickedCard.currentRank,
-            cardLoserRank: unpickedCard.currentRank,
+            cardWinnerRank: pickedCard.rank,
+            cardLoserRank: unpickedCard.rank,
             milliseconds: decisionTime,
             class: _currentMatchupClass
         };

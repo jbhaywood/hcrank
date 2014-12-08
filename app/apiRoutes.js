@@ -4,6 +4,8 @@ var elo = require('elo-rank')();
 var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
 
+var _minPickCount = 100;
+
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
         var data = req.body;
@@ -18,12 +20,16 @@ exports.initialize = function(router) {
             cardOne: {
                 id: cardData.cardOne.id,
                 url: cardData.cardOne.url,
-                currentRank: cardData.cardOne.getRankForClass(cardClass)
+                rank: cardData.cardOne.getRankForClass(cardClass),
+                winRatio: cardData.cardOne.getWinRatioForClass(cardClass),
+                unranked: cardData.cardOne.getMatchupTotalForClass(cardClass) < _minPickCount
             },
             cardTwo: {
                 id: cardData.cardTwo.id,
                 url: cardData.cardTwo.url,
-                currentRank: cardData.cardTwo.getRankForClass(cardClass)
+                rank: cardData.cardTwo.getRankForClass(cardClass),
+                winRatio: cardData.cardTwo.getWinRatioForClass(cardClass),
+                unranked: cardData.cardTwo.getMatchupTotalForClass(cardClass) < _minPickCount
             },
             class: cardClass
         };

@@ -3,7 +3,7 @@ var _ = require('lodash');
 var Q = require('q');
 var cardsData = require('./cardsData');
 var dbProvider = require('./dbProvider');
-var allCardsRawData = require('./../data/all-cards.json');
+var allCardsRawData = require('./../data/sourceCardData').cardList;
 
 var CardData = cardsData.CardData;
 var _defaultTotals = cardsData.defaultTotals;
@@ -11,23 +11,21 @@ var _cardDatas = [];
 var _cardDatasHash = {};
 var _saveCounter = 0;
 var _productionMode = process.env.NODE_ENV === 'production';
+var _baseUrl = 'http:\/\/wow.zamimg.com\/images\/hearthstone\/cards\/enus\/original\/';
 
 var storeCardDatas = function() {
-    var rawDatas = _.filter(allCardsRawData.cards, function(card) {
-        return card.collectible && card.category !== 'ability' && card.category !== 'hero';
-    });
-    _cardDatas = _.map(rawDatas, function(rawData) {
-        var imageUrl = _productionMode ? rawData.image_url : '../lib/images/hs-images/' + rawData.id + '.png';
-        var category = rawData.category === 'secret' ? 'spell' : rawData.category;
+    _cardDatas = _.map(allCardsRawData, function(rawData) {
+        var prodUrl = _baseUrl + rawData.gameId + '.png';
+        var imageUrl = _productionMode ? prodUrl : '../lib/images/hs-images/' + rawData.gameId + '.png';
         return new CardData(
             rawData.name,
-            rawData.id,
+            rawData.gameId,
             rawData.hero,
             rawData.mana,
             imageUrl,
             rawData.quality,
             rawData.set,
-            category);
+            rawData.category);
     });
 };
 

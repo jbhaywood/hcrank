@@ -28,7 +28,8 @@ define(function (require) {
 
     var setDatas = [
         new FilterData('allsets', 'All', true),
-        new FilterData('naxxramas', 'Naxxramas', false)
+        new FilterData('naxxramas', 'Naxxramas', false),
+        new FilterData('goblins vs gnomes', 'Goblins vs Gnomes', false)
     ];
 
     var filterButtonClick = function(filterData) {
@@ -90,6 +91,7 @@ define(function (require) {
                 table.draw();
             } else {
                 var urlBits = window.location.href.split('/');
+                //var verbose = true;
                 var verbose = urlBits[urlBits.length - 1] === 'statsall';
 
                 table = $('#table_id').DataTable({

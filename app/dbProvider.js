@@ -19,7 +19,7 @@ var TestUser = null;
 
 var CardObj = function() {
     return {
-        id: Number,
+        id: String,
         ranks: [Number],
         updated: Date,
         matchupTotals: [Number],
@@ -29,11 +29,11 @@ var CardObj = function() {
 
 var MatchupObj = function() {
     return {
-        cardOneId: Number,
-        cardTwoId: Number,
+        cardOneId: String,
+        cardTwoId: String,
         cardOneRank: Number,
         cardTwoRank: Number,
-        winnerId: Number,
+        winnerId: String,
         class: String,
         secondsToDecide: Number,
         created: Date
@@ -42,7 +42,7 @@ var MatchupObj = function() {
 
 var SnapshotObj = function() {
     return {
-        id: Number,
+        id: String,
         date: String,
         ranks: [Number],
         matchupTotals: [Number],
@@ -111,7 +111,7 @@ var initialize = function() {
     });
 
     _prodDb.on('error', function (err) {
-        console.log('Error onnecting to ' + _prodDb.name + ': ' + err);
+        console.log('Error with ' + _prodDb.name + ': ' + err);
     });
 
     _prodDb.on('disconnected', function () {
@@ -130,7 +130,7 @@ var initialize = function() {
             TestUser = _testDb.model('TestUser', mongoose.Schema(new UserObj()));
 
             console.log('Connected to ' + _testDb.name);
-            if (_prodDb/* && _prodDb._hasOpened*/) {
+            if (_prodDb && _prodDb._hasOpened) {
                 promise.fulfill();
             }
         });
@@ -355,8 +355,10 @@ var getDbModels = function() {
     return {
         Card: Card,
         Matchup: Matchup,
+        Snapshot: Snapshot,
         TestCard: TestCard,
-        TestMatchup: TestMatchup
+        TestMatchup: TestMatchup,
+        TestSnapshot: TestSnapshot
     };
 };
 
