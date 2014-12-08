@@ -183,6 +183,7 @@ var saveUpdatedCards = function(cardDatas) {
     _.forEach(cardDatas, function(cardData) {
         getCard(cardData.id).then(function(dbCard) {
             if (!dbCard) {
+                console.log('saving new card: ' + cardData.id);
                 var cardObj = {
                     id: cardData.id,
                     ranks: cardData.ranks.slice(),
@@ -192,6 +193,7 @@ var saveUpdatedCards = function(cardDatas) {
                 };
                 dbCard = _productionMode ? new Card(cardObj) : new TestCard(cardObj);
             } else if (cardData.updated > dbCard.updated) {
+                console.log('updating card: ' + cardData.id);
                 dbCard.ranks = cardData.ranks.slice();
                 dbCard.updated = cardData.updated;
                 dbCard.matchupTotals = cardData.matchupTotals.slice();
