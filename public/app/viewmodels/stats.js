@@ -99,7 +99,7 @@ define(function (require) {
                     dom: 'lrtip',
                     data: data.data,
                     paging: false,
-                    order:  [ 6, 'desc' ],
+                    order:  [ 7, 'desc' ],
                     columns: [
                         { render: function(cellData, type, rowData, meta) {
                             return '<div class="card-preview ' + rowData.category + '">' + rowData.name + '<div><img src="' + rowData.url + '"></div></div>';
