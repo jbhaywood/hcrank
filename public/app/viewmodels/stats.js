@@ -4,6 +4,7 @@ define(function (require) {
     var dataTables = require('datatables'); // used implicitly, do not remove
     var FilterData = require('filterdata');
     var table;
+    var _curClass;
 
     var classDatas = [
         new FilterData('neutral', 'Neutral', true),
@@ -28,6 +29,8 @@ define(function (require) {
 
     var setDatas = [
         new FilterData('allsets', 'All', true),
+        new FilterData('basic', 'Basic', false),
+        new FilterData('expert', 'Expert', false),
         new FilterData('naxxramas', 'Naxxramas', false),
         new FilterData('goblins vs gnomes', 'Goblins vs Gnomes', false)
     ];
@@ -84,6 +87,8 @@ define(function (require) {
     };
 
     var updateClass = function(classData) {
+        _curClass = classData;
+
         return $.post('/api/getcards/', { class: classData.name }, function(data) {
             if (table) {
                 table.clear();
@@ -98,7 +103,7 @@ define(function (require) {
                     columns: [
                         { render: function(cellData, type, rowData, meta) {
                             return '<div class="card-preview ' + rowData.category + '">' + rowData.name + '<div><img src="' + rowData.url + '"></div></div>';
-                        }, title: 'Name', width: '30%' },
+                            }, title: 'Name', width: '30%' },
                         { data: 'mana', title: 'Mana' },
                         { data: 'rarity', title: 'Rarity', className: 'column-rarity' },
                         { data: 'set', title: 'Set', className: 'column-set' },
@@ -106,7 +111,7 @@ define(function (require) {
                         { data: 'totalWins', title: 'Total Wins', visible: false },
                         { render: function(cellData, type, rowData, meta) {
                             return (rowData.totalMatchups ? (rowData.totalWins / rowData.totalMatchups * 100).toFixed(2) : 0) + '%';
-                        }, title: 'Win Ratio' },
+                            }, title: 'Win Ratio' },
                         { data: 'rank', title: 'Rank' }
                     ]
                 });
