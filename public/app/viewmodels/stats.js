@@ -90,10 +90,6 @@ define(function (require) {
                 table.rows.add(data.data);
                 table.draw();
             } else {
-                var urlBits = window.location.href.split('/');
-                //var verbose = true;
-                var verbose = urlBits[urlBits.length - 1] === 'statsall';
-
                 table = $('#table_id').DataTable({
                     dom: 'lrtip',
                     data: data.data,
@@ -104,10 +100,10 @@ define(function (require) {
                             return '<div class="card-preview ' + rowData.category + '">' + rowData.name + '<div><img src="' + rowData.url + '"></div></div>';
                         }, title: 'Name', width: '30%' },
                         { data: 'mana', title: 'Mana' },
-                        { data: 'rarity', title: 'Rarity', className: 'column-rarity', visible: verbose },
-                        { data: 'set', title: 'Set', className: 'column-set', visible: verbose },
-                        { data: 'totalMatchups', title: 'Total Matchups', visible: verbose },
-                        { data: 'totalWins', title: 'Total Wins', visible: verbose },
+                        { data: 'rarity', title: 'Rarity', className: 'column-rarity' },
+                        { data: 'set', title: 'Set', className: 'column-set' },
+                        { data: 'totalMatchups', title: 'Matchups' },
+                        { data: 'totalWins', title: 'Total Wins', visible: false },
                         { render: function(cellData, type, rowData, meta) {
                             return (rowData.totalMatchups ? (rowData.totalWins / rowData.totalMatchups * 100).toFixed(2) : 0) + '%';
                         }, title: 'Win Ratio' },

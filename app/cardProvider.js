@@ -13,7 +13,9 @@ var _saveCounter = 0;
 var _productionMode = process.env.NODE_ENV === 'production';
 var _baseUrl = 'http:\/\/wow.zamimg.com\/images\/hearthstone\/cards\/enus\/original\/';
 
-var storeCardDatas = function() {
+var initialize = function() {
+    var deferred = Q.defer();
+
     _cardDatas = _.map(allCardsRawData, function(rawData) {
         var prodUrl = _baseUrl + rawData.gameId + '.png';
         var imageUrl = _productionMode ? prodUrl : '../lib/images/hs-images/' + rawData.gameId + '.png';
@@ -27,11 +29,6 @@ var storeCardDatas = function() {
             rawData.set,
             rawData.category);
     });
-};
-
-var initialize = function() {
-    var deferred = Q.defer();
-    storeCardDatas();
 
     _.forEach(_cardDatas, function(cardData) {
         _cardDatasHash[cardData.id] = cardData;
