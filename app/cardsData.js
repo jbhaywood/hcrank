@@ -61,8 +61,7 @@ CardData.prototype.getRankForClass = function(className) {
     if (!className) {
         className = this.class;
     }
-    var idx = getClassIdx(className);
-    return this.ranks[idx];
+    return getAverageTotalForClass(this.ranks, className);
 };
 
 CardData.prototype.getMatchupTotalForClass = function(className) {
