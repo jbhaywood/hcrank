@@ -37,6 +37,7 @@ var getClassIdx = function(className) {
 
 var getAverageTotalForClass = function(totals, className) {
     var result = 0;
+    className = classList.indexOf(className) !== -1 ? className : 'neutral';
 
     // get the average of all heroes for 'neutral'
     if (className === 'neutral') {

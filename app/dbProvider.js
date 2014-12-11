@@ -63,7 +63,8 @@ var UserObj = function() {
         totalWins: Number,
         averagePickTime: Number,
         unlockLevel: Number,
-        lastUpdated: Date
+        lastUpdated: Date,
+        created: Date
     };
 };
 
@@ -345,7 +346,8 @@ var saveUser = function(userData) {
                     totalPicks: tPicks,
                     totalWins: tWins,
                     averagePickTime: avgTime,
-                    unlockLevel: uLevel
+                    unlockLevel: uLevel,
+                    created: new Date()
                 };
                 data = _productionMode ? new User(dataObj) : new TestUser(dataObj);
             }

@@ -56,7 +56,9 @@ var initialize = function() {
 };
 
 var getCardDatasByClass = function(className) {
-    return _.where(_cardDatas, { class: className });
+    return _.where(_cardDatas, function(cardData) {
+        return cardData.class === className || cardData.set === className;
+    });
 };
 
 var getTwoRandomCardsInternal = function(cardDatas, className) {

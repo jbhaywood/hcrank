@@ -1,6 +1,6 @@
 'use strict';
 define(function(require) {
-    var classList = [ 'Druid', 'Hunter', 'Mage', 'Paladin', 'Priest', 'Rogue', 'Shaman', 'Warlock', 'Warrior'];
+    var classList = [ 'Druid', 'Hunter', 'Mage', 'Paladin', 'Priest', 'Rogue', 'Shaman', 'Warlock', 'Warrior', 'Curse of Naxxramas', 'Goblins vs Gnomes'];
     var _ = require('lodash');
     var ko = require('knockout');
     var topCards = ko.observableArray();
