@@ -13,7 +13,6 @@ define(function (require) {
     var _totalWinsKey = 'totalwins';
     var _avgPickTimeKey = 'averagepicktime';
     var _currentClassIndexKey = 'currentclassindex';
-    var _currentUnlockedIndexKey = 'currentunlockedindex';
     var _classOrderKey = 'classorder';
 
     var _curVersion = 2;
@@ -24,7 +23,7 @@ define(function (require) {
     var _customClassDatas = ko.observableArray();
     var _currentClassData = ko.observable('');
     var _nextClassData = ko.observable('');
-    var _heroUnlockLevels = [0,50,100,150,200,250,300,350,400,450];
+    var _heroUnlockLevels = [0,10,25,50,75,100,125,150,175,200];
     //var _heroUnlockLevels = [0,3,5,9,12,15,20,22,26];
     var _curClassIdx = 0;
     var _curUnlockedIdx = ko.observable(0);
@@ -67,12 +66,10 @@ define(function (require) {
 
         // randomize class order
         _curClassIdx = localStorage[_currentClassIndexKey];
-        var unlockedIdx = localStorage[_currentUnlockedIndexKey];
         var orderStr = localStorage[_classOrderKey];
         var reorderedDatas = [];
         if (!_curClassIdx) {
             _curClassIdx = 0;
-            unlockedIdx = 0;
             orderStr = '';
             var heroDatasCopy = _heroDatas.slice();
             while (heroDatasCopy.length !== 0) {
@@ -90,31 +87,16 @@ define(function (require) {
         } else {
             _userId = localStorage[_userIdKey];
             _curClassIdx = parseInt(_curClassIdx);
-            unlockedIdx = parseInt(unlockedIdx);
             _.forEach(orderStr, function(char) {
                 var idx = parseInt(char);
                 reorderedDatas.push(_heroDatas[idx]);
             });
         }
 
-        _curUnlockedIdx(unlockedIdx);
-        for (var j = 0; j < reorderedDatas.length; j = j + 1) {
-            var isLocked = j > _curUnlockedIdx();
-            reorderedDatas[j].isLocked(isLocked);
-        }
-
         _.forEach(reorderedDatas, function(classData) {
+            classData.loadSettings();
             _customClassDatas().push(classData);
         });
-
-        _.forEach(_customClassDatas(), function(classData) {
-            classData.loadSettings();
-        });
-
-        var nextHero = _.find(_customClassDatas(), function(classData) {
-            return classData.isLocked();
-        });
-        _nextClassData(nextHero);
 
         // make sure that one class filter button is active
         if (_.all(_customClassDatas(), function(classData) {
@@ -139,6 +121,25 @@ define(function (require) {
         if (!isNaN(tw)) {
             _totalWins(tw);
         }
+
+        // set locked heroes based on total picks
+        if (_totalPicks() > 0) {
+            var unlockLevel = _.find(_heroUnlockLevels, function(level) {
+                return _totalPicks() < level;
+            });
+            _curUnlockedIdx(unlockLevel ? _heroUnlockLevels.indexOf(unlockLevel) - 1 : _heroUnlockLevels.length - 1);
+        }
+
+        for (var j = 0; j < _customClassDatas().length; j = j + 1) {
+            var isLocked = j > _curUnlockedIdx();
+            _customClassDatas()[j].isLocked(isLocked);
+        }
+
+        var nextHero = _.find(_customClassDatas(), function(classData) {
+            return classData.isLocked();
+        });
+
+        _nextClassData(nextHero);
     } else {
         _customClassDatas().push(_heroDatas) ;
     }
@@ -183,7 +184,6 @@ define(function (require) {
             localStorage[_totalWinsKey] = _totalWins();
             localStorage[_avgPickTimeKey] = _averagePickTime();
             localStorage[_currentClassIndexKey] = _curClassIdx;
-            localStorage[_currentUnlockedIndexKey] = _curUnlockedIdx();
         }
 
         var sendData = {

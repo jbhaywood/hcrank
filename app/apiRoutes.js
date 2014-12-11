@@ -4,7 +4,7 @@ var elo = require('elo-rank')();
 var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
 
-var _minPickCount = 100;
+var _minPickCount = 25;
 
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
