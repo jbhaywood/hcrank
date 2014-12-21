@@ -4,6 +4,7 @@ var elo = require('elo-rank')();
 var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
 
+var test = false;
 var _minPickCount = 10;
 
 exports.initialize = function(router) {
