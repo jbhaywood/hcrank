@@ -4,35 +4,24 @@ var elo = require('elo-rank')();
 var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
 
-var _minPickCount = 25;
+var _minPickCount = 10;
 
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
         var data = req.body;
-        var cardHistory = _.map(data.cardHistory, function(id) {
-            return parseInt(id, 10);
-        }) || [];
-        var cardData = cardProvider.getTwoRandomCards(data.classes, cardHistory);
-        var cardClass = data.classes.length === 1 ? data.classes[0] : _.find(data.classes, function(cardClass) {
-            return cardClass !== 'neutral';
+        var excludedIds = data.excludedIds || [];
+        var numCards = parseInt(data.numCards, 10);
+        var cards = cardProvider.getRandomCards(data.hero, numCards, excludedIds);
+        var sendData = _.map(cards, function(card) {
+            return {
+                id: card.id,
+                name: card.name,
+                url: card.url,
+                rank: card.getRankForClass(data.hero),
+                winRatio: card.getWinRatioForClass(data.hero),
+                unranked: card.getMatchupTotalForClass(data.hero) < _minPickCount
+            };
         });
-        var sendData = {
-            cardOne: {
-                id: cardData.cardOne.id,
-                url: cardData.cardOne.url,
-                rank: cardData.cardOne.getRankForClass(cardClass),
-                winRatio: cardData.cardOne.getWinRatioForClass(cardClass),
-                unranked: cardData.cardOne.getMatchupTotalForClass(cardClass) < _minPickCount
-            },
-            cardTwo: {
-                id: cardData.cardTwo.id,
-                url: cardData.cardTwo.url,
-                rank: cardData.cardTwo.getRankForClass(cardClass),
-                winRatio: cardData.cardTwo.getWinRatioForClass(cardClass),
-                unranked: cardData.cardTwo.getMatchupTotalForClass(cardClass) < _minPickCount
-            },
-            class: cardClass
-        };
         res.send(sendData);
     });
 

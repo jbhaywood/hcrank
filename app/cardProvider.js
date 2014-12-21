@@ -18,7 +18,7 @@ var initialize = function() {
 
     _cardDatas = _.map(allCardsRawData, function(rawData) {
         var prodUrl = _baseUrl + rawData.gameId + '.png';
-        var imageUrl = _productionMode ? prodUrl : '../lib/images/hs-images/' + rawData.gameId + '.png';
+        var imageUrl = _productionMode ? prodUrl : '../lib/images/hs-images/original/' + rawData.gameId + '.png';
         return new CardData(
             rawData.name,
             rawData.gameId,
@@ -40,12 +40,12 @@ var initialize = function() {
             _.forEach(dbCards, function(dbCard) {
                 var cardData = _.find(_cardDatas, { id: dbCard.id });
                 if (cardData) {
-                    cardData.ranks = dbCard.ranks.slice();
+                    cardData.ranks = dbCard.ranks.slice(0);
                     cardData.updated = dbCard.updated;
                     cardData.matchupTotals = dbCard.matchupTotals && dbCard.matchupTotals.length > 0 ?
-                        dbCard.matchupTotals.slice() : _defaultTotals.slice();
+                        dbCard.matchupTotals.slice(0) : _defaultTotals.slice(0);
                     cardData.winTotals = dbCard.winTotals && dbCard.winTotals.length > 0 ?
-                        dbCard.winTotals.slice() : _defaultTotals.slice();
+                        dbCard.winTotals.slice(0) : _defaultTotals.slice(0);
                 }
             });
 
@@ -55,54 +55,42 @@ var initialize = function() {
     return deferred.promise;
 };
 
-var getCardDatasByClass = function(className) {
+var getCardDatasByClass = function(hero) {
     return _.where(_cardDatas, function(cardData) {
-        return cardData.class === className || cardData.set === className;
+        return cardData.class === hero || cardData.set === hero;
     });
 };
 
-var getTwoRandomCardsInternal = function(cardDatas, className) {
+var getRandomCardsInternal = function(cardDatas, hero, numCards) {
     // if there are enough cards, make sure all them get matched up more or less evenly
     // by sorting the cards so that the ones with the fewest matchups are first
     // and then only choosing from the first quarter of the list if it makes sense to do so
-    // also make sure that hero cards are better represented than neutral cards, if there are any
+    // also make sure that hero cards are better represented than neutral cards
 
     var sorted = _.sortBy(cardDatas, function(cardData) {
-        return cardData.getMatchupTotalForClass(className);
+        return cardData.getMatchupTotalForClass(hero);
     });
 
     var neutralCards = _.filter(sorted, { 'class': 'neutral' });
-    var heroCards = _.reject(sorted, { 'class': 'neutral' });
+    var heroCards = _.difference(sorted, neutralCards);
 
     neutralCards.length = neutralCards.length > 4 ? Math.ceil(neutralCards.length / 4) : neutralCards.length;
     sorted = _.union(neutralCards, heroCards);
 
-    var indOne = _.random(sorted.length - 1);
-    var indTwo = indOne;
-
-    while ( indOne === indTwo ) {
-         indTwo = _.random(sorted.length - 1);
-    }
-
-    var cardOne = sorted[indOne];
-    var cardTwo = sorted[indTwo];
-    
-    return {
-        cardOne: cardOne,
-        cardTwo: cardTwo
-    };
+    return _.sample(sorted, numCards);
 };
 
-var getFilteredCards = function(includeClasses) {
-    var classCards = _.filter(_cardDatas, function(card) {
-        return (_.contains(includeClasses, card.class));
-    });
-    var cards = [];
+var getFilteredCards = function(hero, numCards, excludedIds) {
+    var result = [];
     var rarity;
     var randomRarity;
     var rarities = [ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4 ];
+    var combinedCards = _.filter(_cardDatas, function(card) {
+        return card.class === hero || card.class === 'neutral';
+    });
 
-    while (cards.length < 2) {
+    // make sure to return at least the required number of cards
+    while (result.length < numCards) {
         randomRarity = Math.floor(Math.random() * rarities.length);
         switch (rarities[randomRarity]) {
             case 1:
@@ -118,32 +106,26 @@ var getFilteredCards = function(includeClasses) {
                 rarity = 'legendary';
                 break;
         }
-        cards = _.filter(classCards, { 'rarity': rarity });
+
+        result = _.filter(combinedCards, function(card) {
+            return card.rarity === rarity && !_.contains(excludedIds, card.id);
+        }); // jshint ignore:line
     }
 
-    return cards;
+    return result;
 };
 
-var getTwoRandomCards = function(includeClasses, cardHistory) {
-    var className = includeClasses.length === 1 ? includeClasses[0] : _.find(includeClasses, function(className) {
-        return className !== 'neutral';
-    });
+var getRandomCards = function(hero, numCards, excludedIds) {
+    var result;
 
-    var twoCards;
-    var numLoops = 0;
-    var hasId = true;
+    var filteredCards = getFilteredCards(hero, numCards, excludedIds);
+    result = getRandomCardsInternal(filteredCards, hero, numCards);
 
-    while (numLoops < 20 && hasId) {
-        var cards = getFilteredCards(includeClasses, cardHistory);
-        twoCards = getTwoRandomCardsInternal(cards, className);
-        hasId = _.contains(cardHistory, twoCards.cardOne.id) || _.contains(cardHistory, twoCards.cardTwo.id);
-        numLoops = numLoops + 1;
+    while (result.length !== numCards) {
+        result = getRandomCards(hero, numCards, excludedIds);
     }
 
-    return {
-        cardOne: twoCards.cardOne,
-        cardTwo: twoCards.cardTwo
-    };
+    return result;
 };
 
 var saveAllCards = function() {
@@ -157,15 +139,15 @@ var saveAllCards = function() {
     }
 };
 
-var setCardRank = function(cardId, rank, className, didWin) {
+var setCardRank = function(cardId, rank, hero, didWin) {
     var cardData = _cardDatasHash[cardId];
     if (cardData) {
-        cardData.setRankForClass(className, rank);
-        cardData.setMatchupTotalForClass(className);
+        cardData.setRankForClass(hero, rank);
+        cardData.setMatchupTotalForClass(hero);
         cardData.updated = new Date();
 
         if (didWin) {
-            cardData.setWinTotalForClass(className);
+            cardData.setWinTotalForClass(hero);
         }
     }
 };
@@ -177,6 +159,6 @@ var getCardDatas = function() {
 exports.initialize = initialize;
 exports.getCardDatas = getCardDatas;
 exports.getCardDatasByClass = getCardDatasByClass;
-exports.getTwoRandomCards = getTwoRandomCards;
+exports.getRandomCards = getRandomCards;
 exports.saveAllCards = saveAllCards;
 exports.setCardRank = setCardRank;

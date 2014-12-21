@@ -188,17 +188,17 @@ var saveUpdatedCards = function(cardDatas) {
             if (!dbCard) {
                 var cardObj = {
                     id: cardData.id,
-                    ranks: cardData.ranks.slice(),
+                    ranks: cardData.ranks.slice(0),
                     updated: new Date(),
-                    matchupTotals: cardData.matchupTotals.slice(),
-                    winTotals: cardData.winTotals.slice()
+                    matchupTotals: cardData.matchupTotals.slice(0),
+                    winTotals: cardData.winTotals.slice(0)
                 };
                 dbCard = _productionMode ? new Card(cardObj) : new TestCard(cardObj);
             } else if (cardData.updated > dbCard.updated) {
-                dbCard.ranks = cardData.ranks.slice();
+                dbCard.ranks = cardData.ranks.slice(0);
                 dbCard.updated = cardData.updated;
-                dbCard.matchupTotals = cardData.matchupTotals.slice();
-                dbCard.winTotals = cardData.winTotals.slice();
+                dbCard.matchupTotals = cardData.matchupTotals.slice(0);
+                dbCard.winTotals = cardData.winTotals.slice(0);
             }
 
             if (doSave) {
@@ -308,9 +308,9 @@ var saveAllSnapshots = function(cardDatas) {
                     var snapshotObj = {
                         id: cardData.id,
                         date: curDateStr,
-                        ranks: cardData.ranks.slice(),
-                        matchupTotals: cardData.matchupTotals.slice(),
-                        winTotals: cardData.winTotals.slice()
+                        ranks: cardData.ranks.slice(0),
+                        matchupTotals: cardData.matchupTotals.slice(0),
+                        winTotals: cardData.winTotals.slice(0)
                     };
                     var snapshot = _productionMode ? new Snapshot(snapshotObj) : new TestSnapshot(snapshotObj);
                     snapshot.save();

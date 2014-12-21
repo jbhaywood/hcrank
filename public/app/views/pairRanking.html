@@ -33,16 +33,16 @@
 
 	<div class="block-group">
 		<!--choose wisely-->
-		<h1 class="block" data-bind="text: matchupText"></h1>
+		<h1 class="block columns100" data-bind="text: matchupText"></h1>
 
 		<!--card one-->
-		<div id="cardOne" class="block" data-bind="style: { visibility: hideCards() ? 'hidden' : 'visible' }">
-			<img class="shadowfilter hoverover" data-bind="attr: { src: cardOneData().url }, click: cardOneClick">
+		<div id="cardOne" class="block columnsRight" data-bind="style: { visibility: hideCards() ? 'hidden' : 'visible' }">
+			<img class="glowhover" data-bind="attr: { src: cardOne().url }, click: cardOneClick">
 		</div>
 
 		<!--card two-->
-		<div id="cardTwo" class="block" data-bind="style: { visibility: hideCards() ? 'hidden' : 'visible' }">
-			<img class="shadowfilter hoverover" data-bind="attr: { src: cardTwoData().url }, click: cardTwoClick">
+		<div id="cardTwo" class="block columnsLeft" data-bind="style: { visibility: hideCards() ? 'hidden' : 'visible' }">
+			<img class="glowhover" data-bind="attr: { src: cardTwo().url }, click: cardTwoClick">
 		</div>
 	</div>
 </div>

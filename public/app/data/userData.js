@@ -3,6 +3,7 @@ define(function (require) {
     //localStorage.clear();
 
     var app = require('durandal/app');
+    var _ = require('lodash');
     var ko = require('knockout');
     var Modernizr = require('modernizr');
     var FilterData = require('filterdata');
@@ -64,6 +65,7 @@ define(function (require) {
             localStorage[_versionKey] = 2;
         }
 
+        // --- PAIR RANKING ---
         // randomize class order
         _curClassIdx = localStorage[_currentClassIndexKey];
         var orderStr = localStorage[_classOrderKey];
@@ -180,6 +182,7 @@ define(function (require) {
 
     var saveUserData = function() {
         if (Modernizr.localstorage) {
+            // pair ranking
             localStorage[_totalPicksKey] = _totalPicks();
             localStorage[_totalWinsKey] = _totalWins();
             localStorage[_avgPickTimeKey] = _averagePickTime();
@@ -245,7 +248,12 @@ define(function (require) {
         _currentClassData(curClass);
     };
 
+    var getRandomHeroes = function(numHeroes) {
+        return _.sample(_heroDatas, numHeroes);
+    };
+
     return {
+        // pair ranking
         totalPicks: _totalPicks,
         totalWins: _totalWins,
         averagePickTime: _averagePickTime,
@@ -256,8 +264,11 @@ define(function (require) {
         nextHero: _nextClassData,
         classDatas: _customClassDatas,
         userId: _userId,
-        updateAndSave: updateAndSave,
         updateCurrentHero: updateCurrentHero,
+        getRandomHeroes: getRandomHeroes,
+        // general
+        updateAndSave: updateAndSave,
+        save: saveUserData,
 
         activate: function() {
             return true;

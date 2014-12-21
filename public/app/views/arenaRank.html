@@ -1,0 +1,116 @@
+<div id="arenaRank">
+	<div class="block-group" data-bind="visible: !showResults()">
+		<div class="block columns100">
+			<div class="block-group" data-bind="visible: hideCards()">
+				<h1 class="columns100 textCenter">Choose your Hero</h1>
+				<div class="block columns33 columnsRight">
+					<img class="glowhover" data-bind="attr: { src: heroOne() ? heroOne().url : '' }, click: function() { heroClick(0) }">
+				</div>
+				<div class="block columns33 columnsCenter">
+					<img class="glowhover" data-bind="attr: { src: heroTwo() ? heroTwo().url : '' }, click: function() { heroClick(1) }">
+				</div>
+				<div class="block columns33 columnsLeft">
+					<img class="glowhover" data-bind="attr: { src: heroThree() ? heroThree().url : '' }, click: function() { heroClick(2) }">
+				</div>
+			</div>
+
+			<div class="block-group" data-bind="visible: !hideCards()">
+				<h1 class="block columns100 textCenter">Choose your card</h1>
+				<h2 class="block columns100 textCenter">
+					<span data-bind="text: curMatchups"></span>/<span data-bind="text: maxMatchups"></span>
+				</h2>
+				<div class="block columns33 columnsRight">
+					<img class="glowhover" data-bind="attr: { src: card1() ? card1().url : '' }, click: function() { cardClick(card1()) }">
+				</div>
+				<div class="block columns33 columnsCenter">
+					<img class="glowhover" data-bind="attr: { src: card2() ? card2().url : '' }, click: function() { cardClick(card2()) }">
+				</div>
+				<div class="block columns33 columnsLeft">
+					<img class="glowhover" data-bind="attr: { src: card3() ? card3().url : '' }, click: function() { cardClick(card3()) }">
+				</div>
+			</div>
+
+			<div class="block-group" style="margin-top: 50px">
+				<div class="block columns25">&nbsp;</div>
+				<div class="alert alert-info block columns50">
+					Here's how this works...
+					Choose a hero and then for each set of three cards, choose the one that you think is the best.
+					Pretend that every set is the first pick of an arena draft.
+					This is not about making a deck, it's just about picking the best cards.
+				</div>
+				<div class="block columns25">&nbsp;</div>
+			</div>
+		</div>
+	</div>
+	<div class="block-group" data-bind="visible: showResults()">
+		<table class="block columns100">
+			<tr>
+				<td class="columns50">
+					<div>&nbsp;</div>
+				</td>
+				<td>
+					<table class="columns100">
+						<tr>
+							<td style="text-align: left">
+								<h2>
+									<span>Hits: </span>
+									<span data-bind="text: hits"></span>
+									<span>/ 30</span>
+								</h2>
+							</td>
+							<td style="text-align: right">
+								<button class="pure-button" data-bind="click: function() { resetClick() }"
+									style="margin: 10px 0">Do it again</button>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td class="columns50">
+					<div>&nbsp;</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="columns50">
+					<div>&nbsp;</div>
+				</td>
+				<td>
+					<table class="pure-table pure-table-bordered">
+						<tbody data-bind="foreach: matchups">
+							<tr>
+								<td class="tableCell textCenter">
+									<h2 class="columnsTop" data-bind="text: pickedBest() ? 'HIT' : 'MISS',
+										style: { color: pickedBest() ? 'green' : 'red', fontWeight: pickedBest() ? 'bolder' : 'normal' }">
+									</h2>
+								</td>
+								<td>
+									<div style="display: flex; flex-direction: column; align-items: center">
+										<img data-bind="attr: { src: card1.url },
+									style: { opacity: isBest(1) ? '1' : '0.75' }">
+										<h2 class="pickedMark" data-bind="text: resultCaption(1)"></h2>
+									</div>
+								</td>
+								<td>
+									<div style="display: flex; flex-direction: column; align-items: center">
+										<img data-bind="attr: { src: card2.url },
+									style: { opacity: isBest(2) ? '1' : '0.75' }">
+										<h2 class="pickedMark" data-bind="text: resultCaption(2)"></h2>
+									</div>
+								</td>
+								<td>
+									<div style="display: flex; flex-direction: column; align-items: center">
+										<img data-bind="attr: { src: card3.url },
+									style: { opacity: isBest(3) ? '1' : '0.75' }">
+										<h2 class="pickedMark" data-bind="text: resultCaption(3)"></h2>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+				<td class="columns50">
+					<div>&nbsp;</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>

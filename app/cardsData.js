@@ -22,8 +22,8 @@ function CardData(name, id, className, mana, url, rarity, setName, category) {
     this.set = setName;
     this.category = category;
     this.ranks = [ 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300 ];
-    this.matchupTotals = defaultTotals.slice();
-    this.winTotals = defaultTotals.slice();
+    this.matchupTotals = defaultTotals.slice(0);
+    this.winTotals = defaultTotals.slice(0);
     this.updated = new Date();
 }
 

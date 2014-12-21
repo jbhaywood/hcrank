@@ -5,14 +5,13 @@ define(function (require) {
     var ko = require('knockout');
     var UserData = require('userdata');
 
-    var _cardHistory = [];
-    var _maxCardHistory = 20;
+    var _prevMatchupIds = [];
+    var _maxMatchupIds = 20;
     var _matchupStartTime;
-    var _currentMatchupClass = '';
     var _matchupText = ko.observable('');
     var _matchupSubtext = ko.observable('');
-    var _cardOneData = ko.observable({});
-    var _cardTwoData = ko.observable({});
+    var _cardOne = ko.observable({});
+    var _cardTwo = ko.observable({});
     var _hideCards = ko.observable(false);
 
     var filterButtonClick = function(filterData) {
@@ -40,12 +39,12 @@ define(function (require) {
     };
 
     var cardOneClick = function() {
-        processMatchup(_cardOneData(), _cardTwoData());
+        processMatchup(_cardOne(), _cardTwo());
         setTimeout(newMatchup, 1000);
     };
 
     var cardTwoClick = function() {
-        processMatchup(_cardTwoData(), _cardOneData());
+        processMatchup(_cardTwo(), _cardOne());
         setTimeout(newMatchup, 1000);
     };
 
@@ -75,21 +74,19 @@ define(function (require) {
     };
 
     var newMatchup = function() {
-        var classes = [ 'neutral', UserData.currentHero().name ];
-
-        _cardOneData({ url: ''});
-        _cardTwoData({ url: ''});
+        _cardOne({ url: ''});
+        _cardTwo({ url: ''});
 
         var sendData = {
-            cardHistory: _cardHistory,
-            classes: classes
+            excludedIds: _prevMatchupIds,
+            hero: UserData.currentHero().name,
+            numCards: 2
         };
 
         return $.post('/api/newmatchup/', sendData, function(data) {
-            setMatchupText(data.cardOne, data.cardTwo);
-            _cardOneData(data.cardOne);
-            _cardTwoData(data.cardTwo);
-            _currentMatchupClass = data.class;
+            setMatchupText(data[0], data[1]);
+            _cardOne(data[0]);
+            _cardTwo(data[1]);
             _matchupStartTime = new Date().getTime();
             _hideCards(false);
 
@@ -112,12 +109,12 @@ define(function (require) {
         var undecided = pickedCard.unranked || unpickedCard.unranked;
         var pickedBest = undecided ? undefined : pickedRank >= unpickedRank;
 
-        if (_cardHistory.length === _maxCardHistory) {
-            _cardHistory.length = _maxCardHistory - 2;
+        if (_prevMatchupIds.length === _maxMatchupIds) {
+            _prevMatchupIds.length = _maxMatchupIds - 2;
         }
 
-        _cardHistory.unshift(pickedCard.id);
-        _cardHistory.unshift(unpickedCard.id);
+        _prevMatchupIds.unshift(pickedCard.id);
+        _prevMatchupIds.unshift(unpickedCard.id);
 
         if (undecided) {
             _matchupText('The crowd hasn\'t decided yet');
@@ -134,7 +131,7 @@ define(function (require) {
             cardWinnerRank: pickedCard.rank,
             cardLoserRank: unpickedCard.rank,
             milliseconds: decisionTime,
-            class: _currentMatchupClass
+            class: UserData.currentHero().name
         };
 
         $.post('/api/savematchup/', sendData, function() { });
@@ -145,8 +142,8 @@ define(function (require) {
         summaryClick: summaryClick,
         cardOneClick: cardOneClick,
         cardTwoClick: cardTwoClick,
-        cardOneData: _cardOneData,
-        cardTwoData: _cardTwoData,
+        cardOne: _cardOne,
+        cardTwo: _cardTwo,
         matchupText: _matchupText,
         matchupSubtext: _matchupSubtext,
         totalPicks: UserData.totalPicks,

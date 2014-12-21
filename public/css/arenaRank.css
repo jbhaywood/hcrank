@@ -1,0 +1,17 @@
+.tableCell {
+	vertical-align: middle;
+	horiz-align: center;
+}
+
+.pickedMark {
+	margin: -10px 0 10px 0;
+}
+
+table img {
+	margin-top: -10px;
+}
+
+table h1 {
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+}
