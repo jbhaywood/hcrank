@@ -69,7 +69,7 @@ exports.initialize = function(router) {
                 }
             });
 
-            cardProvider.saveAllCards();
+            cardProvider.saveAllCards(true);
         }
 
         res.end();

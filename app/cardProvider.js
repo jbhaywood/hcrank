@@ -128,11 +128,11 @@ var getRandomCards = function(hero, numCards, excludedIds) {
     return result;
 };
 
-var saveAllCards = function() {
+var saveAllCards = function(force) {
     _saveCounter = _saveCounter + 1;
 
     var saveCount =  _productionMode ? 5 : 1;
-    if (_saveCounter > saveCount) {
+    if (force || _saveCounter > saveCount) {
         dbProvider.saveUpdatedCards(_cardDatas);
         dbProvider.saveAllSnapshots(_cardDatas);
         _saveCounter = 0;
