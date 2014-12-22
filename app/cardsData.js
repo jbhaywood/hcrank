@@ -105,8 +105,23 @@ CardData.prototype.setWinTotalForClass = function(className) {
 };
 
 CardData.prototype.setRankForClass = function(className, rank) {
+    if (!className) {
+        className = this.class;
+    }
     var idx = getClassIdx(className);
     this.ranks[idx] = rank;
+};
+
+CardData.prototype.updateRankForClass = function(rank, className, didWin) {
+    if (!className) {
+        className = this.class;
+    }
+    this.setRankForClass(rank);
+    this.setMatchupTotalForClass(className);
+    if (didWin) {
+        this.setWinTotalForClass(className);
+    }
+    this.updated = new Date();
 };
 
 exports.getClassIdx = getClassIdx;

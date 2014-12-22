@@ -1,20 +1,16 @@
-/*use box-sizing for all elements*/
 /** {*/
-	/*-webkit-box-sizing: border-box;*/
-	/*-moz-box-sizing: border-box;*/
-	/*box-sizing: border-box;*/
-/*}*/
-
-* {
 	/*border: 1px solid lightblue !important;*/
-}
+/*}*/
 
 html {
 	font-family: sans-serif;
 }
 
+/*GENERAL*/
+
 .alert {
-	padding: 8px 35px 8px 14px;
+	padding: 10px 30px;
+	margin-top: 30px;
 	margin-bottom: 18px;
 	color: #c09853;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
@@ -31,7 +27,6 @@ html {
 	border-color: #bce8f1;
 }
 
-/*GENERAL*/
 .columns25 {
 	width: 25%;
 }

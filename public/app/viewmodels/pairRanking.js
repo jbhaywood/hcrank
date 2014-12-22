@@ -126,15 +126,15 @@ define(function (require) {
         clearMatchup();
 
         var sendData = {
-            cardWinnerId: pickedCard.id,
-            cardLoserId: unpickedCard.id,
-            cardWinnerRank: pickedCard.rank,
-            cardLoserRank: unpickedCard.rank,
-            milliseconds: decisionTime,
-            class: UserData.currentHero().name
-        };
+            matchups: [
+            {
+                winnerId: pickedCard.id,
+                loserIds: [ unpickedCard.id ],
+                milliseconds: decisionTime,
+                hero: UserData.currentHero().name
+        }]};
 
-        $.post('/api/savematchup/', sendData, function() { });
+        $.post('/api/savematchups/', sendData, function() { });
     };
 
     return {

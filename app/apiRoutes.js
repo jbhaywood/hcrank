@@ -4,7 +4,6 @@ var elo = require('elo-rank')();
 var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
 
-var test = false;
 var _minPickCount = 10;
 
 exports.initialize = function(router) {
@@ -30,40 +29,47 @@ exports.initialize = function(router) {
         return typeof int === 'number' && (int % 1) === 0;
     };
 
-    router.post('/savematchup/', function(req, res) {
+    router.post('/savematchups/', function(req, res) {
         var data = req.body;
 
-        if (data.cardWinnerId && data.cardLoserId && data.cardWinnerRank &&
-            data.cardLoserRank && data.milliseconds && data.class) {
-            var idWinner = data.cardWinnerId;
-            var idLoser = data.cardLoserId;
-            var className = data.class;
-            var oldWinnerRank = parseFloat(data.cardWinnerRank);
-            var oldLoserRank = parseFloat(data.cardLoserRank);
-            var milliseconds = parseInt(data.milliseconds, 10);
+        if (data.matchups && data.matchups.length > 0) {
+            _.forEach(data.matchups, function(matchtup) {
+                var winnerId = matchtup.winnerId;
+                var loserIds = matchtup.loserIds;
+                var className = matchtup.hero;
+                var winnerCard = cardProvider.getCardData(winnerId);
+                var loserCards = cardProvider.getCardDatas(loserIds);
+                var milliseconds = parseInt(matchtup.milliseconds, 10);
 
-            if (isNaN(oldWinnerRank)) {
-                oldWinnerRank = 1300;
-            }
-            if (isNaN(oldLoserRank)) {
-                oldLoserRank = 1300;
-            }
-            if (!intCheck(milliseconds)) {
-                milliseconds = 0;
-            }
+                if (!intCheck(milliseconds)) {
+                    milliseconds = 0;
+                }
 
-            elo.setKFactor(128);
+                if (winnerCard && loserCards.length !== 0) {
+                    elo.setKFactor(Math.ceil(128 / loserCards.length));
 
-            var winnerExpected = elo.getExpected(oldWinnerRank, oldLoserRank);
-            var loserExpected = elo.getExpected(oldLoserRank, oldWinnerRank);
+                    if (winnerCard && loserCards.length !== 0) {
+                        elo.setKFactor(Math.ceil(128 / loserCards.length));
+                        var oldWinnerRank = winnerCard.getRankForClass(className);
 
-            var rankWinner = Math.floor(elo.updateRating(winnerExpected, 1, oldWinnerRank));
-            var rankLoser = Math.floor(elo.updateRating(loserExpected, 0, oldLoserRank));
+                        _.forEach(loserCards, function(loserCard) {
+                            var oldLoserRank = loserCard.getRankForClass(className);
 
-            cardProvider.setCardRank(idWinner, rankWinner, className, true);
-            cardProvider.setCardRank(idLoser, rankLoser, className, false);
+                            var winnerExpected = elo.getExpected(oldWinnerRank, oldLoserRank );
+                            var loserExpected = elo.getExpected(oldLoserRank, oldWinnerRank);
+
+                            var newWinnerRank = Math.floor(elo.updateRating(winnerExpected, 1, oldWinnerRank));
+                            var newLoserRank = Math.floor(elo.updateRating(loserExpected, 0, oldLoserRank));
+
+                            winnerCard.updateRankForClass(newWinnerRank, className, true);
+                            loserCard.updateRankForClass(newLoserRank, className, false);
+                            dbProvider.saveMatchup(winnerId, loserCard.id, newWinnerRank, newLoserRank, winnerId, className, milliseconds);
+                        });
+                    }
+                }
+            });
+
             cardProvider.saveAllCards();
-            dbProvider.saveMatchup(idWinner, idLoser, rankWinner, rankLoser, idWinner, className, milliseconds);
         }
 
         res.end();

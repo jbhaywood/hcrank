@@ -139,26 +139,17 @@ var saveAllCards = function() {
     }
 };
 
-var setCardRank = function(cardId, rank, hero, didWin) {
-    var cardData = _cardDatasHash[cardId];
-    if (cardData) {
-        cardData.setRankForClass(hero, rank);
-        cardData.setMatchupTotalForClass(hero);
-        cardData.updated = new Date();
-
-        if (didWin) {
-            cardData.setWinTotalForClass(hero);
-        }
-    }
+var getCardData = function(id) {
+    return _cardDatasHash[id];
 };
 
-var getCardDatas = function() {
-    return _cardDatas;
+var getCardDatas = function(ids) {
+    return _.map(ids, function(id) { return _cardDatasHash[id]; });
 };
 
 exports.initialize = initialize;
+exports.getCardData = getCardData;
 exports.getCardDatas = getCardDatas;
 exports.getCardDatasByClass = getCardDatasByClass;
 exports.getRandomCards = getRandomCards;
 exports.saveAllCards = saveAllCards;
-exports.setCardRank = setCardRank;

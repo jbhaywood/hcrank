@@ -17,8 +17,8 @@ define(function (require) {
     var _curMatchups = ko.observable(0);
     var _hits = ko.observable(0);
     var _maxMatchups = 30;
+    var _matchupStartTime;
 
-    
     var ArenaRankMatchup = function(card1, card2, card3, pickedCard) {
         this._best = undefined;
         this.card1 = card1;
@@ -30,6 +30,12 @@ define(function (require) {
                 this._best = _.sortBy([card1, card2, card3 ], 'rank')[2];
             }
             return this._best;
+        };
+        this.unpicked = function() {
+            var p = this.picked;
+            return _.where([card1, card2, card3 ], function(card) {
+                return card.id !== p.id;
+            });
         };
         this.pickedBest = function() {
             return this.best().id === this.picked.id;
@@ -101,6 +107,7 @@ define(function (require) {
         };
 
         return $.post('/api/newmatchup/', sendData, function(data) {
+            _matchupStartTime = new Date().getTime();
             _card1(data[0]);
             _card2(data[1]);
             _card3(data[2]);
@@ -110,10 +117,24 @@ define(function (require) {
 
     var processAllMatchups = function() {
         _showResults(true);
+        var matchupStopTime = new Date().getTime();
+        var decisionTime = matchupStopTime - _matchupStartTime;
         var matchupResults = _.countBy(_allMatchups(), function(matchup) {
             return matchup.pickedBest() ? 'hits' : 'misses';
         });
         _hits(matchupResults['hits']); // jshint ignore:line
+
+        var sendData = {
+            matchups: _.map(_allMatchups(), function(matchup) {
+                return {
+                        winnerId: matchup.picked.id,
+                        loserIds: _.pluck(matchup.unpicked(), 'id'),
+                        milliseconds: decisionTime,
+                        hero: _hero.name
+                    };
+            })};
+
+        $.post('/api/savematchups/', sendData, function() { });
     };
 
     var resetClick = function() {
