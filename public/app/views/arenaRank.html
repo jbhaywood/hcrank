@@ -17,7 +17,7 @@
 			<div class="block-group" data-bind="visible: !hideCards()">
 				<h1 class="block columns100 textCenter">Choose your card</h1>
 				<h2 class="block columns100 textCenter">
-					<span data-bind="text: curMatchups"></span>/<span data-bind="text: maxMatchups"></span>
+					Remaining: <span data-bind="text: remainingMatchups"></span>
 				</h2>
 				<div class="block columns33 columnsRight">
 					<img class="glowhover" data-bind="attr: { src: card1() ? card1().url : '' }, click: function() { cardClick(card1()) }">
@@ -45,6 +45,14 @@
 						After 30 picks, you can see how well you did.  Keep trying to improve your score so that when you do a real arena run
 						you'll be able to quickly judge the cards you're presented with and make the best deck you can.
 					</p>
+				</div>
+				<div class="block columns25">&nbsp;</div>
+			</div>
+
+			<div class="block-group" data-bind="visible: !hideCards()">
+				<div class="block columns25">&nbsp;</div>
+				<div class="alert alert-info block columns50">
+					Remember, you're not making a deck.  Just pick the best card of the three.
 				</div>
 				<div class="block columns25">&nbsp;</div>
 			</div>

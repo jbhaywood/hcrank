@@ -14,9 +14,10 @@ define(function (require) {
     var _hideCards = ko.observable(true);
     var _showResults = ko.observable(false);
     var _allMatchups = ko.observableArray();
-    var _curMatchups = ko.observable(0);
-    var _hits = ko.observable(0);
     var _maxMatchups = 30;
+    var _curMatchups = 0;
+    var _remainingMatchups = ko.observable(_maxMatchups);
+    var _hits = ko.observable(0);
     var _matchupStartTime;
 
     var ArenaRankMatchup = function(card1, card2, card3, pickedCard) {
@@ -68,7 +69,8 @@ define(function (require) {
     };
     
     var clear = function() {
-        _curMatchups(0);
+        _curMatchups = 0;
+        _remainingMatchups(_maxMatchups);
         _prevMatchupIds.length = 0;
         _allMatchups.removeAll();
         _hideCards(true);
@@ -150,7 +152,7 @@ define(function (require) {
         _prevMatchupIds.unshift(_card2().id);
         _prevMatchupIds.unshift(_card3().id);
 
-        if (_curMatchups() === _maxMatchups) {
+        if (_curMatchups === _maxMatchups) {
             processAllMatchups();
         } else {
             var card1 = _card1();
@@ -164,7 +166,8 @@ define(function (require) {
             newMatchup();
         }
 
-        _curMatchups(_curMatchups() + 1);
+        _curMatchups += 1;
+        _remainingMatchups(_maxMatchups - _curMatchups);
     };
 
     return {
@@ -179,8 +182,7 @@ define(function (require) {
         resetClick: resetClick,
         hideCards: _hideCards,
         showResults: _showResults,
-        curMatchups: _curMatchups,
-        maxMatchups: _maxMatchups,
+        remainingMatchups: _remainingMatchups,
         hits: _hits,
         matchups: _allMatchups,
         displayName: 'Arena Rank',

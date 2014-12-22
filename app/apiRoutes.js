@@ -33,13 +33,13 @@ exports.initialize = function(router) {
         var data = req.body;
 
         if (data.matchups && data.matchups.length > 0) {
-            _.forEach(data.matchups, function(matchtup) {
-                var winnerId = matchtup.winnerId;
-                var loserIds = matchtup.loserIds;
-                var className = matchtup.hero;
+            _.forEach(data.matchups, function(matchup) {
+                var winnerId = matchup.winnerId;
+                var loserIds = matchup.loserIds;
+                var hero = matchup.hero;
                 var winnerCard = cardProvider.getCardData(winnerId);
                 var loserCards = cardProvider.getCardDatas(loserIds);
-                var milliseconds = parseInt(matchtup.milliseconds, 10);
+                var milliseconds = parseInt(matchup.milliseconds, 10);
 
                 if (!intCheck(milliseconds)) {
                     milliseconds = 0;
@@ -50,10 +50,10 @@ exports.initialize = function(router) {
 
                     if (winnerCard && loserCards.length !== 0) {
                         elo.setKFactor(Math.ceil(128 / loserCards.length));
-                        var oldWinnerRank = winnerCard.getRankForClass(className);
+                        var oldWinnerRank = winnerCard.getRankForClass(hero);
 
                         _.forEach(loserCards, function(loserCard) {
-                            var oldLoserRank = loserCard.getRankForClass(className);
+                            var oldLoserRank = loserCard.getRankForClass(hero);
 
                             var winnerExpected = elo.getExpected(oldWinnerRank, oldLoserRank );
                             var loserExpected = elo.getExpected(oldLoserRank, oldWinnerRank);
@@ -61,9 +61,9 @@ exports.initialize = function(router) {
                             var newWinnerRank = Math.floor(elo.updateRating(winnerExpected, 1, oldWinnerRank));
                             var newLoserRank = Math.floor(elo.updateRating(loserExpected, 0, oldLoserRank));
 
-                            winnerCard.updateRankForClass(newWinnerRank, className, true);
-                            loserCard.updateRankForClass(newLoserRank, className, false);
-                            dbProvider.saveMatchup(winnerId, loserCard.id, newWinnerRank, newLoserRank, winnerId, className, milliseconds);
+                            winnerCard.updateRankForClass(newWinnerRank, hero, true);
+                            loserCard.updateRankForClass(newLoserRank, hero, false);
+                            dbProvider.saveMatchup(winnerId, loserCard.id, newWinnerRank, newLoserRank, winnerId, hero, milliseconds);
                         });
                     }
                 }

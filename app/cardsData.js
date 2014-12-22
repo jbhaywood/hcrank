@@ -104,7 +104,7 @@ CardData.prototype.setWinTotalForClass = function(className) {
     this.winTotals[idx] = this.winTotals[idx] + 1;
 };
 
-CardData.prototype.setRankForClass = function(className, rank) {
+CardData.prototype.setRankForClass = function(rank, className) {
     if (!className) {
         className = this.class;
     }
@@ -116,7 +116,7 @@ CardData.prototype.updateRankForClass = function(rank, className, didWin) {
     if (!className) {
         className = this.class;
     }
-    this.setRankForClass(rank);
+    this.setRankForClass(rank, className);
     this.setMatchupTotalForClass(className);
     if (didWin) {
         this.setWinTotalForClass(className);
