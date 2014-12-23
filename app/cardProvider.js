@@ -60,27 +60,35 @@ var getCardDatasByClass = function(hero) {
     });
 };
 
-var getRandomCardsInternal = function(cardDatas, hero, numCards) {
+var getRandomCardsInternal = function(cards, hero, numCards, excludedIds) {
+    // filter out the cards to exclude, unless it would result in fewer than the required number of cards
+    while (excludedIds.length > cards.length + numCards) {
+        excludedIds = _.sample(excludedIds, Math.ceil(excludedIds.length / 1.25));
+    }
+
+    var filteredCards = _.filter(cards, function(card) {
+        return !_.contains(excludedIds, card.id);
+    });
+
     // if there are enough cards, make sure all them get matched up more or less evenly
     // by sorting the cards so that the ones with the fewest matchups are first
     // and then only choosing from the first quarter of the list if it makes sense to do so
     // also make sure that hero cards are better represented than neutral cards
-
-    var sorted = _.sortBy(cardDatas, function(cardData) {
-        return cardData.getMatchupTotalForClass(hero);
+    var sortedCards = _.sortBy(filteredCards, function(cardData) {
+        // make sure some of the older cards get sprinkled in the mix too
+        return Math.random() > 0.75 ? 1 : cardData.getMatchupTotalForClass(hero);
     });
 
-    var neutralCards = _.filter(sorted, { 'class': 'neutral' });
-    var heroCards = _.difference(sorted, neutralCards);
+    var neutralCards = _.filter(sortedCards, { 'class': 'neutral' });
+    var heroCards = _.difference(sortedCards, neutralCards);
 
     neutralCards.length = neutralCards.length > 4 ? Math.ceil(neutralCards.length / 4) : neutralCards.length;
-    sorted = _.union(neutralCards, heroCards);
+    sortedCards = _.union(neutralCards, heroCards);
 
-    return _.sample(sorted, numCards);
+    return _.sample(sortedCards, numCards);
 };
 
-var getFilteredCards = function(hero, minNumCards, excludedIds) {
-    var result = [];
+var getFilteredCards = function(hero) {
     var rarity;
     var randomRarity;
     var rarities = [ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4 ];
@@ -88,37 +96,32 @@ var getFilteredCards = function(hero, minNumCards, excludedIds) {
         return card.class === hero || card.class === 'neutral';
     });
 
-    // make sure to return at least the required number of cards
-    while (result.length < minNumCards) {
-        randomRarity = Math.floor(Math.random() * rarities.length);
-        switch (rarities[randomRarity]) {
-            case 1:
-                rarity = 'common';
-                break;
-            case 2:
-                rarity = 'rare';
-                break;
-            case 3:
-                rarity = 'epic';
-                break;
-            case 4:
-                rarity = 'legendary';
-                break;
-        }
-
-        result = _.filter(combinedCards, function(card) {
-            return card.rarity === rarity && !_.contains(excludedIds, card.id);
-        });
+    randomRarity = Math.floor(Math.random() * rarities.length);
+    switch (rarities[randomRarity]) {
+        case 1:
+            rarity = 'common';
+            break;
+        case 2:
+            rarity = 'rare';
+            break;
+        case 3:
+            rarity = 'epic';
+            break;
+        case 4:
+            rarity = 'legendary';
+            break;
     }
 
-    return result;
+    return _.filter(combinedCards, function(card) {
+        return card.rarity === rarity;
+    });
 };
 
 var getRandomCards = function(hero, numCards, excludedIds) {
     var result;
 
-    var filteredCards = getFilteredCards(hero, numCards, excludedIds);
-    result = getRandomCardsInternal(filteredCards, hero, numCards);
+    var filteredCards = getFilteredCards(hero);
+    result = getRandomCardsInternal(filteredCards, hero, numCards, excludedIds);
 
     while (result.length !== numCards) {
         result = getRandomCards(hero, numCards, excludedIds);
