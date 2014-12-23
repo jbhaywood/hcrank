@@ -23,6 +23,7 @@ define(function (require) {
     var _nextClassData = ko.observable('');
     var _heroUnlockLevels = [0,10,25,50,75,100,125,150,175,200];
     var _curUnlockedIdx = ko.observable(0);
+    var _arenaRankRuns = 0;
 
     var _heroDatas = [
         new FilterData('druid', 'Malfurion', false,
@@ -184,7 +185,8 @@ define(function (require) {
             totalPicks: _totalPicks,
             totalWins: _totalWins,
             averagePickTime: _averagePickTime,
-            unlockLevel: _curUnlockedIdx
+            unlockLevel: _curUnlockedIdx,
+            arenaRankRuns: _arenaRankRuns
         };
 
         $.post('/api/saveuserdata/', sendData, function() { });
@@ -225,6 +227,11 @@ define(function (require) {
         saveUserData();
     };
 
+    var updateArenaRankAndSave = function() {
+        _arenaRankRuns += 1;
+        saveUserData();
+    };
+
     var updateCurrentHero = function() {
         var curClass = _.find(_customClassDatas(), function(classData) {
             return classData.isActive();
@@ -256,6 +263,8 @@ define(function (require) {
         userId: _userId,
         updateCurrentHero: updateCurrentHero,
         getRandomHeroes: getRandomHeroes,
+        // arena rank
+        updateArenaRankAndSave: updateArenaRankAndSave,
         // general
         updateAndSave: updateAndSave,
         save: saveUserData,

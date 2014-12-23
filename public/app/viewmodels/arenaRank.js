@@ -144,6 +144,7 @@ define(function (require) {
             })};
 
         $.post('/api/savematchups/', sendData, function() { });
+        UserData.updateArenaRankAndSave();
     };
 
     var resetClick = function() {

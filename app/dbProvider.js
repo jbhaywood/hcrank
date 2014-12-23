@@ -63,6 +63,7 @@ var UserObj = function() {
         totalWins: Number,
         averagePickTime: Number,
         unlockLevel: Number,
+        arenaRankRuns: Number,
         lastUpdated: Date,
         created: Date
     };
@@ -334,12 +335,14 @@ var saveUser = function(userData) {
             var tWins = parseInt(userData.totalWins, 10);
             var avgTime = parseInt(userData.averagePickTime, 10);
             var uLevel = parseInt(userData.unlockLevel, 10);
+            var arenaRuns = parseInt(userData.arenaRankRuns, 10);
 
             if (data) {
                 data.totalPicks = tPicks;
                 data.totalWins = tWins;
                 data.averagePickTime = avgTime;
                 data.unlockLevel = uLevel;
+                data.arenaRankRuns = arenaRuns;
             } else {
                 var dataObj = {
                     id: userData.userId,
@@ -347,6 +350,7 @@ var saveUser = function(userData) {
                     totalWins: tWins,
                     averagePickTime: avgTime,
                     unlockLevel: uLevel,
+                    arenaRankRuns: arenaRuns,
                     created: new Date()
                 };
                 data = _productionMode ? new User(dataObj) : new TestUser(dataObj);
