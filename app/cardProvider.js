@@ -79,7 +79,7 @@ var getRandomCardsInternal = function(cardDatas, hero, numCards) {
     return _.sample(sorted, numCards);
 };
 
-var getFilteredCards = function(hero, numCards, excludedIds) {
+var getFilteredCards = function(hero, minNumCards, excludedIds) {
     var result = [];
     var rarity;
     var randomRarity;
@@ -89,7 +89,7 @@ var getFilteredCards = function(hero, numCards, excludedIds) {
     });
 
     // make sure to return at least the required number of cards
-    while (result.length < numCards) {
+    while (result.length < minNumCards) {
         randomRarity = Math.floor(Math.random() * rarities.length);
         switch (rarities[randomRarity]) {
             case 1:
@@ -108,7 +108,7 @@ var getFilteredCards = function(hero, numCards, excludedIds) {
 
         result = _.filter(combinedCards, function(card) {
             return card.rarity === rarity && !_.contains(excludedIds, card.id);
-        }); // jshint ignore:line
+        });
     }
 
     return result;
