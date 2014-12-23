@@ -103,19 +103,25 @@ define(function (require) {
     };
 
     var newMatchup = function() {
-        var sendData = {
-            excludedIds: _prevMatchupIds,
-            hero: _hero.name,
-            numCards: 3
-        };
+        _curMatchupsCount += 1;
+        _remainingMatchups(_totalMatchupsCount - _curMatchupsCount);
 
-        return $.post('/api/newmatchup/', sendData, function(data) {
-            _matchupStartTime = new Date().getTime();
-            _card1(data[0]);
-            _card2(data[1]);
-            _card3(data[2]);
-            _hideCards(false);
-        });
+        if (_curMatchupsCount > _totalMatchupsCount) {
+            processAllMatchups();
+        } else {
+            var sendData = {
+                excludedIds: _prevMatchupIds,
+                hero: _hero.name,
+                numCards: 3
+            };
+            return $.post('/api/newmatchup/', sendData, function(data) {
+                _matchupStartTime = new Date().getTime();
+                _card1(data[0]);
+                _card2(data[1]);
+                _card3(data[2]);
+                _hideCards(false);
+            });
+        }
     };
 
     var processAllMatchups = function() {
@@ -153,22 +159,15 @@ define(function (require) {
         _prevMatchupIds.unshift(_card2().id);
         _prevMatchupIds.unshift(_card3().id);
 
-        if (_curMatchupsCount === _totalMatchupsCount) {
-            processAllMatchups();
-        } else {
-            var card1 = _card1();
-            var card2 = _card2();
-            var card3 = _card3();
-            card1.url = card1.url.replace('original', 'medium');
-            card2.url = card2.url.replace('original', 'medium');
-            card3.url = card3.url.replace('original', 'medium');
-            var matchup = new ArenaRankMatchup(card1, card2, card3, picked);
-            _allMatchups.push(matchup);
-            newMatchup();
-        }
-
-        _curMatchupsCount += 1;
-        _remainingMatchups(_totalMatchupsCount - _curMatchupsCount);
+        var card1 = _card1();
+        var card2 = _card2();
+        var card3 = _card3();
+        card1.url = card1.url.replace('original', 'medium');
+        card2.url = card2.url.replace('original', 'medium');
+        card3.url = card3.url.replace('original', 'medium');
+        var matchup = new ArenaRankMatchup(card1, card2, card3, picked);
+        _allMatchups.push(matchup);
+        newMatchup();
     };
 
     return {

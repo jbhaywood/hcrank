@@ -128,7 +128,6 @@ var getRandomCards = function(hero, numCards, excludedIds) {
 };
 
 var saveAllCards = function() {
-    console.log('saveAllCards');
     dbProvider.saveUpdatedCards(_cardDatas);
     dbProvider.saveAllSnapshots(_cardDatas);
 };

@@ -195,7 +195,6 @@ var saveUpdatedCards = function(cardDatas) {
                 };
                 dbCard = _productionMode ? new Card(cardObj) : new TestCard(cardObj);
             } else if (cardData.updated > dbCard.updated) {
-                console.log('saveUpdatedCards: card ' + cardData.id)
                 dbCard.ranks = cardData.ranks.slice(0);
                 dbCard.updated = cardData.updated;
                 dbCard.matchupTotals = cardData.matchupTotals.slice(0);
