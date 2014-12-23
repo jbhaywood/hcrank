@@ -14,9 +14,10 @@ define(function (require) {
     var _hideCards = ko.observable(true);
     var _showResults = ko.observable(false);
     var _allMatchups = ko.observableArray();
-    var _maxMatchups = 30;
-    var _curMatchups = 0;
-    var _remainingMatchups = ko.observable(_maxMatchups);
+    var _maxMatchups = 60;
+    var _totalMatchupsCount = 30;
+    var _curMatchupsCount = 0;
+    var _remainingMatchups = ko.observable(_totalMatchupsCount);
     var _hits = ko.observable(0);
     var _matchupStartTime;
 
@@ -69,8 +70,8 @@ define(function (require) {
     };
     
     var clear = function() {
-        _curMatchups = 0;
-        _remainingMatchups(_maxMatchups);
+        _curMatchupsCount = 0;
+        _remainingMatchups(_totalMatchupsCount);
         _prevMatchupIds.length = 0;
         _allMatchups.removeAll();
         _hideCards(true);
@@ -152,7 +153,7 @@ define(function (require) {
         _prevMatchupIds.unshift(_card2().id);
         _prevMatchupIds.unshift(_card3().id);
 
-        if (_curMatchups === _maxMatchups) {
+        if (_curMatchupsCount === _totalMatchupsCount) {
             processAllMatchups();
         } else {
             var card1 = _card1();
@@ -166,8 +167,8 @@ define(function (require) {
             newMatchup();
         }
 
-        _curMatchups += 1;
-        _remainingMatchups(_maxMatchups - _curMatchups);
+        _curMatchupsCount += 1;
+        _remainingMatchups(_totalMatchupsCount - _curMatchupsCount);
     };
 
     return {

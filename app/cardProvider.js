@@ -9,7 +9,6 @@ var CardData = cardsData.CardData;
 var _defaultTotals = cardsData.defaultTotals;
 var _cardDatas = [];
 var _cardDatasHash = {};
-var _saveCounter = 0;
 var _productionMode = process.env.NODE_ENV === 'production';
 var _baseUrl = 'http:\/\/wow.zamimg.com\/images\/hearthstone\/cards\/enus\/original\/';
 
@@ -128,15 +127,10 @@ var getRandomCards = function(hero, numCards, excludedIds) {
     return result;
 };
 
-var saveAllCards = function(force) {
-    _saveCounter = _saveCounter + 1;
-
-    var saveCount =  _productionMode ? 5 : 1;
-    if (force || _saveCounter > saveCount) {
-        dbProvider.saveUpdatedCards(_cardDatas);
-        dbProvider.saveAllSnapshots(_cardDatas);
-        _saveCounter = 0;
-    }
+var saveAllCards = function() {
+    console.log('saveAllCards');
+    dbProvider.saveUpdatedCards(_cardDatas);
+    dbProvider.saveAllSnapshots(_cardDatas);
 };
 
 var getCardData = function(id) {
