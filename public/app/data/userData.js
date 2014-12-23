@@ -1,7 +1,5 @@
 'use strict';
 define(function (require) {
-    //localStorage.clear();
-
     var app = require('durandal/app');
     var _ = require('lodash');
     var ko = require('knockout');
@@ -13,7 +11,6 @@ define(function (require) {
     var _totalPicksKey = 'totalpicks';
     var _totalWinsKey = 'totalwins';
     var _avgPickTimeKey = 'averagepicktime';
-    var _currentClassIndexKey = 'currentclassindex';
     var _classOrderKey = 'classorder';
 
     var _curVersion = 2;
@@ -25,8 +22,6 @@ define(function (require) {
     var _currentClassData = ko.observable('');
     var _nextClassData = ko.observable('');
     var _heroUnlockLevels = [0,10,25,50,75,100,125,150,175,200];
-    //var _heroUnlockLevels = [0,3,5,9,12,15,20,22,26];
-    var _curClassIdx = 0;
     var _curUnlockedIdx = ko.observable(0);
 
     var _heroDatas = [
@@ -52,6 +47,7 @@ define(function (require) {
 
     var guidGenerator = function() {
         var S4 = function() {
+            //noinspection JSConstructorReturnsPrimitive
             return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
         };
 
@@ -66,12 +62,9 @@ define(function (require) {
         }
 
         // --- PAIR RANKING ---
-        // randomize class order
-        _curClassIdx = localStorage[_currentClassIndexKey];
         var orderStr = localStorage[_classOrderKey];
         var reorderedDatas = [];
-        if (!_curClassIdx) {
-            _curClassIdx = 0;
+        if (!orderStr) {
             orderStr = '';
             var heroDatasCopy = _heroDatas.slice();
             while (heroDatasCopy.length !== 0) {
@@ -84,11 +77,9 @@ define(function (require) {
             }
             _userId = guidGenerator();
             localStorage[_userIdKey] = _userId;
-            localStorage[_currentClassIndexKey] = 0;
             localStorage[_classOrderKey] = orderStr;
         } else {
             _userId = localStorage[_userIdKey];
-            _curClassIdx = parseInt(_curClassIdx);
             _.forEach(orderStr, function(char) {
                 var idx = parseInt(char);
                 reorderedDatas.push(_heroDatas[idx]);
@@ -186,7 +177,6 @@ define(function (require) {
             localStorage[_totalPicksKey] = _totalPicks();
             localStorage[_totalWinsKey] = _totalWins();
             localStorage[_avgPickTimeKey] = _averagePickTime();
-            localStorage[_currentClassIndexKey] = _curClassIdx;
         }
 
         var sendData = {
