@@ -3,17 +3,52 @@
 	<head>
 		<title>HearthCrowdRank</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="css/reset.css">
-		<link rel="stylesheet" href="css/pure-min.css">
-		<link rel="stylesheet" href="css/pocketgrid.min.css">
-		<link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css" />
-		<link rel="stylesheet" href="lib/durandal/css/durandal.css" />
-		<link rel="stylesheet" href="lib/externals/jquery.dataTables.min.css">
-		<link rel="stylesheet" href="css/style.css">
-		<link rel="stylesheet" href="css/topCards.css">
-		<link rel="stylesheet" href="css/pairRanking.css">
-		<link rel="stylesheet" href="css/arenaRank.css">
-		<link rel="stylesheet" href="css/stats.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css"/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/pure-min.css"/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css"/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.2/css/jquery.dataTables.min.css"/>
+		<link rel="stylesheet" href="lib/durandal/css/durandal.css"/>
+		<link rel="stylesheet" href="css/pocketgrid.min.css"/>
+		<link rel="stylesheet" href="css/style.css"/>
+		<link rel="stylesheet" href="css/topCards.css"/>
+		<link rel="stylesheet" href="css/pairRanking.css"/>
+		<link rel="stylesheet" href="css/arenaRank.css"/>
+		<link rel="stylesheet" href="css/stats.css"/>
+
+		<script>
+			function addLocalLink(url) {
+				var link = document.createElement("link");
+				link.rel = "stylesheet";
+				link.href = url;
+				document.getElementsByTagName("head")[0].appendChild(link);
+			}
+
+			function loadCssIfNotLoaded (checkUrl, fallbackUrl) {
+				var styles = document.styleSheets;
+				for (var i = 0; i < styles.length; i++) {
+					if (styles[i].href.match(checkUrl)) {
+						if (styles[i].cssRules != null && styles[i].cssRules.length == 0) {
+							addLocalLink(fallbackUrl);
+							break;
+						} else {
+							break;
+						}
+					} else if (i == styles.length-1) {
+						addLocalLink(fallbackUrl);
+					}
+				}
+			}
+
+			loadCssIfNotLoaded("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css",
+					"css/reset.css");
+			loadCssIfNotLoaded("https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.2/css/jquery.dataTables.min.css",
+				"lib/externals/jquery.dataTables.min.css");
+			loadCssIfNotLoaded("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css",
+				"lib/font-awesome/css/font-awesome.min.css");
+			loadCssIfNotLoaded("https://cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/pure-min.css",
+				"css/pure-min.css");
+		</script>
+
 	</head>
 	<body>
 		<div id="applicationHost">
@@ -25,7 +60,6 @@
 			</div>
 		</div>
 
-		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 		<script src="lib/require/require.js" data-main="app/main"></script>
 
 		<!-- Start of StatCounter Code for Default Guide -->

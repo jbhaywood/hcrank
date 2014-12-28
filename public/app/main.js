@@ -1,27 +1,41 @@
 ﻿'use strict';
 requirejs.config({
     paths: {
-        'text': '../lib/require/text',
-        'durandal':'../lib/durandal/js',
-        'plugins' : '../lib/durandal/js/plugins',
-        'transitions' : '../lib/durandal/js/transitions',
-        'knockout': '../lib/knockout/knockout-3.1.0',
-        'jquery': '../lib/jquery/jquery-2.1.1.min',
-        'datatables': '../lib/externals/jquery.dataTables.min',
-        'modernizr': '../lib/externals/modernizr-custom-2.8.3.min',
-        'lodash': '../lib/externals/lodash-modern-2.4.1.min',
-        'filterdata': '../app/data/filterData',
-        'userdata': '../app/data/userData'
+        durandal:'../lib/durandal/js',
+        plugins : '../lib/durandal/js/plugins',
+        transitions : '../lib/durandal/js/transitions',
+        text: [
+            'https://cdnjs.cloudflare.com/ajax/libs/require-text/2.0.12/text',
+            '../lib/require/text'
+        ],
+        knockout: [
+            'https://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min',
+            '../lib/knockout/knockout-3.1.0'
+        ],
+        lodash: [
+            'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min',
+            '../lib/externals/lodash-modern-2.4.1.min'
+        ],
+        jquery: [
+            'https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min',
+            '../lib/jquery/jquery-2.1.1.min'
+        ],
+        datatables: [
+            'https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.2/js/jquery.dataTables.min',
+            '../lib/externals/jquery.dataTables.min'
+        ],
+        modernizr: [
+            'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min',
+            '../lib/externals/modernizr-custom-2.8.3.min'
+        ],
+        filterdata: '../app/data/filterData',
+        userdata: '../app/data/userData'
     },
     shim: {
-        'bootstrap': {
-            deps: ['jquery'],
-            exports: 'jQuery'
-        },
-        'modernizr': {
+        modernizr: {
             exports: 'Modernizr'
         },
-        'lodash': {
+        lodash: {
             exports: '_'
         }
     }
