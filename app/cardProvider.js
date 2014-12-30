@@ -7,15 +7,15 @@ var allCardsRawData = require('./../data/sourceCardData').cardList;
 
 var CardData = cardsData.CardData;
 var _defaultTotals = cardsData.defaultTotals;
-var _cardDatas = [];
-var _cardDatasHash = {};
+var _cards = [];
+var _cardsHash = {};
 var _productionMode = process.env.NODE_ENV === 'production';
 var _baseUrl = 'http:\/\/wow.zamimg.com\/images\/hearthstone\/cards\/enus\/original\/';
 
 var initialize = function() {
     var deferred = Q.defer();
 
-    _cardDatas = _.map(allCardsRawData, function(rawData) {
+    _cards = _.map(allCardsRawData, function(rawData) {
         var prodUrl = _baseUrl + rawData.gameId + '.png';
         var imageUrl = _productionMode ? prodUrl : '../lib/images/hs-images/original/' + rawData.gameId + '.png';
         return new CardData(
@@ -29,21 +29,21 @@ var initialize = function() {
             rawData.category);
     });
 
-    _.forEach(_cardDatas, function(cardData) {
-        _cardDatasHash[cardData.id] = cardData;
+    _.forEach(_cards, function(card) {
+        _cardsHash[card.id] = card;
     });
 
-    var ids = _.pluck(_cardDatas, 'id');
+    var ids = _.pluck(_cards, 'id');
     dbProvider.getCardsByIds(ids)
         .then(function(dbCards) {
             _.forEach(dbCards, function(dbCard) {
-                var cardData = _.find(_cardDatas, { id: dbCard.id });
-                if (cardData) {
-                    cardData.ranks = dbCard.ranks.slice(0);
-                    cardData.updated = dbCard.updated;
-                    cardData.matchupTotals = dbCard.matchupTotals && dbCard.matchupTotals.length > 0 ?
+                var card = _.find(_cards, { id: dbCard.id });
+                if (card) {
+                    card.ranks = dbCard.ranks.slice(0);
+                    card.updated = dbCard.updated;
+                    card.matchupTotals = dbCard.matchupTotals && dbCard.matchupTotals.length > 0 ?
                         dbCard.matchupTotals.slice(0) : _defaultTotals.slice(0);
-                    cardData.winTotals = dbCard.winTotals && dbCard.winTotals.length > 0 ?
+                    card.winTotals = dbCard.winTotals && dbCard.winTotals.length > 0 ?
                         dbCard.winTotals.slice(0) : _defaultTotals.slice(0);
                 }
             });
@@ -54,9 +54,9 @@ var initialize = function() {
     return deferred.promise;
 };
 
-var getCardDatasByClass = function(hero) {
-    return _.where(_cardDatas, function(cardData) {
-        return cardData.class === hero || cardData.set === hero;
+var getCardsByClass = function(hero) {
+    return _.where(_cards, function(card) {
+        return card.class === hero || card.set === hero;
     });
 };
 
@@ -74,9 +74,9 @@ var getRandomCardsInternal = function(cards, hero, numCards, excludedIds) {
     // by sorting the cards so that the ones with the fewest matchups are first
     // and then only choosing from the first quarter of the list if it makes sense to do so
     // also make sure that hero cards are better represented than neutral cards
-    var sortedCards = _.sortBy(filteredCards, function(cardData) {
+    var sortedCards = _.sortBy(filteredCards, function(card) {
         // make sure some of the older cards get sprinkled in the mix too
-        return Math.random() > 0.75 ? 1 : cardData.getMatchupTotalForClass(hero);
+        return Math.random() > 0.75 ? 1 : card.getMatchupTotalForClass(hero);
     });
 
     var neutralCards = _.filter(sortedCards, { 'class': 'neutral' });
@@ -92,7 +92,7 @@ var getFilteredCards = function(hero) {
     var rarity;
     var randomRarity;
     var rarities = [ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4 ];
-    var combinedCards = _.filter(_cardDatas, function(card) {
+    var combinedCards = _.filter(_cards, function(card) {
         return card.class === hero || card.class === 'neutral';
     });
 
@@ -131,21 +131,26 @@ var getRandomCards = function(hero, numCards, excludedIds) {
 };
 
 var saveAllCards = function() {
-    dbProvider.saveUpdatedCards(_cardDatas);
-    dbProvider.saveAllSnapshots(_cardDatas);
+    dbProvider.saveUpdatedCards(_cards);
+    dbProvider.saveAllSnapshots(_cards);
 };
 
-var getCardData = function(id) {
-    return _cardDatasHash[id];
+var getCard = function(id) {
+    return _cardsHash[id];
 };
 
-var getCardDatas = function(ids) {
-    return _.map(ids, function(id) { return _cardDatasHash[id]; });
+var getCards = function(ids) {
+    return _.map(ids, function(id) { return _cardsHash[id]; });
+};
+
+var getAllCards = function() {
+    return _cards;
 };
 
 exports.initialize = initialize;
-exports.getCardData = getCardData;
-exports.getCardDatas = getCardDatas;
-exports.getCardDatasByClass = getCardDatasByClass;
+exports.getCard = getCard;
+exports.getCards = getCards;
+exports.getAllCards = getAllCards;
+exports.getCardsByClass = getCardsByClass;
 exports.getRandomCards = getRandomCards;
 exports.saveAllCards = saveAllCards;

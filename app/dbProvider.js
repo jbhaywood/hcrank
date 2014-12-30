@@ -132,7 +132,7 @@ var initialize = function() {
             TestUser = _testDb.model('TestUser', mongoose.Schema(new UserObj()));
 
             console.log('Connected to ' + _testDb.name);
-            if (_prodDb /*&& _prodDb._hasOpened*/) {
+            if (_prodDb && _prodDb._hasOpened) {
                 promise.fulfill();
             }
         });

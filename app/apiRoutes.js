@@ -37,8 +37,8 @@ exports.initialize = function(router) {
                 var winnerId = matchup.winnerId;
                 var loserIds = matchup.loserIds;
                 var hero = matchup.hero;
-                var winnerCard = cardProvider.getCardData(winnerId);
-                var loserCards = cardProvider.getCardDatas(loserIds);
+                var winnerCard = cardProvider.getCard(winnerId);
+                var loserCards = cardProvider.getCards(loserIds);
                 var milliseconds = parseInt(matchup.milliseconds, 10);
 
                 if (!intCheck(milliseconds)) {
@@ -79,7 +79,7 @@ exports.initialize = function(router) {
         var data = req.body;
         var className = (data.class || 'neutral').toLowerCase();
         var numCards = parseInt(data.numCards, 10);
-        var cardDatas = cardProvider.getCardDatasByClass(className);
+        var cardDatas = cardProvider.getCardsByClass(className);
 
         var sortedDatas = _.chain(cardDatas)
             .sortBy(function(cardData) {

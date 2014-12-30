@@ -1,7 +1,6 @@
 'use strict';
 var express = require('express');
 var http = require('http');
-var socket = require('socket.io');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var errorHandler = require('errorhandler');
@@ -14,7 +13,6 @@ dbProvider.initialize().then(function() {
         var app = express();
         var apiRouter = express.Router();
         var router = express.Router();
-        var port = process.env.PORT || 3000;
 
         app.use(express.static('public'));
         app.use(bodyParser.urlencoded({
@@ -29,20 +27,6 @@ dbProvider.initialize().then(function() {
         }
 
         apiRoutes.initialize(apiRouter);
-
-        var server = app.listen(port);
-        var io = socket.listen(server);
-
-        io.on('connection', function (socket) {
-            // NOTE: socket test, keep around for now
-            //var sortedDatas = apiRoutes.getSortedCardDatas('neutral');
-            //socket.emit('card update', { data: sortedDatas });
-            //
-            //setInterval(function() {
-            //    var sortedDatas = apiRoutes.getSortedCardDatas('neutral');
-            //    socket.emit('card update', { data: sortedDatas });
-            //}, 1000);
-        });
     });
 });
 
