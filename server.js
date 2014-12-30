@@ -13,6 +13,7 @@ dbProvider.initialize().then(function() {
         var app = express();
         var apiRouter = express.Router();
         var router = express.Router();
+        var port = process.env.PORT || 3000;
 
         app.use(express.static('public'));
         app.use(bodyParser.urlencoded({
@@ -27,6 +28,7 @@ dbProvider.initialize().then(function() {
         }
 
         apiRoutes.initialize(apiRouter);
+        app.listen(port);
     });
 });
 
