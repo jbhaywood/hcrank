@@ -1,2 +1,4 @@
-h_crowd_rank
-============
+HearthCrowdRank
+===============
+
+Crowd-sourced Hearthstone card ranking application.
