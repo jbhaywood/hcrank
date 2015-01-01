@@ -107,12 +107,12 @@ define(function (require) {
                         { data: 'mana', title: 'Mana' },
                         { data: 'rarity', title: 'Rarity', className: 'column-rarity' },
                         { data: 'set', title: 'Set', className: 'column-set' },
-                        { data: 'totalMatchups', title: 'Matchups' },
+                        { data: 'totalMatchups', title: 'Matchups', orderSequence: [ 'desc', 'asc' ] },
                         { data: 'totalWins', title: 'Total Wins', visible: false },
                         { render: function(cellData, type, rowData, meta) {
                             return (rowData.totalMatchups ? (rowData.totalWins / rowData.totalMatchups * 100).toFixed(2) : 0) + '%';
-                            }, title: 'Win Ratio' },
-                        { data: 'rank', title: 'Rank' }
+                            }, title: 'Win Ratio', orderSequence: [ 'desc', 'asc' ] },
+                        { data: 'rank', title: 'Rank', orderSequence: [ 'desc', 'asc' ] }
                     ]
                 });
             }
