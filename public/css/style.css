@@ -61,6 +61,14 @@ html {
 	align-items: flex-start;
 }
 
+.textLeft {
+	text-align: left;
+}
+
+.textRight {
+	text-align: right;
+}
+
 .textCenter {
 	text-align: center;
 }
@@ -164,4 +172,121 @@ h1 {
 	z-index:1000;
 	margin-top:-250px;
 	margin-left:50px;
+}
+
+/*arena rank*/
+.arTableCell {
+	vertical-align: middle;
+	horiz-align: center;
+}
+
+.arPickedMark {
+	margin: -10px 0 10px 0;
+}
+
+.arTableCell img {
+	margin-top: -10px;
+}
+
+.arTableCell h1 {
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+}
+
+/*stats*/
+#stats h3 {
+	margin-bottom: 4px;
+	margin-top: 10px;
+}
+
+#stats table {
+	margin-top: 20px;
+}
+
+/*top cards*/
+#topCards {
+	margin-top: 100px;
+	width: 730px;
+	display: none;
+}
+
+#topCards p {
+	font-size: 1.5em;
+	text-align: center;
+}
+
+#topCards span {
+	font-weight: bold;
+}
+
+#topCards table {
+	font-size: 1.125em;
+	width: 400px;
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-right: 0;
+}
+
+#topCards img {
+	height: auto;
+	width: 306px;
+	margin-left: -20px;
+	margin-top: -60px;
+}
+
+#topCards th:first-child {
+	text-align: center;
+}
+
+#topCards td:first-child {
+	width: 30px;
+	text-align: center;
+}
+
+/*pair rankings*/
+#pairRanking {
+	margin-top: 50px;
+}
+
+#pairRanking #hero-image {
+	width: 13%;
+}
+
+#pairRanking #hero-image img {
+	width: 100%;
+}
+
+#pairRanking #classPicker {
+	width: 77%;
+}
+
+#pairRanking #pairButtons button {
+	margin: 50px 10px 0 -20px;
+}
+
+#pairRanking #userData {
+	width: 10%;
+}
+
+#pairRanking h1 {
+	text-align: center;
+	margin-top: 0;
+}
+
+#cardOne {
+	width: 50%;
+	margin-top: -40px;
+}
+
+#cardTwo {
+	width: 50%;
+	margin-top: -40px;
+}
+
+#cardOne img {
+	padding-right: 50px;
+}
+
+#cardTwo img {
+	padding-left: 50px;
 }
