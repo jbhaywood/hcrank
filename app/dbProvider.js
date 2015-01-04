@@ -84,7 +84,7 @@ var getCard = function(cardId) {
 
 // PUBLIC
 var initialize = function() {
-    var promise = new mongoose.Promise;
+    var promise = new mongoose.Promise();
 
     var conStr = getConnectionString(true);
     _db = mongoose.createConnection(conStr, new Options());
@@ -176,7 +176,7 @@ var saveUpdatedCards = function(cardDatas) {
 };
 
 var getTotalMatchups = function() {
-    var promise = new mongoose.Promise;
+    var promise = new mongoose.Promise();
     Matchup.count({ }, function(err, c)
     {
         promise.fulfill(c);
@@ -185,7 +185,7 @@ var getTotalMatchups = function() {
 };
 
 var shutDown = function() {
-    var promise = new mongoose.Promise;
+    var promise = new mongoose.Promise();
     _db.close(function () {
         console.log('Mongoose default connection with DB :' + _db.name + ' is disconnected through app termination');
         promise.fulfill();
@@ -222,7 +222,7 @@ var getSnapshotDateString = function(date) {
 };
 
 var getLastSnapshots = function() {
-    var promise = new mongoose.Promise;
+    var promise = new mongoose.Promise();
     App.findOne({}, function(err, appObj) {
         var dateStr = getSnapshotDateString(appObj.lastSnapshot);
         Snapshot.where('date').equals(dateStr).exec(function(err, snapshots) {
