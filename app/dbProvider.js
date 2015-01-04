@@ -3,19 +3,13 @@ var _ = require('lodash');
 var mongoose = require('mongoose');
 
 var _productionMode = process.env.NODE_ENV === 'production';
-var _prodDb;
-var _testDb;
+var _db;
 
 var Card;
 var Matchup;
 var Snapshot;
 var App;
 var User;
-var TestCard = null;
-var TestMatchup = null;
-var TestSnapshot = null;
-var TestApp = null;
-var TestUser = null;
 
 var CardObj = function() {
     return {
@@ -73,82 +67,52 @@ var Options = function() {
     return { server: { socketOptions: { keepAlive: 1 } } };
 };
 
-var getConnectionString = function(useProductionDb) {
-    var connectString;
-
-    if (_productionMode) {
-        connectString = process.env.DB_CONNECT_URI;
+var getConnectionString = function() {
+    var result;
+    if (_productionMode && process.env.DB_CONNECT_URI) {
+        result = process.env.DB_CONNECT_URI;
     } else {
         var config = require('./config');
-        connectString = useProductionDb ? config.productionDbUri : config.testDbUri;
+        result = _productionMode ? config.productionDbUri : config.testDbUri;
     }
-    return connectString;
+    return result;
 };
 
 var getCard = function(cardId) {
-    var card = _productionMode ? Card : TestCard;
-    return card.findOne({ id: cardId }).exec();
+    return Card.findOne({ id: cardId }).exec();
 };
 
 // PUBLIC
 var initialize = function() {
     var promise = new mongoose.Promise;
 
-    var prodCon = getConnectionString(true);
-    _prodDb = mongoose.createConnection(prodCon, new Options());
+    var conStr = getConnectionString(true);
+    _db = mongoose.createConnection(conStr, new Options());
 
-    _prodDb.once('open', function() {
-        Card = _prodDb.model('Card', mongoose.Schema(new CardObj()));
-        Matchup = _prodDb.model('Matchup', mongoose.Schema(new MatchupObj()));
-        Snapshot = _prodDb.model('Snapshot', mongoose.Schema(new SnapshotObj()));
-        App = _prodDb.model('App', mongoose.Schema(new AppObj()));
-        User = _prodDb.model('User', mongoose.Schema(new UserObj()));
+    _db.once('open', function() {
+        Card = _db.model('Card', mongoose.Schema(new CardObj()));
+        Matchup = _db.model('Matchup', mongoose.Schema(new MatchupObj()));
+        Snapshot = _db.model('Snapshot', mongoose.Schema(new SnapshotObj()));
+        App = _db.model('App', mongoose.Schema(new AppObj()));
+        User = _db.model('User', mongoose.Schema(new UserObj()));
 
-        console.log('Connected to ' + _prodDb.name);
-        if (_productionMode) {
-            promise.fulfill();
-        } else if (_testDb && _testDb._hasOpened) {
-                promise.fulfill();
-        }
+        console.log('Connected to ' + _db.name);
+        promise.fulfill();
     });
 
-    _prodDb.on('error', function (err) {
-        console.log('Error with ' + _prodDb.name + ': ' + err);
+    _db.on('error', function (err) {
+        console.log('Error with ' + _db.name + ': ' + err);
     });
 
-    _prodDb.on('disconnected', function () {
-        console.log('Mongoose connection to ' + _prodDb.name + ' disconnected');
+    _db.on('disconnected', function () {
+        console.log('Mongoose connection to ' + _db.name + ' disconnected');
     });
-
-    if (!_productionMode) {
-        var testCon = getConnectionString(false);
-        _testDb = mongoose.createConnection(testCon, new Options());
-
-        _testDb.once('open', function() {
-            TestCard = _testDb.model('TestCard', mongoose.Schema(new CardObj()));
-            TestMatchup = _testDb.model('TestMatchup', mongoose.Schema(new MatchupObj()));
-            TestSnapshot = _testDb.model('TestSnapshot', mongoose.Schema(new SnapshotObj()));
-            TestApp = _testDb.model('TestApp', mongoose.Schema(new AppObj()));
-            TestUser = _testDb.model('TestUser', mongoose.Schema(new UserObj()));
-
-            console.log('Connected to ' + _testDb.name);
-            if (_prodDb && _prodDb._hasOpened) {
-                promise.fulfill();
-            }
-        });
-
-        _testDb.on('error', function (err) {
-            console.log('Error with ' + _testDb.name + ': ' + err);
-        });
-    }
 
     return promise;
 };
 
 var getCardsByIds = function(cardIds) {
-    return _productionMode ?
-        Card.where('id').in(cardIds).exec() :
-        TestCard.where('id').in(cardIds).exec();
+    return Card.where('id').in(cardIds).exec();
 };
 
 var saveMatchup = function(cardWinnerId, cardLoserId, cardWinnerRank, cardLOserRank, winnerId, cardClass, milliseconds) {
@@ -177,7 +141,7 @@ var saveMatchup = function(cardWinnerId, cardLoserId, cardWinnerRank, cardLOserR
         created: new Date()
     };
 
-    var matchup = _productionMode ? new Matchup(matchupObj) : new TestMatchup(matchupObj);
+    var matchup = new Matchup(matchupObj);
     matchup.save();
 };
 
@@ -194,7 +158,7 @@ var saveUpdatedCards = function(cardDatas) {
                     matchupTotals: cardData.matchupTotals.slice(0),
                     winTotals: cardData.winTotals.slice(0)
                 };
-                dbCard = _productionMode ? new Card(cardObj) : new TestCard(cardObj);
+                dbCard = new Card(cardObj);
             } else if (cardData.updated > dbCard.updated) {
                 dbCard.ranks = cardData.ranks.slice(0);
                 dbCard.updated = cardData.updated;
@@ -213,8 +177,7 @@ var saveUpdatedCards = function(cardDatas) {
 
 var getTotalMatchups = function() {
     var promise = new mongoose.Promise;
-    var matchup = _productionMode ? Matchup : TestMatchup;
-    matchup.count({ }, function(err, c)
+    Matchup.count({ }, function(err, c)
     {
         promise.fulfill(c);
     });
@@ -223,22 +186,15 @@ var getTotalMatchups = function() {
 
 var shutDown = function() {
     var promise = new mongoose.Promise;
-    _prodDb.close(function () {
-        console.log('Mongoose default connection with DB :' + _prodDb.name + ' is disconnected through app termination');
+    _db.close(function () {
+        console.log('Mongoose default connection with DB :' + _db.name + ' is disconnected through app termination');
         promise.fulfill();
     });
-    if (!_productionMode) {
-        _testDb.close(function () {
-            console.log('Mongoose default connection with DB :' + _testDb.name + ' is disconnected through app termination');
-            promise.fulfill();
-        });
-    }
     return promise;
 };
 
 var deleteCards = function() {
-    var card = _productionMode ? Card : TestCard;
-    card.remove({}, function(err) {
+    Card.remove({}, function(err) {
         if (err) {
             console.log('error removing card collection:' + err.message);
         } else {
@@ -248,8 +204,7 @@ var deleteCards = function() {
 };
 
 var deleteMatchups = function() {
-    var matchup = _productionMode ? Matchup : TestMatchup;
-    matchup.remove({}, function(err) {
+    Matchup.remove({}, function(err) {
         if (err) {
             console.log('error removing matchup collection:' + err.message);
         } else {
@@ -268,11 +223,9 @@ var getSnapshotDateString = function(date) {
 
 var getLastSnapshots = function() {
     var promise = new mongoose.Promise;
-    var app = _productionMode ? App : TestApp;
-    var snapshot = _productionMode ? Snapshot : TestSnapshot;
-    app.findOne({}, function(err, appObj) {
+    App.findOne({}, function(err, appObj) {
         var dateStr = getSnapshotDateString(appObj.lastSnapshot);
-        snapshot.where('date').equals(dateStr).exec(function(err, snapshots) {
+        Snapshot.where('date').equals(dateStr).exec(function(err, snapshots) {
             promise.fulfill(snapshots);
         });
     });
@@ -280,14 +233,11 @@ var getLastSnapshots = function() {
 };
 
 var getSnapshotsByIds = function(cardIds) {
-    var snapshot = _productionMode ? Snapshot : TestSnapshot;
-    return snapshot.where('id').in(cardIds).exec();
+    Snapshot.where('id').in(cardIds).exec();
 };
 
 var saveAllSnapshots = function(cardDatas) {
-    var app = _productionMode ? App : TestApp;
-
-    app.findOne({}, function(err, data) {
+    App.findOne({}, function(err, data) {
         if (err) {
             console.log('error saving snapshots:' + err.message);
         } else {
@@ -299,7 +249,7 @@ var saveAllSnapshots = function(cardDatas) {
                 doSave = hourDiff >= 24;
             } else {
                 var newDataObj = { lastSnapshot: curDate };
-                data = _productionMode ? new App(newDataObj) : new TestApp(newDataObj);
+                data = new App(newDataObj);
                 doSave = true;
             }
 
@@ -313,7 +263,7 @@ var saveAllSnapshots = function(cardDatas) {
                         matchupTotals: cardData.matchupTotals.slice(0),
                         winTotals: cardData.winTotals.slice(0)
                     };
-                    var snapshot = _productionMode ? new Snapshot(snapshotObj) : new TestSnapshot(snapshotObj);
+                    var snapshot = new Snapshot(snapshotObj);
                     snapshot.save();
                 });
 
@@ -325,9 +275,7 @@ var saveAllSnapshots = function(cardDatas) {
 };
 
 var saveUser = function(userData) {
-    var user = _productionMode ? User : TestUser;
-
-    user.findOne({ id: userData.userId }, function(err, data) {
+    User.findOne({ id: userData.userId }, function(err, data) {
         if (err) {
             console.log('error saving user:' + err.message);
         } else {
@@ -353,7 +301,7 @@ var saveUser = function(userData) {
                     arenaRankRuns: arenaRuns,
                     created: new Date()
                 };
-                data = _productionMode ? new User(dataObj) : new TestUser(dataObj);
+                data = new User(dataObj);
             }
 
             data.lastUpdated = new Date();
@@ -366,10 +314,7 @@ var getDbModels = function() {
     return {
         Card: Card,
         Matchup: Matchup,
-        Snapshot: Snapshot,
-        TestCard: TestCard,
-        TestMatchup: TestMatchup,
-        TestSnapshot: TestSnapshot
+        Snapshot: Snapshot
     };
 };
 
