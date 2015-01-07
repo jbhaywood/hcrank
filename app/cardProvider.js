@@ -4,13 +4,35 @@ var Q = require('q');
 var cardsData = require('./cardsData');
 var dbProvider = require('./dbProvider');
 var allCardsRawData = require('./../data/sourceCardData').cardList;
-
+var adwctaRanks = require('./../data/adwctaRanks').cardList;
 var CardData = cardsData.CardData;
 var _defaultTotals = cardsData.defaultTotals;
 var _cards = [];
-var _cardsHash = {};
+var _cardsById = {};
 var _productionMode = process.env.NODE_ENV === 'production';
 var _baseUrl = 'http:\/\/wow.zamimg.com\/images\/hearthstone\/cards\/enus\/original\/';
+
+var addAdwctaRanks = function() {
+    _.forEach(_cards, function(card) {
+        var adwctaRank = -1;
+
+        var rankObj = _.find(adwctaRanks, function(obj) {
+                return obj.hero === card.class;
+        });
+
+        if (rankObj) {
+            var rankValue = _.find(rankObj.ranks, function(rank) {
+                return rank.name === card.name;
+            });
+
+            if (rankValue) {
+                adwctaRank = rankValue.value;
+            }
+        }
+
+        card.adwctaRank = adwctaRank;
+    });
+};
 
 var initialize = function() {
     var deferred = Q.defer();
@@ -18,6 +40,7 @@ var initialize = function() {
     _cards = _.map(allCardsRawData, function(rawData) {
         var prodUrl = _baseUrl + rawData.gameId + '.png';
         var imageUrl = _productionMode ? prodUrl : '../lib/images/hs-images/original/' + rawData.gameId + '.png';
+
         return new CardData(
             rawData.name,
             rawData.gameId,
@@ -29,8 +52,10 @@ var initialize = function() {
             rawData.category);
     });
 
+    addAdwctaRanks();
+
     _.forEach(_cards, function(card) {
-        _cardsHash[card.id] = card;
+        _cardsById[card.id] = card;
     });
 
     var ids = _.pluck(_cards, 'id');
@@ -54,9 +79,9 @@ var initialize = function() {
     return deferred.promise;
 };
 
-var getCardsByClass = function(hero) {
+var getCardsByHeroOrSet = function(value) {
     return _.where(_cards, function(card) {
-        return card.class === hero || card.set === hero;
+        return card.class === value || card.set === value;
     });
 };
 
@@ -136,11 +161,11 @@ var saveAllCards = function() {
 };
 
 var getCard = function(id) {
-    return _cardsHash[id];
+    return _cardsById[id];
 };
 
 var getCards = function(ids) {
-    return _.map(ids, function(id) { return _cardsHash[id]; });
+    return _.map(ids, function(id) { return _cardsById[id]; });
 };
 
 var getAllCards = function() {
@@ -151,6 +176,6 @@ exports.initialize = initialize;
 exports.getCard = getCard;
 exports.getCards = getCards;
 exports.getAllCards = getAllCards;
-exports.getCardsByClass = getCardsByClass;
+exports.getCardsByHeroOrSet = getCardsByHeroOrSet;
 exports.getRandomCards = getRandomCards;
 exports.saveAllCards = saveAllCards;

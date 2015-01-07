@@ -99,7 +99,7 @@ define(function (require) {
                     dom: 'lrtip',
                     data: data.data,
                     paging: false,
-                    order:  [ 7, 'desc' ],
+                    order:  [ 6, 'desc' ],
                     columns: [
                         { render: function(cellData, type, rowData, meta) {
                             return '<div class="card-preview ' + rowData.category + '">' + rowData.name + '<div><img src="' + rowData.url + '"></div></div>';
@@ -109,10 +109,11 @@ define(function (require) {
                         { data: 'set', title: 'Set', className: 'column-set' },
                         { data: 'totalMatchups', title: 'Matchups', orderSequence: [ 'desc', 'asc' ] },
                         { data: 'totalWins', title: 'Total Wins', visible: false },
-                        { render: function(cellData, type, rowData, meta) {
-                            return (rowData.totalMatchups ? (rowData.totalWins / rowData.totalMatchups * 100).toFixed(2) : 0) + '%';
-                            }, title: 'Win Ratio', orderSequence: [ 'desc', 'asc' ] },
                         { data: 'rank', title: 'Rank', orderSequence: [ 'desc', 'asc' ] }
+                        //{ data: 'adwctaRank', title: 'ADWCTA Rank', width: '1px', orderSequence: [ 'desc', 'asc' ] },
+                        //{ render: function(cellData, type, rowData, meta) {
+                        //    return (rowData.totalMatchups ? (rowData.totalWins / rowData.totalMatchups * 100).toFixed(2) : 0) + '%';
+                        //}, title: 'Win Ratio', width: '60px', orderSequence: [ 'desc', 'asc' ] }
                     ]
                 });
             }

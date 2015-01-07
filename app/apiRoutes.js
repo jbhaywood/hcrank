@@ -5,6 +5,7 @@ var cardProvider = require('./cardProvider');
 var dbProvider = require('./dbProvider');
 
 var _minPickCount = 10;
+var _kFactor = 256;
 
 exports.initialize = function(router) {
     router.post('/newmatchup/', function(req, res) {
@@ -46,10 +47,10 @@ exports.initialize = function(router) {
                 }
 
                 if (winnerCard && loserCards.length !== 0) {
-                    elo.setKFactor(Math.ceil(128 / loserCards.length));
+                    elo.setKFactor(Math.ceil(_kFactor / loserCards.length));
 
                     if (winnerCard && loserCards.length !== 0) {
-                        elo.setKFactor(Math.ceil(128 / loserCards.length));
+                        elo.setKFactor(Math.ceil(_kFactor / loserCards.length));
                         var oldWinnerRank = winnerCard.getRankForClass(hero);
 
                         _.forEach(loserCards, function(loserCard) {
@@ -79,13 +80,9 @@ exports.initialize = function(router) {
         var data = req.body;
         var className = (data.class || 'neutral').toLowerCase();
         var numCards = parseInt(data.numCards, 10);
-        var cardDatas = cardProvider.getCardsByClass(className);
+        var cardDatas = cardProvider.getCardsByHeroOrSet(className);
 
         var sortedDatas = _.chain(cardDatas)
-            .sortBy(function(cardData) {
-                return cardData.getRankForClass(className);
-            })
-            .reverse()
             .map(function(cardData) {
                 return {
                     name: cardData.name,
@@ -97,9 +94,12 @@ exports.initialize = function(router) {
                     url: cardData.url,
                     rarity: cardData.rarity,
                     set: cardData.set,
-                    category: cardData.category
+                    category: cardData.category,
+                    adwctaRank: cardData.adwctaRank
                 };
             })
+            .sortBy('rank')
+            .reverse()
             .value();
 
         if (numCards) {

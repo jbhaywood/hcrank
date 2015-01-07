@@ -37,7 +37,6 @@ var getClassIdx = function(className) {
 
 var getAverageTotalForClass = function(totals, className) {
     var result = 0;
-    className = classList.indexOf(className) !== -1 ? className : 'neutral';
 
     // get the average of all heroes for 'neutral'
     if (className === 'neutral') {
@@ -58,64 +57,52 @@ var getAverageTotalForClass = function(totals, className) {
     return result;
 };
 
+CardData.prototype.getValidClass = function(className) {
+    return !className || classList.indexOf(className) === -1 ? this.class : className;
+};
+
 CardData.prototype.getRankForClass = function(className) {
-    if (!className) {
-        className = this.class;
-    }
+    className = this.getValidClass(className);
     return getAverageTotalForClass(this.ranks, className);
 };
 
 CardData.prototype.getMatchupTotalForClass = function(className) {
-    if (!className) {
-        className = this.class;
-    }
+    className = this.getValidClass(className);
     return getAverageTotalForClass(this.matchupTotals, className);
 };
 
 CardData.prototype.getWinTotalForClass = function(className) {
-    if (!className) {
-        className = this.class;
-    }
+    className = this.getValidClass(className);
     return getAverageTotalForClass(this.winTotals, className);
 };
 
 CardData.prototype.getWinRatioForClass = function(className) {
-    if (!className) {
-        className = this.class;
-    }
+    className = this.getValidClass(className);
     var matchupTotal = this.getMatchupTotalForClass(className);
     var winTotal = this.getWinTotalForClass(className);
     return matchupTotal ? Math.round(winTotal / matchupTotal * 100) : 0;
 };
 
 CardData.prototype.setMatchupTotalForClass = function(className) {
-    if (!className) {
-        className = this.class;
-    }
+    className = this.getValidClass(className);
     var idx = getClassIdx(className);
     this.matchupTotals[idx] = this.matchupTotals[idx] + 1;
 };
 
 CardData.prototype.setWinTotalForClass = function(className) {
-    if (!className) {
-        className = this.class;
-    }
+    className = this.getValidClass(className);
     var idx = getClassIdx(className);
     this.winTotals[idx] = this.winTotals[idx] + 1;
 };
 
 CardData.prototype.setRankForClass = function(rank, className) {
-    if (!className) {
-        className = this.class;
-    }
+    className = this.getValidClass(className);
     var idx = getClassIdx(className);
     this.ranks[idx] = rank;
 };
 
 CardData.prototype.updateRankForClass = function(rank, className, didWin) {
-    if (!className) {
-        className = this.class;
-    }
+    className = this.getValidClass(className);
     this.setRankForClass(rank, className);
     this.setMatchupTotalForClass(className);
     if (didWin) {
